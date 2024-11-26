@@ -4,16 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="Init svelte set up">
+    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="Design improvements">
+      <change afterPath="$PROJECT_DIR$/clientSvelte/components.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/button/button.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/button/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/input/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/input/input.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/label/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/label/label.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/radio-group/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/radio-group/radio-group-item.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/radio-group/radio-group.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/ambient.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/ambient.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/types/src/routes/demo/lucia/login/proxy+page.server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/types/src/routes/demo/lucia/login/proxy+page.server.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/types/src/routes/demo/lucia/proxy+page.server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/types/src/routes/demo/lucia/proxy+page.server.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/tsconfig.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/src/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/src/app.html" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/app.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+layout.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+layout.svelte" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/svelte.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/svelte.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/tailwind.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/tailwind.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,6 +35,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
@@ -33,22 +51,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "frontend/landing",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -72,6 +90,7 @@
       <updated>1732623678987</updated>
       <workItem from="1732623680014" duration="1350000" />
       <workItem from="1732629382488" duration="1293000" />
+      <workItem from="1732651985419" duration="8763000" />
     </task>
     <task id="LOCAL-00001" summary="Init svelte set up">
       <option name="closed" value="true" />
@@ -81,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732624309049</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Initial look of the page">
+      <option name="closed" value="true" />
+      <created>1732652012482</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1732652012482</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -89,6 +116,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Init svelte set up" />
-    <option name="LAST_COMMIT_MESSAGE" value="Init svelte set up" />
+    <MESSAGE value="Initial look of the page" />
+    <MESSAGE value="Design improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Design improvements" />
   </component>
 </project>

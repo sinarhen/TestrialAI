@@ -22,3 +22,7 @@ vite.config.ts.timestamp-*
 
 # SQLite
 *.db
+/.idea/dataSources/b2995e76-481c-45c6-b717-2c60715f22e0.xml
+/.idea/dataSources.local.xml
+/.idea/dataSources.xml
+/.idea/dataSources/b2995e76-481c-45c6-b717-2c60715f22e0/storage_v2/_src_/schema/main.uQUzAA.meta
