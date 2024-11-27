@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="Design improvements">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+layout.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+layout.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" afterDir="false" />
-    </list>
+    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="Demo of the landing" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -73,7 +68,7 @@
       <workItem from="1732629382488" duration="1293000" />
       <workItem from="1732651985419" duration="8792000" />
       <workItem from="1732662396270" duration="4313000" />
-      <workItem from="1732703834884" duration="1526000" />
+      <workItem from="1732703834884" duration="1873000" />
     </task>
     <task id="LOCAL-00001" summary="Init svelte set up">
       <option name="closed" value="true" />
@@ -99,7 +94,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732661474951</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Demo of the landing">
+      <option name="closed" value="true" />
+      <created>1732705758523</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1732705758523</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -109,6 +112,7 @@
     <MESSAGE value="Init svelte set up" />
     <MESSAGE value="Initial look of the page" />
     <MESSAGE value="Design improvements" />
-    <option name="LAST_COMMIT_MESSAGE" value="Design improvements" />
+    <MESSAGE value="Demo of the landing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Demo of the landing" />
   </component>
 </project>
