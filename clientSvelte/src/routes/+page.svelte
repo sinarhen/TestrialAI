@@ -1,36 +1,31 @@
 <script lang="ts">
     import '../app.css';
-    import { Input } from "@/components/ui/input";
-    import { Button } from "@/components/ui/button";
-    import { Label } from "@/components/ui/label";
-    import * as RadioGroup from "$lib/components/ui/radio-group";
-    import {Pencil, Save, Share2, Trash2} from "lucide-svelte";
-    import {Checkbox} from "@/components/ui/checkbox";
-    import type {Question} from "@/types";
-    import {testQuestions} from "@/utils";
     import { fade } from 'svelte/transition';
-    import {toast} from "svelte-sonner";
+    import { toast } from "svelte-sonner";
+    import type { Question } from "@/types";
+    import { testQuestions } from "@/utils";
+
+    import Greeting from './components/Greeting.svelte';
+    import QuestionList from './components/QuestionList.svelte';
+    import ExportSection from './components/ExportSection.svelte';
 
     let topic = $state("");
-
     let isDeleting = false;
-
-    // Initial test data
     let questions = $state(testQuestions);
 
-    export const editQuestion = (index: number, updatedQuestion: Question) => {
-        questions.map((question, i) => {
-            if (i === index) {
-                return updatedQuestion;
-            }
-            return question;
-        });
-    };
+    function onCreateSurvey() {
+        // Logic to handle survey creation
+    }
 
-    export const deleteQuestion = (id: number) => {
-        if (isDeleting){
+    function editQuestion(id: number) {
+        // Implement edit logic (e.g., open a modal)
+        // You might set a variable to the question being edited
+    }
+
+    function deleteQuestion(id: number) {
+        if (isDeleting) {
             toast.warning("Please wait for the previous action to complete", {
-                duration: 2000
+                duration: 2000,
             });
             return;
         }
@@ -38,113 +33,30 @@
         const question = questions[questionIndex];
 
         if (question) {
+            isDeleting = true;
             toast.success("Question deleted successfully!", {
                 action: {
                     label: "Undo",
                     onClick: () => {
                         questions.splice(questionIndex, 0, question);
                         isDeleting = false;
-                    }
+                    },
                 },
                 onAutoClose: () => {
                     isDeleting = false;
-                }
+                },
             });
             questions = questions.filter((q) => q.id !== id);
-            isDeleting = true;
         } else {
             toast.warning("Internal error");
         }
-    };
-
+    }
 </script>
 
-<div class="w-full h-[75vh] flex flex-grow flex-col justify-center items-center">
-    <h1 class="text-3xl animate-fadeInSlide">
-        Hello, <span class="font-semibold">stranger</span>👋
-    </h1>
-    <p class="opacity-0 mt-0.5 animate-fadeInSlide [animation-delay:0.3s]">
-        Give us a topic you want to create a survey on
-    </p>
-    <Input bind:value={topic} placeholder="Napoleonic wars" class="w-[400px] mt-2" />
-    <Button class="mt-2">
-        Create survey
-    </Button>
-</div>
+<Greeting bind:topic onCreateSurvey={onCreateSurvey} />
 
 <h2 class="font-bold text-2xl">Napoleonic wars</h2>
 <div class="w-full flex h-full relative xl:flex-row flex-col mt-6">
-    <section class="flex w-full flex-col gap-y-10">
-        {#each questions as question(question.id)}
-            <div class="group grid transition-all" transition:fade>
-                <h3 class="text-xl mb-5 font-medium inline-flex items-center gap-x-2">
-                    {question.question}
-                    <button class="xl:opacity-0 opacity-50 transition-opacity xl:group-hover:opacity-25 xl:hover:opacity-50">
-                        <Pencil size="16" />
-                    </button>
-                    <button onclick={() => deleteQuestion(question.id)} class="xl:opacity-0 opacity-50 text-destructive transition-opacity xl:group-hover:opacity-25 xl:hover:opacity-50">
-                        <Trash2 size="16" />
-                    </button>
-                </h3>
-                {#if question.type === "single"}
-                    <RadioGroup.Root value="option-one">
-                        {#each question.options as option}
-                            <div class="flex items-center space-x-2">
-                                <RadioGroup.Item value={option.value} id={option.value} />
-                                <Label for={option.value}>{option.value}
-                                    {#if option.correct}
-                                        <span class="text-green">✅</span>
-                                    {/if}
-                                </Label>
-                            </div>
-                        {/each}
-                    </RadioGroup.Root>
-
-                {:else if question.type === "multiple"}
-                    {#each question.options as option}
-                        <div class="flex items-center mt-2 space-x-2">
-                            <Checkbox />
-                            <Label for={option.value}>
-                                {option.value}
-                                {#if option.correct}
-                                    <span class="text-green ml-2">✅</span>
-                                {/if}
-                            </Label>
-                        </div>
-                    {/each}
-                {/if}
-
-            </div>
-        {/each}
-        <div class="flex  w-full xl:justify-start justify-center">
-
-            <div class="grid w-full gap-y-2 xl:max-w-[400px] gap-x-2 grid-cols-4">
-                <Button class="col-span-4 gap-x-1">
-                    <Save size="16"/>
-                    Save
-                </Button>
-                <Button variant="outline" class="gap-x-1 inline-flex xl:hidden col-span-4">
-                    <Share2 size="16" />
-                    Share
-                </Button>
-
-            </div>
-        </div>
-    </section>
-    <section class="flex flex-col w-full mt-14 xl:mt-0">
-        <h5 class="text-lg font-semibold text-center ">Export</h5>
-
-        <div class="grid grid-cols-2 gap-2 w-full mt-4 xl:h-full xl:mt-6 max-h-[20rem] items-center">
-            <Button variant="ghost" class="h-16 xl:h-full border enabled:hover:bg-blue-500 col-span-2 xl:col-span-1  rounded-sm flex items-center justify-center">
-                <h4 class="font-bold">Google Forms</h4>
-            </Button>
-            <Button variant="ghost" class=" h-16 xl:h-full border col-span-2 xl:col-span-1  rounded-sm flex items-center justify-center">
-                <h4 class="font-bold">Microsoft Forms</h4>
-            </Button>
-            <Button variant="ghost" class="h-16 xl:h-full border enabled:hover:bg-red-400 col-span-2 xl:col-span-2 rounded-sm flex items-center justify-center">
-                <h4 class="font-bold">PDF</h4>
-            </Button>
-
-        </div>
-    </section>
+    <QuestionList {questions} onDeleteQuestion={deleteQuestion} onEditQuestion={editQuestion} />
+    <ExportSection />
 </div>

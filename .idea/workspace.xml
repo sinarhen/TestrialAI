@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="Deletion is implemented">
+    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="bug fixes">
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/ExportSection.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/Greeting.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionItem.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionList.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -16,6 +21,10 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="TypeScript File" />
+        <option value="Greeting" />
+        <option value="QuestionItem" />
+        <option value="QuestionList" />
+        <option value="ExportSection" />
       </list>
     </option>
   </component>
@@ -80,7 +89,7 @@
       <workItem from="1732662396270" duration="4313000" />
       <workItem from="1732703834884" duration="2202000" />
       <workItem from="1732710505546" duration="1346000" />
-      <workItem from="1732724662298" duration="4890000" />
+      <workItem from="1732724662298" duration="5527000" />
     </task>
     <task id="LOCAL-00001" summary="Init svelte set up">
       <option name="closed" value="true" />
@@ -154,7 +163,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732733513732</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="bug fixes">
+      <option name="closed" value="true" />
+      <created>1732733935926</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1732733935926</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,6 +196,7 @@
     <MESSAGE value="Responsiveness improvements" />
     <MESSAGE value="multiple answers type" />
     <MESSAGE value="Deletion is implemented" />
-    <option name="LAST_COMMIT_MESSAGE" value="Deletion is implemented" />
+    <MESSAGE value="bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="bug fixes" />
   </component>
 </project>
