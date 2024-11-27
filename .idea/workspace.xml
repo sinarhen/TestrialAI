@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="multiple answers type">
-      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/lib/utils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+layout.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+layout.svelte" afterDir="false" />
+    <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="Deletion is implemented">
       <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +80,7 @@
       <workItem from="1732662396270" duration="4313000" />
       <workItem from="1732703834884" duration="2202000" />
       <workItem from="1732710505546" duration="1346000" />
-      <workItem from="1732724662298" duration="4567000" />
+      <workItem from="1732724662298" duration="4890000" />
     </task>
     <task id="LOCAL-00001" summary="Init svelte set up">
       <option name="closed" value="true" />
@@ -137,11 +130,46 @@
       <option name="project" value="LOCAL" />
       <updated>1732729301331</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Deletion is implemented">
+      <option name="closed" value="true" />
+      <created>1732733494156</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1732733494156</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Deletion is implemented">
+      <option name="closed" value="true" />
+      <created>1732733504114</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1732733504114</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Deletion is implemented">
+      <option name="closed" value="true" />
+      <created>1732733513732</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1732733513732</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Init svelte set up" />
@@ -150,6 +178,7 @@
     <MESSAGE value="Demo of the landing" />
     <MESSAGE value="Responsiveness improvements" />
     <MESSAGE value="multiple answers type" />
-    <option name="LAST_COMMIT_MESSAGE" value="multiple answers type" />
+    <MESSAGE value="Deletion is implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="Deletion is implemented" />
   </component>
 </project>

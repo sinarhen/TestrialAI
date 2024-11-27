@@ -11,7 +11,9 @@
     import { fade } from 'svelte/transition';
     import {toast} from "svelte-sonner";
 
-    let topic = "";
+    let topic = $state("");
+
+    let isDeleting = false;
 
     // Initial test data
     let questions = $state(testQuestions);
@@ -26,18 +28,30 @@
     };
 
     export const deleteQuestion = (id: number) => {
+        if (isDeleting){
+            toast.warning("Please wait for the previous action to complete", {
+                duration: 2000
+            });
+            return;
+        }
         const questionIndex = questions.findIndex((q) => q.id === id);
         const question = questions[questionIndex];
+
         if (question) {
             toast.success("Question deleted successfully!", {
                 action: {
                     label: "Undo",
                     onClick: () => {
                         questions.splice(questionIndex, 0, question);
+                        isDeleting = false;
                     }
+                },
+                onAutoClose: () => {
+                    isDeleting = false;
                 }
             });
             questions = questions.filter((q) => q.id !== id);
+            isDeleting = true;
         } else {
             toast.warning("Internal error");
         }
