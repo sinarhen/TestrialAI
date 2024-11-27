@@ -6,6 +6,7 @@
     import * as RadioGroup from "$lib/components/ui/radio-group";
     import {Check, Save, Share2} from "lucide-svelte";
     import * as Card from "$lib/components/ui/card/index.js";
+    import {Checkbox} from "@/components/ui/checkbox";
 
     let topic = "";
     const questions = [
@@ -23,7 +24,7 @@
             question: "What year did the first coalition collapse?",
             options: [
                 { value: "1803", correct: false },
-                { value: "1810", correct: false },
+                { value: "1810", correct: true },
                 { value: "1800", correct: false },
                 { value: "None of the above", correct: true }
             ],
@@ -67,9 +68,10 @@
 <div class="w-full flex h-full relative xl:flex-row flex-col mt-6">
     <section class="flex w-full flex-col gap-y-10">
         {#each questions as question}
-            {#if question.type === "single"}
-                <div>
-                    <h3 class="text-xl mb-5 font-medium">{question.question}</h3>
+
+            <div>
+                <h3 class="text-xl mb-5 font-medium">{question.question}</h3>
+                {#if question.type === "single"}
                     <RadioGroup.Root value="option-one">
                         {#each question.options as option}
                             <div class="flex items-center space-x-2">
@@ -82,15 +84,23 @@
                             </div>
                         {/each}
                     </RadioGroup.Root>
-                </div>
 
-            {:else if question.type === "multiple"}
-                <div>
-                    Multiple choice question
-                </div>
-            {/if}
+                {:else if question.type === "multiple"}
+                        {#each question.options as option}
+                            <div class="flex items-center mt-2 space-x-2">
+                                <Checkbox />
+                                <Label for={option.value}>
+                                    {option.value}
+                                    {#if option.correct}
+                                        <span class="text-green ml-2">✅</span>
+                                    {/if}
+                                </Label>
+                            </div>
+                        {/each}
+                {/if}
+            </div>
         {/each}
-        <div class="flex w-full xl:justify-start justify-center">
+        <div class="flex  w-full xl:justify-start justify-center">
 
             <div class="grid w-full gap-y-2 xl:max-w-[400px] gap-x-2 grid-cols-4">
                 <Button class="col-span-4 gap-x-1">
@@ -106,9 +116,9 @@
         </div>
     </section>
     <section class="flex flex-col w-full mt-14 xl:mt-0">
-        <h5 class="text-lg font-semibold text-center">Export</h5>
+        <h5 class="text-lg font-semibold text-center ">Export</h5>
 
-        <div class="grid grid-cols-2 gap-2 w-full mt-4 xl:h-full xl:mt-0 items-center">
+        <div class="grid grid-cols-2 gap-2 w-full mt-4 xl:h-full xl:mt-6 max-h-[20rem] items-center">
             <Button variant="ghost" class="h-16 xl:h-full border enabled:hover:bg-blue-500 col-span-2 xl:col-span-1  rounded-sm flex items-center justify-center">
                 <h4 class="font-bold">Google Forms</h4>
             </Button>
