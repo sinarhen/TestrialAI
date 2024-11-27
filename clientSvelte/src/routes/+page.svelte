@@ -4,51 +4,45 @@
     import { Button } from "@/components/ui/button";
     import { Label } from "@/components/ui/label";
     import * as RadioGroup from "$lib/components/ui/radio-group";
-    import {Check, Save, Share2} from "lucide-svelte";
-    import * as Card from "$lib/components/ui/card/index.js";
+    import {Pencil, Save, Share2, Trash2} from "lucide-svelte";
     import {Checkbox} from "@/components/ui/checkbox";
+    import type {Question} from "@/types";
+    import {testQuestions} from "@/utils";
+    import { fade } from 'svelte/transition';
+    import {toast} from "svelte-sonner";
 
     let topic = "";
-    const questions = [
-        {
-            type: "single",
-            question: "What year did the first coalition collapse?",
-            options: [
-                { value: "1803", correct: false },
-                { value: "1810", correct: false },
-                { value: "1800", correct: false },
-                { value: "None of the above", correct: true }
-            ],
-        },        {
-            type: "multiple",
-            question: "What year did the first coalition collapse?",
-            options: [
-                { value: "1803", correct: false },
-                { value: "1810", correct: true },
-                { value: "1800", correct: false },
-                { value: "None of the above", correct: true }
-            ],
-        },        {
-            type: "single",
-            question: "What year did the first coalition collapse?",
-            options: [
-                { value: "1803", correct: false },
-                { value: "1810", correct: false },
-                { value: "1800", correct: false },
-                { value: "None of the above", correct: true }
-            ],
-        },        {
-            type: "single",
-            question: "What year did the first coalition collapse?",
-            options: [
-                { value: "1803", correct: false },
-                { value: "1810", correct: false },
-                { value: "1800", correct: false },
-                { value: "None of the above", correct: true }
-            ],
-        },
-        // ... more questions
-    ];
+
+    // Initial test data
+    let questions = $state(testQuestions);
+
+    export const editQuestion = (index: number, updatedQuestion: Question) => {
+        questions.map((question, i) => {
+            if (i === index) {
+                return updatedQuestion;
+            }
+            return question;
+        });
+    };
+
+    export const deleteQuestion = (id: number) => {
+        const questionIndex = questions.findIndex((q) => q.id === id);
+        const question = questions[questionIndex];
+        if (question) {
+            toast.success("Question deleted successfully!", {
+                action: {
+                    label: "Undo",
+                    onClick: () => {
+                        questions.splice(questionIndex, 0, question);
+                    }
+                }
+            });
+            questions = questions.filter((q) => q.id !== id);
+        } else {
+            toast.warning("Internal error");
+        }
+    };
+
 </script>
 
 <div class="w-full h-[75vh] flex flex-grow flex-col justify-center items-center">
@@ -67,10 +61,17 @@
 <h2 class="font-bold text-2xl">Napoleonic wars</h2>
 <div class="w-full flex h-full relative xl:flex-row flex-col mt-6">
     <section class="flex w-full flex-col gap-y-10">
-        {#each questions as question}
-
-            <div>
-                <h3 class="text-xl mb-5 font-medium">{question.question}</h3>
+        {#each questions as question(question.id)}
+            <div class="group grid transition-all" transition:fade>
+                <h3 class="text-xl mb-5 font-medium inline-flex items-center gap-x-2">
+                    {question.question}
+                    <button class="xl:opacity-0 opacity-50 transition-opacity xl:group-hover:opacity-25 xl:hover:opacity-50">
+                        <Pencil size="16" />
+                    </button>
+                    <button onclick={() => deleteQuestion(question.id)} class="xl:opacity-0 opacity-50 text-destructive transition-opacity xl:group-hover:opacity-25 xl:hover:opacity-50">
+                        <Trash2 size="16" />
+                    </button>
+                </h3>
                 {#if question.type === "single"}
                     <RadioGroup.Root value="option-one">
                         {#each question.options as option}
@@ -86,18 +87,19 @@
                     </RadioGroup.Root>
 
                 {:else if question.type === "multiple"}
-                        {#each question.options as option}
-                            <div class="flex items-center mt-2 space-x-2">
-                                <Checkbox />
-                                <Label for={option.value}>
-                                    {option.value}
-                                    {#if option.correct}
-                                        <span class="text-green ml-2">✅</span>
-                                    {/if}
-                                </Label>
-                            </div>
-                        {/each}
+                    {#each question.options as option}
+                        <div class="flex items-center mt-2 space-x-2">
+                            <Checkbox />
+                            <Label for={option.value}>
+                                {option.value}
+                                {#if option.correct}
+                                    <span class="text-green ml-2">✅</span>
+                                {/if}
+                            </Label>
+                        </div>
+                    {/each}
                 {/if}
+
             </div>
         {/each}
         <div class="flex  w-full xl:justify-start justify-center">
