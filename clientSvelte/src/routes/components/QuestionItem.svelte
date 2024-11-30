@@ -1,6 +1,6 @@
 <script lang="ts">
     import {
-        ArrowDown,
+        ArrowDown, Brain,
         CaseLower,
         ChevronDown, Globe,
         Grip,
@@ -56,10 +56,6 @@
             correct: false,
         });
     }
-
-    type action = "rephrase" | "simplify" | "translate"
-
-    let actionChosen: action | null = $state(null);
 </script>
 
 <div class="group flex gap-x-6" transition:fade>
@@ -77,18 +73,11 @@
                     <DropdownMenu.Group>
                       <DropdownMenu.Label>Actions</DropdownMenu.Label>
                       <DropdownMenu.Separator />
-                      <DropdownMenu.Item onclick={() => {actionChosen = 'rephrase'}} class="cursor-pointer"><RotateCw size="16" class="mr-2"/> Rephrase</DropdownMenu.Item>
-                      <DropdownMenu.Item onclick={() => {actionChosen = 'simplify'}} class="cursor-pointer"><CaseLower size="16" class="mr-2"/>Simplify</DropdownMenu.Item>
-                      <DropdownMenu.Item onclick={() => {actionChosen = 'rephrase'}} class="cursor-pointer"><Globe size="16" class="mr-2" />Translate</DropdownMenu.Item>
+                      <DropdownMenu.Item class="cursor-pointer"><RotateCw size="16" class="mr-2"/> Rephrase</DropdownMenu.Item>
+                      <DropdownMenu.Item class="cursor-pointer"><Brain size="16" class="mr-2"/> Harder</DropdownMenu.Item>
+                      <DropdownMenu.Item class="cursor-pointer"><CaseLower size="16" class="mr-2"/>Simplify</DropdownMenu.Item>
+                      <DropdownMenu.Item class="cursor-pointer"><Globe size="16" class="mr-2" />Translate</DropdownMenu.Item>
                     </DropdownMenu.Group>
-<!--                      <div hidden={!actionChosen} class="absolute rounded bg-white p-2 top-0 right-[200px]">-->
-<!--                          <Label for="action" class="block">Rephrase</Label>-->
-<!--                          <Input id="action" class="w-[250px] mt-1"/>-->
-<!--                          <p class="text-xs opacity-50 mt-0.5">-->
-<!--                              Prompt for the action-->
-<!--                          </p>-->
-<!--                          <Button size="sm" class="mt-1 gap-x-1 ">Apply <Sparkles size="12"/></Button>-->
-<!--                      </div>-->
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
                 <Dialog open={isDialogOpen} onOpenChange={() => { isDialogOpen = !isDialogOpen }}>
@@ -113,7 +102,7 @@
                                     Answer type
                                     <Info size="10"/>
                                 </Label>
-                                <RadioGroup.Root class="mt-2 gap-x-2" id={`type-${question.id}`} >
+                                <RadioGroup.Root value={question.answerType} class="mt-2 gap-x-2" id={`type-${question.id}`} >
                                     <div class="flex items-center space-x-2">
                                         <RadioGroup.Item value="single" id="single" />
                                         <Label for="single" >Single</Label>
@@ -171,7 +160,7 @@
             </span>
 
         </h3>
-        {#if question.type === "single"}
+        {#if question.answerType === "single"}
             <RadioGroup.Root value="option-one">
                 {#each question.options as option, index}
                     <div class="flex items-center space-x-2">
@@ -184,7 +173,7 @@
                     </div>
                 {/each}
             </RadioGroup.Root>
-        {:else if question.type === "multiple"}
+        {:else if question.answerType === "multiple"}
             {#each question.options as option, index}
                 <div class="flex items-center mt-2 space-x-2">
                     <Checkbox id={`checkbox-${question.id}-${index}`} />

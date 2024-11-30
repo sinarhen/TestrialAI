@@ -1,9 +1,11 @@
 export interface Question {
 	id: number;
-	type: string;
+	answerType: AnswerType;
 	question: string;
 	options: Option[];
 }
+
+type AnswerType = 'single' | 'multiple';
 
 export interface Option {
 	value: string;

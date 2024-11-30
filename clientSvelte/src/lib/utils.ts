@@ -59,7 +59,7 @@ export const flyAndScale = (
 export const testQuestions: Question[] = [
 	{
 		id: 1,
-		type: 'single',
+		answerType: 'single',
 		question: 'What year did the first coalition collapse?',
 		options: [
 			{ value: '1803', correct: false },
@@ -70,7 +70,7 @@ export const testQuestions: Question[] = [
 	},
 	{
 		id: 2,
-		type: 'multiple',
+		answerType: 'multiple',
 		question: 'Select all correct answers:',
 		options: [
 			{ value: '1803', correct: false },
@@ -81,7 +81,7 @@ export const testQuestions: Question[] = [
 	},
 	{
 		id: 3,
-		type: 'single',
+		answerType: 'single',
 		question: 'What year did the first coalition collapse?',
 		options: [
 			{ value: '1803', correct: false },
@@ -92,7 +92,7 @@ export const testQuestions: Question[] = [
 	},
 	{
 		id: 4,
-		type: 'multiple',
+		answerType: 'multiple',
 		question: 'Select all correct answers:',
 		options: [
 			{ value: '1803', correct: false },
@@ -103,7 +103,7 @@ export const testQuestions: Question[] = [
 	},
 	{
 		id: 5,
-		type: 'single',
+		answerType: 'single',
 		question: 'What year did the first coalition collapse?',
 		options: [
 			{ value: '1803', correct: false },
@@ -114,7 +114,7 @@ export const testQuestions: Question[] = [
 	},
 	{
 		id: 6,
-		type: 'multiple',
+		answerType: 'multiple',
 		question: 'Select all correct answers:',
 		options: [
 			{ value: '1803', correct: false },
@@ -125,7 +125,7 @@ export const testQuestions: Question[] = [
 	},
 	{
 		id: 7,
-		type: 'single',
+		answerType: 'single',
 		question: 'What year did the first coalition collapse?',
 		options: [
 			{ value: '1803', correct: false },
@@ -136,7 +136,7 @@ export const testQuestions: Question[] = [
 	},
 	{
 		id: 8,
-		type: 'multiple',
+		answerType: 'multiple',
 		question: 'Select all correct answers:',
 		options: [
 			{ value: '1803', correct: false },
