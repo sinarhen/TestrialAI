@@ -1,6 +1,6 @@
 <script lang="ts">
     import QuestionItem from './QuestionItem.svelte';
-    import {Grip, Plus, Save, Share2} from "lucide-svelte";
+    import {Grip, Lock, Plus, Save, Share2, Sparkle, Sparkles} from "lucide-svelte";
     import type { Question } from "@/types";
     import { flip } from "svelte/animate";
     import {Button} from "@/components/ui/button";
@@ -49,7 +49,7 @@
     }
 </script>
 
-<section class="flex w-full">
+<section class="flex flex-col w-full">
     <div class=" flex flex-col gap-y-10 w-full">
         {#each questions as question, index (question.id)}
             <div
@@ -75,22 +75,29 @@
             </div>
         {/each}
         <!-- Add Question Button and other components -->
-        <Button variant="outline" class="flex items-center justify-center gap-x-1">
-            <Plus size="16" />
-            Add question
-        </Button>
-        <div class="flex w-full xl:justify-start justify-center">
-            <div class="grid w-full gap-y-2 gap-x-2 grid-cols-4">
-                <Button class="col-span-4 gap-x-1">
-                    <Save size="16" />
-                    Save
-                </Button>
-                <Button variant="outline" class="gap-x-1 inline-flex xl:hidden col-span-4">
-                    <Share2 size="16" />
-                    Share
-                </Button>
-            </div>
+        <div class="flex">
+            <Button size="sm" variant="outline" class="flex rounded-r-none items-center w-full justify-center gap-x-1">
+                <Plus size="16" />
+                Add question
+            </Button>
+            <Button size="sm" disabled={true} variant="outline" class="flex w-full rounded-l-none items-center justify-center gap-x-1">
+                <Sparkles size="16" />
+                Generate question
+            </Button>
+
         </div>
     </div>
 
+    <div class="flex mt-16 w-full xl:justify-start justify-center">
+        <div class="grid w-full gap-y-2 gap-x-2 grid-cols-4">
+            <Button class="col-span-4 gap-x-1">
+                <Save size="16" />
+                Save
+            </Button>
+            <Button variant="outline" class="gap-x-1 inline-flex xl:hidden col-span-4">
+                <Share2 size="16" />
+                Share
+            </Button>
+        </div>
+    </div>
 </section>
