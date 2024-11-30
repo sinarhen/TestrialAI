@@ -1,8 +1,6 @@
 <script lang="ts">
     import '../app.css';
-    import { fade } from 'svelte/transition';
     import { toast } from "svelte-sonner";
-    import type { Question } from "@/types";
     import { testQuestions } from "@/utils";
 
     import Greeting from './components/Greeting.svelte';
@@ -10,16 +8,11 @@
     import ExportSection from './components/ExportSection.svelte';
 
     let topic = $state("");
-    let isDeleting = false;
+    let isDeleting = $state(false);
     let questions = $state(testQuestions);
 
     function onCreateSurvey() {
         // Logic to handle survey creation
-    }
-
-    function editQuestion(id: number) {
-        // Implement edit logic (e.g., open a modal)
-        // You might set a variable to the question being edited
     }
 
     function deleteQuestion(id: number) {
@@ -57,6 +50,6 @@
 
 <h2 class="font-bold text-2xl">Napoleonic wars</h2>
 <div class="w-full flex h-full relative xl:flex-row flex-col mt-6">
-    <QuestionList {questions} onDeleteQuestion={deleteQuestion} onEditQuestion={editQuestion} />
+    <QuestionList {questions} onDeleteQuestion={deleteQuestion} />
     <ExportSection />
 </div>
