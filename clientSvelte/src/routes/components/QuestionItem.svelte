@@ -1,9 +1,21 @@
 <script lang="ts">
-    import {ArrowDown, ChevronDown, Grip, Info, Pencil, Plus, Sparkles, Trash2} from "lucide-svelte";
+    import {
+        ArrowDown,
+        CaseLower,
+        ChevronDown, Globe,
+        Grip,
+        Info,
+        Pencil,
+        Plus,
+        RotateCw,
+        Sparkles,
+        Trash2
+    } from "lucide-svelte";
     import { Label } from "@/components/ui/label";
     import * as RadioGroup from "$lib/components/ui/radio-group";
     import { Checkbox } from "@/components/ui/checkbox";
     import { fade } from 'svelte/transition';
+    import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
     import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
     import { Button } from "@/components/ui/button";
     import type { Question } from "@/types";
@@ -21,6 +33,8 @@
     } = $props();
 
     let isDialogOpen = $state(false);
+    let isActionMenuOpen = $state(false);
+
     let updatedQuestion: Question = $state(cloneDeep(question));
 
     function handleDelete() {
@@ -42,6 +56,10 @@
             correct: false,
         });
     }
+
+    type action = "rephrase" | "simplify" | "translate"
+
+    let actionChosen: action | null = $state(null);
 </script>
 
 <div class="group flex gap-x-6" transition:fade>
@@ -50,14 +68,33 @@
         <h3 class="text-xl w-full mb-5 font-medium inline-flex justify-between gap-x-2">
             {question.question}
             <span class="flex h-full items-center gap-x-2 ">
-                <button class="inline-flex opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 cursor-pointer items-center transition-opacity hover:opacity-75">
-                    <Sparkles size="16" />
-                    <ChevronDown size="12"/>
-                </button>
+                <DropdownMenu.Root closeOnItemClick={true} open={isActionMenuOpen} onOpenChange={() => isActionMenuOpen = !isActionMenuOpen}>
+                  <DropdownMenu.Trigger class="inline-flex  opacity-25 lg:opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 cursor-pointer items-center transition-opacity hover:opacity-75">
+                        <Sparkles size="16" />
+                        <ChevronDown size="12"/>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content class=" w-[200px] relative">
+                    <DropdownMenu.Group>
+                      <DropdownMenu.Label>Actions</DropdownMenu.Label>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item onclick={() => {actionChosen = 'rephrase'}} class="cursor-pointer"><RotateCw size="16" class="mr-2"/> Rephrase</DropdownMenu.Item>
+                      <DropdownMenu.Item onclick={() => {actionChosen = 'simplify'}} class="cursor-pointer"><CaseLower size="16" class="mr-2"/>Simplify</DropdownMenu.Item>
+                      <DropdownMenu.Item onclick={() => {actionChosen = 'rephrase'}} class="cursor-pointer"><Globe size="16" class="mr-2" />Translate</DropdownMenu.Item>
+                    </DropdownMenu.Group>
+<!--                      <div hidden={!actionChosen} class="absolute rounded bg-white p-2 top-0 right-[200px]">-->
+<!--                          <Label for="action" class="block">Rephrase</Label>-->
+<!--                          <Input id="action" class="w-[250px] mt-1"/>-->
+<!--                          <p class="text-xs opacity-50 mt-0.5">-->
+<!--                              Prompt for the action-->
+<!--                          </p>-->
+<!--                          <Button size="sm" class="mt-1 gap-x-1 ">Apply <Sparkles size="12"/></Button>-->
+<!--                      </div>-->
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
                 <Dialog open={isDialogOpen} onOpenChange={() => { isDialogOpen = !isDialogOpen }}>
                     <DialogTrigger>
                         <button
-                                class="transition-opacity opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 hover:opacity-75"
+                                class="transition-opacity opacity-25 lg:opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 hover:opacity-75"
                                 onclick={() => (isDialogOpen = true)}
                         >
                             <Pencil size="16" />
@@ -127,7 +164,7 @@
                 </Dialog>
                 <button
                         onclick={handleDelete}
-                        class="text-destructive transition-opacity opacity-0 group-hover:opacity-25 group-hover:hover:opacity-75"
+                        class="text-destructive transition-opacity opacity-25 lg:opacity-0 group-hover:opacity-25 group-hover:hover:opacity-75"
                 >
                     <Trash2 size="16" />
                 </button>
