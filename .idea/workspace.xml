@@ -7,9 +7,8 @@
     <list default="true" id="3d1a6f0c-e6c5-417b-9796-2446a53d6aac" name="Changes" comment="Organizing components">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.svelte-kit/generated/server/internal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/src/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/lib/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/components/ExportSection.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/ExportSection.svelte" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionItem.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionItem.svelte" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionList.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionList.svelte" afterDir="false" />
     </list>

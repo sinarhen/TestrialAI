@@ -78,5 +78,71 @@ export const testQuestions: Question[] = [
 			{ value: '1800', correct: false },
 			{ value: 'None of the above', correct: true }
 		]
+	},
+	{
+		id: 3,
+		type: 'single',
+		question: 'What year did the first coalition collapse?',
+		options: [
+			{ value: '1803', correct: false },
+			{ value: '1810', correct: false },
+			{ value: '1800', correct: false },
+			{ value: 'None of the above', correct: true }
+		]
+	},
+	{
+		id: 4,
+		type: 'multiple',
+		question: 'Select all correct answers:',
+		options: [
+			{ value: '1803', correct: false },
+			{ value: '1810', correct: true },
+			{ value: '1800', correct: false },
+			{ value: 'None of the above', correct: true }
+		]
+	},
+	{
+		id: 5,
+		type: 'single',
+		question: 'What year did the first coalition collapse?',
+		options: [
+			{ value: '1803', correct: false },
+			{ value: '1810', correct: false },
+			{ value: '1800', correct: false },
+			{ value: 'None of the above', correct: true }
+		]
+	},
+	{
+		id: 6,
+		type: 'multiple',
+		question: 'Select all correct answers:',
+		options: [
+			{ value: '1803', correct: false },
+			{ value: '1810', correct: true },
+			{ value: '1800', correct: false },
+			{ value: 'None of the above', correct: true }
+		]
+	},
+	{
+		id: 7,
+		type: 'single',
+		question: 'What year did the first coalition collapse?',
+		options: [
+			{ value: '1803', correct: false },
+			{ value: '1810', correct: false },
+			{ value: '1800', correct: false },
+			{ value: 'None of the above', correct: true }
+		]
+	},
+	{
+		id: 8,
+		type: 'multiple',
+		question: 'Select all correct answers:',
+		options: [
+			{ value: '1803', correct: false },
+			{ value: '1810', correct: true },
+			{ value: '1800', correct: false },
+			{ value: 'None of the above', correct: true }
+		]
 	}
 ];
