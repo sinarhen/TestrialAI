@@ -49,7 +49,7 @@
 <Greeting bind:topic onCreateSurvey={onCreateSurvey} />
 
 <h2 class="font-bold text-2xl">Napoleonic wars</h2>
-<div class="w-full flex h-full relative xl:flex-row flex-col mt-6">
+<div class="w-full flex h-full gap-x-12 relative xl:flex-row flex-col mt-6">
     <QuestionList {questions} onDeleteQuestion={deleteQuestion} />
     <ExportSection />
 </div>

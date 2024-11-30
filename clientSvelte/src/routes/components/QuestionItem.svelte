@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {Grip, Info, Pencil, Plus, Trash2} from "lucide-svelte";
+    import {ArrowDown, ChevronDown, Grip, Info, Pencil, Plus, Sparkles, Trash2} from "lucide-svelte";
     import { Label } from "@/components/ui/label";
     import * as RadioGroup from "$lib/components/ui/radio-group";
     import { Checkbox } from "@/components/ui/checkbox";
@@ -46,86 +46,93 @@
 
 <div class="group flex gap-x-6" transition:fade>
 
-    <div>
-        <h3 class="text-xl mb-5 font-medium inline-flex items-center gap-x-2">
+    <div class="w-full">
+        <h3 class="text-xl w-full mb-5 font-medium inline-flex justify-between gap-x-2">
             {question.question}
-            <Dialog open={isDialogOpen} onOpenChange={() => { isDialogOpen = !isDialogOpen }}>
-                <DialogTrigger>
-                    <button
-                            class="xl:opacity-0 opacity-50 transition-opacity xl:group-hover:opacity-25 xl:hover:opacity-50"
-                            onclick={() => (isDialogOpen = true)}
-                    >
-                        <Pencil size="16" />
-                    </button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Edit Question</DialogTitle>
-                        <DialogDescription>
-                            Modify the details of the question below.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div class="space-y-6">
-                        <div>
-                            <Label class="inline-flex gap-x-0.5" for={`type-${question.id}`}>
-                                Answer type
-                                <Info size="10"/>
-                            </Label>
-                            <RadioGroup.Root class="mt-2 gap-x-2" id={`type-${question.id}`} >
-                                <div class="flex items-center space-x-2">
-                                    <RadioGroup.Item value="single" id="single" />
-                                    <Label for="single" >Single</Label>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <RadioGroup.Item value="multiple" id="multiple" />
-                                    <Label for="multiple">Multiple</Label>
-                                </div>
-                            </RadioGroup.Root>
+            <span class="flex h-full items-center gap-x-2 ">
+                <button class="inline-flex opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 cursor-pointer items-center transition-opacity hover:opacity-75">
+                    <Sparkles size="16" />
+                    <ChevronDown size="12"/>
+                </button>
+                <Dialog open={isDialogOpen} onOpenChange={() => { isDialogOpen = !isDialogOpen }}>
+                    <DialogTrigger>
+                        <button
+                                class="transition-opacity opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 hover:opacity-75"
+                                onclick={() => (isDialogOpen = true)}
+                        >
+                            <Pencil size="16" />
+                        </button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Edit Question</DialogTitle>
+                            <DialogDescription>
+                                Modify the details of the question below.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div class="space-y-6">
+                            <div>
+                                <Label class="inline-flex gap-x-0.5" for={`type-${question.id}`}>
+                                    Answer type
+                                    <Info size="10"/>
+                                </Label>
+                                <RadioGroup.Root class="mt-2 gap-x-2" id={`type-${question.id}`} >
+                                    <div class="flex items-center space-x-2">
+                                        <RadioGroup.Item value="single" id="single" />
+                                        <Label for="single" >Single</Label>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <RadioGroup.Item value="multiple" id="multiple" />
+                                        <Label for="multiple">Multiple</Label>
+                                    </div>
+                                </RadioGroup.Root>
 
-                        </div>
-                        <div>
-                            <Label for={`question-${updatedQuestion.id}`} class="block">
-                                Question:
-                            </Label>
-                            <Input
-                                    class="mt-2"
-                                    id={`question-${updatedQuestion.id}`}
-                                    bind:value={updatedQuestion.question}
-                            />
+                            </div>
+                            <div>
+                                <Label for={`question-${updatedQuestion.id}`} class="block">
+                                    Question:
+                                </Label>
+                                <Input
+                                        class="mt-2"
+                                        id={`question-${updatedQuestion.id}`}
+                                        bind:value={updatedQuestion.question}
+                                />
 
+                            </div>
+                            <div>
+                                <Label>Options</Label>
+                                {#each updatedQuestion.options as option, index}
+                                    <div class="flex items-center space-x-2 mt-2">
+                                        <Input
+                                                type="text"
+                                                id={`option-${updatedQuestion.id}-${index}`}
+                                                bind:value={option.value}
+                                                class="input flex-1"
+                                        />
+                                        <Checkbox
+                                                id={`checkbox-${updatedQuestion.id}-${index}`}
+                                                bind:checked={option.correct}
+                                        />
+                                        <Trash2 onclick={() => deleteOption(index)} class="text-destructive cursor-pointer" size="16" />
+                                    </div>
+                                {/each}
+                                <Button onclick={createOption} class="w-full mt-2" variant="link"><Plus size="16" />Add new</Button>
+                            </div>
                         </div>
-                        <div>
-                            <Label>Options</Label>
-                            {#each updatedQuestion.options as option, index}
-                                <div class="flex items-center space-x-2 mt-2">
-                                    <Input
-                                            type="text"
-                                            id={`option-${updatedQuestion.id}-${index}`}
-                                            bind:value={option.value}
-                                            class="input flex-1"
-                                    />
-                                    <Checkbox
-                                            id={`checkbox-${updatedQuestion.id}-${index}`}
-                                            bind:checked={option.correct}
-                                    />
-                                    <Trash2 onclick={() => deleteOption(index)} class="text-destructive cursor-pointer" size="16" />
-                                </div>
-                            {/each}
-                            <Button onclick={createOption} class="w-full mt-2" variant="link"><Plus size="16" />Add new</Button>
-                        </div>
-                    </div>
-                    <DialogFooter class="gap-y-2">
-                        <Button on:click={handleSave}>Save</Button>
-                        <Button variant="outline" on:click={() => (isDialogOpen = false)}>Cancel</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            <button
-                    onclick={handleDelete}
-                    class="xl:opacity-0 opacity-50 text-destructive transition-opacity xl:group-hover:opacity-25 xl:hover:opacity-50"
-            >
-                <Trash2 size="16" />
-            </button>
+                        <DialogFooter class="gap-y-2">
+                            <Button on:click={handleSave}>Save</Button>
+                            <Button variant="outline" on:click={() => (isDialogOpen = false)}>Cancel</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+                <button
+                        onclick={handleDelete}
+                        class="text-destructive transition-opacity opacity-0 group-hover:opacity-25 group-hover:hover:opacity-75"
+                >
+                    <Trash2 size="16" />
+                </button>
+            </span>
+
         </h3>
         {#if question.type === "single"}
             <RadioGroup.Root value="option-one">

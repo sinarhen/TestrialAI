@@ -61,7 +61,7 @@
             >
                 <div
                         role="listitem"
-                        class="absolute flex cursor-grab active:cursor-grabbing opacity-10 group-hover:opacity-25 transition-opacity active:hover:opacity-50 h-full items-center -left-20"
+                        class="absolute flex cursor-grab active:cursor-grabbing opacity-10 group-hover:opacity-25 transition-opacity active:hover:opacity-50 items-center xl:-left-20 -left-14"
                         draggable="true"
                         on:dragstart={(event) => onDragStart(event, index)}
                 >
