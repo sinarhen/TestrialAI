@@ -4,18 +4,45 @@
     import type { Question } from "@/types";
     import { flip } from "svelte/animate";
     import {Button} from "@/components/ui/button";
-
-    export let questions: Question[];
-    export let onDeleteQuestion: (id: number) => void;
+    import {toast} from "svelte-sonner";
+    import {questions} from "@/stores/questions.svelte";
 
     function handleEdit(id: number, updatedQuestion: Question) {
-        const index = questions.findIndex((q) => q.id === id);
-        if (index !== -1) {
-            questions[index] = updatedQuestion;
-        }
+        questions.update((qs) => {
+            const index = qs.findIndex((q) => q.id === id);
+            if (index !== -1) {
+                qs[index] = updatedQuestion;
+            }
+            return qs;
+        });
     }
 
     let draggedIndex: number | null = null;
+
+    function onDeleteQuestion(id: number) {
+        questions.update((qs) => {
+            const questionIndex = qs.findIndex((q) => q.id === id);
+            const question = qs[questionIndex];
+
+            if (question) {
+                toast.success("Question deleted successfully!", {
+                    action: {
+                        label: "Undo",
+                        onClick: () => {
+                            questions.update((qs) => {
+                                qs.splice(questionIndex, 0, question);
+                                return qs;
+                            });
+                        },
+                    },
+                });
+                return qs.filter((q) => q.id !== id);
+            } else {
+                toast.warning("Internal error");
+                return qs;
+            }
+        });
+    }
 
     function onDragStart(event: DragEvent, index: number) {
         draggedIndex = index;
@@ -39,31 +66,50 @@
     function onDrop(event: DragEvent, targetIndex: number) {
         event.preventDefault();
 
-        if (draggedIndex !== null && draggedIndex !== targetIndex) {
-            const draggedItem = questions[draggedIndex];
-            questions.splice(draggedIndex, 1);
-            questions.splice(targetIndex, 0, draggedItem);
+        if (!!draggedIndex && draggedIndex !== targetIndex) {
+            questions.update((qs) => {
+                const [draggedItem] = qs.splice(draggedIndex, 1);
+                qs.splice(targetIndex, 0, draggedItem);
+                return qs;
+            });
         }
 
         draggedIndex = null;
     }
+
+    function onCreateQuestion() {
+        questions.update((qs) => [
+            ...qs,
+            {
+                id: qs.length + 1,
+                question: "New question",
+                answerType: "single",
+                options: [
+                    { value: "Option 1", isCorrect: true },
+                    { value: "Option 2", isCorrect: false },
+                    { value: "Option 3", isCorrect: false },
+                    { value: "Option 4", isCorrect: false },
+                ],
+            },
+        ]);
+    }
 </script>
 
 <section class="flex flex-col w-full">
-    <div class=" flex flex-col gap-y-10 w-full">
-        {#each questions as question, index (question.id)}
+    <div class="flex flex-col gap-y-10 w-full">
+        {#each $questions as question, index (question.id)}
             <div
                     class="relative group"
                     animate:flip={{ duration: 300 }}
-                    on:dragover={onDragOver}
-                    on:drop={(event) => onDrop(event, index)}
+                    ondragover={onDragOver}
+                    ondrop={(event) => onDrop(event, index)}
                     role="list"
             >
                 <div
                         role="listitem"
                         class="absolute h-full flex cursor-grab active:cursor-grabbing opacity-10 group-hover:opacity-25 transition-opacity active:hover:opacity-50 items-center xl:-left-20 -left-14"
                         draggable="true"
-                        on:dragstart={(event) => onDragStart(event, index)}
+                        ondragstart={(event) => onDragStart(event, index)}
                 >
                     <Grip size="32" />
                 </div>
@@ -76,7 +122,7 @@
         {/each}
         <!-- Add Question Button and other components -->
         <div class="flex">
-            <Button size="sm" variant="outline" class="flex rounded-r-none items-center w-full justify-center gap-x-1">
+            <Button size="sm" onclick={onCreateQuestion} variant="outline" class="flex rounded-r-none items-center w-full justify-center gap-x-1">
                 <Plus size="16" />
                 Add question
             </Button>
@@ -84,7 +130,6 @@
                 <Sparkles size="16" />
                 Generate question
             </Button>
-
         </div>
     </div>
 

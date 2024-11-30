@@ -9,5 +9,5 @@ type AnswerType = 'single' | 'multiple';
 
 export interface Option {
 	value: string;
-	correct: boolean;
+	isCorrect: boolean;
 }

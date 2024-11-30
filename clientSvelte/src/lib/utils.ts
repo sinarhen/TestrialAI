@@ -60,89 +60,45 @@ export const testQuestions: Question[] = [
 	{
 		id: 1,
 		answerType: 'single',
-		question: 'What year did the first coalition collapse?',
+		question: 'What is the capital of France?',
 		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: false },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
+			{ value: 'Paris', isCorrect: true },
+			{ value: 'Berlin', isCorrect: false },
+			{ value: 'Madrid', isCorrect: false },
+			{ value: 'Rome', isCorrect: false }
 		]
 	},
 	{
 		id: 2,
-		answerType: 'multiple',
-		question: 'Select all correct answers:',
+		answerType: 'single',
+		question: 'What is the capital of Germany?',
 		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: true },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
+			{ value: 'Paris', isCorrect: false },
+			{ value: 'Berlin', isCorrect: true },
+			{ value: 'Madrid', isCorrect: false },
+			{ value: 'Rome', isCorrect: false }
 		]
 	},
 	{
 		id: 3,
 		answerType: 'single',
-		question: 'What year did the first coalition collapse?',
+		question: 'What is the capital of Spain?',
 		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: false },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
+			{ value: 'Paris', isCorrect: false },
+			{ value: 'Berlin', isCorrect: false },
+			{ value: 'Madrid', isCorrect: true },
+			{ value: 'Rome', isCorrect: false }
 		]
 	},
 	{
 		id: 4,
-		answerType: 'multiple',
-		question: 'Select all correct answers:',
-		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: true },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
-		]
-	},
-	{
-		id: 5,
 		answerType: 'single',
-		question: 'What year did the first coalition collapse?',
+		question: 'What is the capital of Italy?',
 		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: false },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
-		]
-	},
-	{
-		id: 6,
-		answerType: 'multiple',
-		question: 'Select all correct answers:',
-		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: true },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
-		]
-	},
-	{
-		id: 7,
-		answerType: 'single',
-		question: 'What year did the first coalition collapse?',
-		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: false },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
-		]
-	},
-	{
-		id: 8,
-		answerType: 'multiple',
-		question: 'Select all correct answers:',
-		options: [
-			{ value: '1803', correct: false },
-			{ value: '1810', correct: true },
-			{ value: '1800', correct: false },
-			{ value: 'None of the above', correct: true }
+			{ value: 'Paris', isCorrect: false },
+			{ value: 'Berlin', isCorrect: false },
+			{ value: 'Madrid', isCorrect: false },
+			{ value: 'Rome', isCorrect: true }
 		]
 	}
 ];

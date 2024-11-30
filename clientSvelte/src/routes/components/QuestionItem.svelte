@@ -53,7 +53,7 @@
     function createOption() {
         updatedQuestion.options.push({
             value: "New option",
-            correct: false,
+            isCorrect: false,
         });
     }
 </script>
@@ -137,7 +137,7 @@
                                         />
                                         <Checkbox
                                                 id={`checkbox-${updatedQuestion.id}-${index}`}
-                                                bind:checked={option.correct}
+                                                bind:checked={option.isCorrect}
                                         />
                                         <Trash2 onclick={() => deleteOption(index)} class="text-destructive cursor-pointer" size="16" />
                                     </div>
@@ -166,7 +166,7 @@
                     <div class="flex items-center space-x-2">
                         <RadioGroup.Item value={option.value} id={`radio-${question.id}-${index}`} />
                         <Label for={`radio-${question.id}-${index}`}>{option.value}
-                            {#if option.correct}
+                            {#if option.isCorrect}
                                 <span class="text-green">✅</span>
                             {/if}
                         </Label>
@@ -179,7 +179,7 @@
                     <Checkbox id={`checkbox-${question.id}-${index}`} />
                     <Label for={`checkbox-${question.id}-${index}`}>
                         {option.value}
-                        {#if option.correct}
+                        {#if option.isCorrect}
                             <span class="text-green ml-2">✅</span>
                         {/if}
                     </Label>
