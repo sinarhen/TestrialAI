@@ -102,7 +102,7 @@
                                     Answer type
                                     <Info size="10"/>
                                 </Label>
-                                <RadioGroup.Root value={question.answerType} class="mt-2 gap-x-2" id={`type-${question.id}`} >
+                                <RadioGroup.Root bind:value={updatedQuestion.answerType} class="mt-2 gap-x-2" id={`type-${question.id}`} >
                                     <div class="flex items-center space-x-2">
                                         <RadioGroup.Item value="single" id="single" />
                                         <Label for="single" >Single</Label>
