@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Global state of questions store">
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/DraggableItem.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/AddQuestionButton.svelte" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/GenerateQuestionButton.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/src/lib/stores/questions.svelte.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/lib/stores/questions.svelte.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionList.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionList.svelte" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+        <option value="DraggableItem" />
+        <option value="AddQuestionButton" />
+        <option value="GenerateQuestionButton" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2pewLOQbSkLsmf6WANKPECv2Wdw" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "prettierjs.PrettierConfiguration.Package": "/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/prettier",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "azure",
+      "sqlserver.localdb",
+      "sqlserver"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/clientSvelte/src/lib" />
+      <recent name="$PROJECT_DIR$/clientSvelte" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-WS-243.21565.180" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task id="LOCAL-00001" summary="Organizing files">
+      <option name="closed" value="true" />
+      <created>1733000094060</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1733000094060</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Ignored">
+      <option name="closed" value="true" />
+      <created>1733000122401</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1733000122401</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Delete bins">
+      <option name="closed" value="true" />
+      <created>1733000134295</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1733000134295</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fixed dragging">
+      <option name="closed" value="true" />
+      <created>1733000275678</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1733000275678</updated>
+    </task>
+    <task id="LOCAL-00005" summary="UI for actions is ready">
+      <option name="closed" value="true" />
+      <created>1733004784182</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1733004784182</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Refactor &amp; New icons for actions menu">
+      <option name="closed" value="true" />
+      <created>1733005017574</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1733005017574</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Update of answer type properly">
+      <option name="closed" value="true" />
+      <created>1733005329198</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1733005329198</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Different flex size of sections">
+      <option name="closed" value="true" />
+      <created>1733006147882</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1733006147882</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Global state of questions store">
+      <option name="closed" value="true" />
+      <created>1733008583108</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1733008583108</updated>
+    </task>
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Global state of questions store" />
+      <created>1733139794583</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1733139794583</updated>
+      <workItem from="1733139796014" duration="862000" />
+      <workItem from="1733141065407" duration="3596000" />
+      <workItem from="1733156888524" duration="2480000" />
+      <workItem from="1733168806097" duration="1899000" />
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Ai icon and styling improved" />
+    <MESSAGE value="Organizing files" />
+    <MESSAGE value="Ignored" />
+    <MESSAGE value="Delete bins" />
+    <MESSAGE value="Fixed dragging" />
+    <MESSAGE value="UI for actions is ready" />
+    <MESSAGE value="Refactor &amp; New icons for actions menu" />
+    <MESSAGE value="Update of answer type properly" />
+    <MESSAGE value="Different flex size of sections" />
+    <MESSAGE value="Global state of questions store" />
+    <option name="LAST_COMMIT_MESSAGE" value="Global state of questions store" />
+  </component>
+</project>

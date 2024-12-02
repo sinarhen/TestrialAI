@@ -1,103 +1,93 @@
 <script lang="ts">
     import QuestionItem from './QuestionItem.svelte';
-    import {Grip, Lock, Plus, Save, Share2, Sparkle, Sparkles} from "lucide-svelte";
-    import type { Question } from "@/types";
-    import { flip } from "svelte/animate";
-    import {Button} from "@/components/ui/button";
-    import {toast} from "svelte-sonner";
-    import {questions} from "@/stores/questions.svelte";
-
-    function handleEdit(id: number, updatedQuestion: Question) {
-        questions.update((qs) => {
-            const index = qs.findIndex((q) => q.id === id);
-            if (index !== -1) {
-                qs[index] = updatedQuestion;
-            }
-            return qs;
-        });
-    }
+    import AddQuestionButton from './AddQuestionButton.svelte';
+    import GenerateQuestionButton from './GenerateQuestionButton.svelte';
+    import { questions } from '@/stores/questions.svelte';
+    import { toast } from 'svelte-sonner';
+    import { Button } from '@/components/ui/button';
+    import {Grip, Save, Share2} from 'lucide-svelte';
+    import type {Question} from "@/types";
+    import {flip} from 'svelte/animate';
 
     let draggedIndex: number | null = null;
 
-    function onDeleteQuestion(id: number) {
-        questions.update((qs) => {
-            const questionIndex = qs.findIndex((q) => q.id === id);
-            const question = qs[questionIndex];
+    function handleEdit(id: number, updatedQuestion: Question) {
+        questions.items = questions.items.map(q => q.id === id ? updatedQuestion : q);
+    }
 
-            if (question) {
-                toast.success("Question deleted successfully!", {
-                    action: {
-                        label: "Undo",
-                        onClick: () => {
-                            questions.update((qs) => {
-                                qs.splice(questionIndex, 0, question);
-                                return qs;
-                            });
-                        },
+    function onDeleteQuestion(id: number) {
+        const qs = questions.items;
+        const questionIndex = qs.findIndex(q => q.id === id);
+        const question = qs[questionIndex];
+
+        if (question) {
+            toast.success('Question deleted successfully!', {
+                action: {
+                    label: 'Undo',
+                    onClick: () => {
+                        const currentQs = questions.items;
+                        questions.items = [
+                            ...currentQs.slice(0, questionIndex),
+                            question,
+                            ...currentQs.slice(questionIndex),
+                        ];
                     },
-                });
-                return qs.filter((q) => q.id !== id);
-            } else {
-                toast.warning("Internal error");
-                return qs;
-            }
-        });
+                },
+            });
+            questions.items = qs.filter(q => q.id !== id);
+        } else {
+            toast.warning('Internal error');
+        }
+    }
+
+    function onCreateQuestion() {
+        const qs = questions.items;
+        questions.items = [
+            ...qs,
+            {
+                id: qs.length + 1,
+                question: 'New question',
+                answerType: 'single',
+                options: [
+                    { value: 'Option 1', isCorrect: true },
+                    { value: 'Option 2', isCorrect: false },
+                    { value: 'Option 3', isCorrect: false },
+                    { value: 'Option 4', isCorrect: false },
+                ],
+            },
+        ];
     }
 
     function onDragStart(event: DragEvent, index: number) {
         draggedIndex = index;
-
         const gripElement = event.currentTarget as HTMLElement;
         const dragImageElement = gripElement.parentNode as HTMLElement;
-
-        // Get the cursor position relative to the drag image element
         const rect = dragImageElement.getBoundingClientRect();
         const offsetX = event.clientX - rect.left;
         const offsetY = event.clientY - rect.top;
-
-        // Set the drag image with the correct offset
         event.dataTransfer?.setDragImage(dragImageElement, offsetX, offsetY);
     }
 
     function onDragOver(event: DragEvent) {
-        event.preventDefault(); // Allow drop
+        event.preventDefault();
     }
 
     function onDrop(event: DragEvent, targetIndex: number) {
         event.preventDefault();
-
-        if (!!draggedIndex && draggedIndex !== targetIndex) {
-            questions.update((qs) => {
-                const [draggedItem] = qs.splice(draggedIndex, 1);
-                qs.splice(targetIndex, 0, draggedItem);
-                return qs;
-            });
+        if (draggedIndex !== null && draggedIndex !== targetIndex) {
+            const qs = questions.items;
+            const newQs = [...qs];
+            const [draggedItem] = newQs.splice(draggedIndex, 1);
+            newQs.splice(targetIndex, 0, draggedItem);
+            questions.items = newQs;
         }
-
         draggedIndex = null;
-    }
-
-    function onCreateQuestion() {
-        questions.update((qs) => [
-            ...qs,
-            {
-                id: qs.length + 1,
-                question: "New question",
-                answerType: "single",
-                options: [
-                    { value: "Option 1", isCorrect: true },
-                    { value: "Option 2", isCorrect: false },
-                    { value: "Option 3", isCorrect: false },
-                    { value: "Option 4", isCorrect: false },
-                ],
-            },
-        ]);
     }
 </script>
 
 <section class="flex flex-col w-full">
     <div class="flex flex-col gap-y-10 w-full">
-        {#each $questions as question, index (question.id)}
+        {#each questions.items as question, index (question.id)}
             <div
                     class="relative group"
                     animate:flip={{ duration: 300 }}
@@ -120,16 +110,9 @@
                 />
             </div>
         {/each}
-        <!-- Add Question Button and other components -->
         <div class="flex">
-            <Button size="sm" onclick={onCreateQuestion} variant="outline" class="flex rounded-r-none items-center w-full justify-center gap-x-1">
-                <Plus size="16" />
-                Add question
-            </Button>
-            <Button size="sm" disabled={true} variant="outline" class="flex w-full rounded-l-none items-center justify-center gap-x-1">
-                <Sparkles size="16" />
-                Generate question
-            </Button>
+            <AddQuestionButton onCreate={onCreateQuestion} />
+            <GenerateQuestionButton />
         </div>
     </div>
 
