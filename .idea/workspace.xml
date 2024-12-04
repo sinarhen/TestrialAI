@@ -4,15 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Global state of questions store">
-      <change afterPath="$PROJECT_DIR$/clientSvelte/src/lib/components/ui/DraggableItem.svelte" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/AddQuestionButton.svelte" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/GenerateQuestionButton.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/lib/stores/questions.svelte.ts" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/lib/stores/questions.svelte.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionList.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/clientSvelte/src/routes/components/QuestionList.svelte" afterDir="false" />
+    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Popover added">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,28 +34,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/prettier",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;frontend/landing&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/starosivets_bohdan/WebstormProjects/surveyAI&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "azure",
-      "sqlserver.localdb",
-      "sqlserver"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;azure&quot;,
+      &quot;sqlserver.localdb&quot;,
+      &quot;sqlserver&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/clientSvelte/src/lib" />
@@ -160,8 +155,28 @@
       <workItem from="1733141065407" duration="3596000" />
       <workItem from="1733156888524" duration="2480000" />
       <workItem from="1733168806097" duration="1899000" />
+      <workItem from="1733170737510" duration="1455000" />
+      <workItem from="1733237280424" duration="74000" />
+      <workItem from="1733237441504" duration="391000" />
+      <workItem from="1733323669924" duration="591000" />
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Popover svelte added &amp; using runes in global state &amp; Organizing components">
+      <option name="closed" value="true" />
+      <created>1733170781456</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1733170781456</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Popover added">
+      <option name="closed" value="true" />
+      <created>1733171575799</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1733171575799</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,6 +204,8 @@
     <MESSAGE value="Update of answer type properly" />
     <MESSAGE value="Different flex size of sections" />
     <MESSAGE value="Global state of questions store" />
-    <option name="LAST_COMMIT_MESSAGE" value="Global state of questions store" />
+    <MESSAGE value="Popover svelte added &amp; using runes in global state &amp; Organizing components" />
+    <MESSAGE value="Popover added" />
+    <option name="LAST_COMMIT_MESSAGE" value="Popover added" />
   </component>
 </project>
