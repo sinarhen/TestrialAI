@@ -15,6 +15,20 @@ export const session = sqliteTable('session', {
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
 
-export type Session = typeof session.$inferSelect;
+export const survey = sqliteTable('survey', {
+	id: text('id').primaryKey(),
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
 
-export type User = typeof user.$inferSelect;
+
+export const question = sqliteTable('question', {
+	id: text('id').primaryKey(),
+	question: text('question').notNull(),
+	answer: text('answer').notNull(),
+	options: text('options').notNull()
+		.$default(() => '[]'),
+	surveyId: text('survey_id')
+		.notNull()
+		.references(() => survey.id)
+});
