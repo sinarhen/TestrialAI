@@ -3,12 +3,14 @@
     import Greeting from './components/Greeting.svelte';
     import QuestionList from './components/QuestionList.svelte';
     import ExportSection from './components/ExportSection.svelte';
+    import type { PageServerData } from './$types';
 
     let topic = $state("");
     function onCreateSurvey() {
         // Logic to handle survey creation
     }
 
+    let { data }: { data: PageServerData } = $props();
 </script>
 
 <Greeting bind:topic onCreateSurvey={onCreateSurvey} />
