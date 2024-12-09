@@ -19,7 +19,7 @@ export const actions: Actions = {
 		await auth.invalidateSession(event.locals.session.id);
 		auth.deleteSessionTokenCookie(event);
 
-		return redirect(302, '/demo/lucia/login');
+		return redirect(302, '/?');
 	},
 	login: async (event) => {
 		const formData = await event.request.formData();
@@ -54,7 +54,7 @@ export const actions: Actions = {
 		const session = await auth.createSession(sessionToken, existingUser.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		return redirect(302, '/demo/lucia');
+		return redirect(302, '/');
 	},
 	register: async (event) => {
 		const formData = await event.request.formData();
@@ -67,7 +67,10 @@ export const actions: Actions = {
 		if (!validatePassword(password)) {
 			return fail(400, { message: 'Invalid password' });
 		}
-
+		const existingUser = await db.select().from(table.user).where(eq(table.user.username, username));
+		if (existingUser) {
+			return fail(400, { message: 'Username already exists' });
+		}
 		const userId = generateUserId();
 		const passwordHash = await hash(password, {
 			// recommended minimum parameters
@@ -84,9 +87,10 @@ export const actions: Actions = {
 			const session = await auth.createSession(sessionToken, userId);
 			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		} catch (e) {
+			console.log(e)
 			return fail(500, { message: 'An error has occurred' });
 		}
-		return redirect(302, '/demo/lucia');
+		return redirect(302, '/');
 	}
 };
 
