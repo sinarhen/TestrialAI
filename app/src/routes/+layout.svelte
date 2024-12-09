@@ -7,7 +7,7 @@
 </script>
 
 
-<div class="bg-gradient-to-b md:px-40 lg:px-60 px-20 py-20 min-h-screen w-full via-pink-100 via-30% from-white to-yellow-50 ">
+<div class="bg-gradient-to-b md:px-40 lg:px-60 px-20 pb-20 min-h-screen w-full via-pink-100 via-30% from-white to-yellow-50 ">
     {@render children()}
 </div>
 
