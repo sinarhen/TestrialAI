@@ -1,11 +1,11 @@
 import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
-import { fail, redirect } from '@sveltejs/kit';
+import {type Actions, fail, redirect} from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import * as auth from '@/server/auth';
 import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
-import type { Actions, PageServerLoad } from '../../../.svelte-kit/types/src/routes';
+import type {PageServerLoad} from "../../../.svelte-kit/types/src/routes/$types";
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
