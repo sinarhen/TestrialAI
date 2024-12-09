@@ -5,12 +5,11 @@
     import ExportSection from './components/ExportSection.svelte';
     import type { ActionData, PageServerData } from './$types';
     import { Button } from '@/components/ui/button';
-    import { Github, LogIn } from 'lucide-svelte';
+    import { LogIn } from 'lucide-svelte';
     import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
     import { Label } from '@/components/ui/label';
     import { Input } from '@/components/ui/input';
     import { Separator } from '@/components/ui/separator';
-    import type { Action } from '@sveltejs/kit';
 
 
     let topic = $state("");
