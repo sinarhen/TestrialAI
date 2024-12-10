@@ -3,7 +3,7 @@
     import { Button } from "@/components/ui/button";
 
     let {
-        topic,
+        topic = $bindable("Napoleonic wars"),
         onCreateSurvey,
         userName = "stranger"
     }: {
