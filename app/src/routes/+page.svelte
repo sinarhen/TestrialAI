@@ -5,8 +5,8 @@
     import ExportSection from './components/ExportSection.svelte';
     import type { ActionData, PageServerData } from './$types';
     import { Button } from '@/components/ui/button';
-    import { Github, LogIn } from 'lucide-svelte';
-    import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+    import { LogIn } from 'lucide-svelte';
+    import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
     import { Label } from '@/components/ui/label';
     import { Input } from '@/components/ui/input';
     import { Separator } from '@/components/ui/separator';
@@ -92,7 +92,7 @@
     {/if}
 </header>
 
-<Greeting bind:topic onCreateSurvey={onCreateSurvey} />
+<Greeting bind:topic  onCreateSurvey={onCreateSurvey} />
 
 <h2 class="font-bold text-2xl">Geography test</h2>
 <div class="w-full flex h-full gap-x-12 relative xl:flex-row flex-col mt-6">

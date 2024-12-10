@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Popover added">
-      <change beforePath="$PROJECT_DIR$/clientSvelte/src/lib/server/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/server/db/schema.ts" afterDir="false" />
+    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="auth works">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/components/Greeting.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/components/Greeting.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,7 +27,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="0fa4adb01d85dde0746d6e0565de28598a3444fc" />
+        <entry key="$PROJECT_DIR$" value="db" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -39,35 +41,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "frontend/landing",
-    "last_opened_file_path": "/Users/starosivets_bohdan/WebstormProjects/surveyAI/app/src/lib/server/db",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/prettier",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/starosivets_bohdan/WebstormProjects/surveyAI/app/src/lib/server/db&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/starosivets_bohdan/WebstormProjects/surveyAI/clientSvelte/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/starosivets_bohdan/WebstormProjects/surveyAI/app/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "azure",
-      "sqlserver.localdb",
-      "sqlserver"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;azure&quot;,
+      &quot;sqlserver.localdb&quot;,
+      &quot;sqlserver&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/src/lib/server/db" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/routes" />
+      <recent name="$PROJECT_DIR$/app/src/routes/auth" />
       <recent name="$PROJECT_DIR$/app" />
       <recent name="$PROJECT_DIR$/clientSvelte/src/lib" />
       <recent name="$PROJECT_DIR$/clientSvelte" />
@@ -169,6 +173,7 @@
       <workItem from="1733237441504" duration="391000" />
       <workItem from="1733323669924" duration="591000" />
       <workItem from="1733763703400" duration="242000" />
+      <workItem from="1733846603596" duration="313000" />
     </task>
     <task id="LOCAL-00010" summary="Popover svelte added &amp; using runes in global state &amp; Organizing components">
       <option name="closed" value="true" />
@@ -186,7 +191,71 @@
       <option name="project" value="LOCAL" />
       <updated>1733171575799</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Schema.ts updated">
+      <option name="closed" value="true" />
+      <created>1733770020096</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1733770020096</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Auth moved to home page">
+      <option name="closed" value="true" />
+      <created>1733770710714</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1733770710714</updated>
+    </task>
+    <task id="LOCAL-00014" summary="types fixed">
+      <option name="closed" value="true" />
+      <created>1733770781287</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1733770781287</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Select component added">
+      <option name="closed" value="true" />
+      <created>1733771207796</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1733771207796</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Separator component added">
+      <option name="closed" value="true" />
+      <created>1733779338009</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1733779338009</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Auth dialog implemented with validation functionality">
+      <option name="closed" value="true" />
+      <created>1733779446275</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1733779446275</updated>
+    </task>
+    <task id="LOCAL-00018" summary="New schema">
+      <option name="closed" value="true" />
+      <created>1733780429850</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1733780429850</updated>
+    </task>
+    <task id="LOCAL-00019" summary="auth works">
+      <option name="closed" value="true" />
+      <created>1733782035275</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1733782035275</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -216,6 +285,14 @@
     <MESSAGE value="Global state of questions store" />
     <MESSAGE value="Popover svelte added &amp; using runes in global state &amp; Organizing components" />
     <MESSAGE value="Popover added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Popover added" />
+    <MESSAGE value="Schema.ts updated" />
+    <MESSAGE value="Auth moved to home page" />
+    <MESSAGE value="types fixed" />
+    <MESSAGE value="Select component added" />
+    <MESSAGE value="Separator component added" />
+    <MESSAGE value="Auth dialog implemented with validation functionality" />
+    <MESSAGE value="New schema" />
+    <MESSAGE value="auth works" />
+    <option name="LAST_COMMIT_MESSAGE" value="auth works" />
   </component>
 </project>
