@@ -9,6 +9,7 @@
     import {invalidateAll} from "$app/navigation";
     import * as Sheet from "$lib/components/ui/sheet/index.js";
     import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card/index.js";
+    import {dummySurveys} from "@/utils";
 
     let { data, form }: { data: PageServerData, form: ActionData } = $props();
     let isLoggingOutInProgress = $state(false);
@@ -40,6 +41,7 @@
             isLoggingOutInProgress = false;
         }
     }
+
 </script>
 
 <header class="flex h-12 pt-4 w-full items-center justify-between">
@@ -56,28 +58,57 @@
                     </Sheet.Description>
                 </Sheet.Header>
                 <div class="flex flex-col gap-y-4 mt-6">
-                    {#each Array.from({ length: 5 }, (_, i) => i) as _}
+                    {#each dummySurveys as survey}
                         <Card class="cursor-pointer" >
                             <CardHeader>
-                                <CardTitle tag="h6">Napoleonic wars</CardTitle>
+                                <CardTitle tag="h6">{survey.title}</CardTitle>
                                 <CardDescription class="flex w-full gap-x-2">
-                                    <span class="gap-x-1 flex items-center"><CircleHelp size="12"/> 8 Questions</span>
+                                    <span class="gap-x-1 flex items-center"><CircleHelp size="12"/> {survey.questions.length} Questions</span>
                                     <span class="gap-x-1 flex items-center"><Timer size="12"/> 10 Minutes</span>
                                     <span class="gap-x-1 flex items-center"><Gauge size="12"/> Hard</span>
                                 </CardDescription>
                             </CardHeader>
                             <CardContent class="text-sm line-clamp-3 pt-2 opacity-75">
-                                This survey is about the Napoleonic wars. It is a hard test with 8 questions and a time limit of 10 minutes.
+                                This survey is about {survey.title} and it has {survey.questions.length} questions in total.
+
                             </CardContent>
                         </Card>
                     {/each}
                 </div>
             </Sheet.Content>
         </Sheet.Root>
-        <div class="relative cursor-pointer">
-            <Bell size="16" />
-            <span class="bg-red-500 text-white size-2 rounded-full -right-0.5 bottom-0 px-1 absolute"></span>
-        </div>
+        <Sheet.Root>
+            <Sheet.Trigger>
+                <div class="relative cursor-pointer">
+
+                    <Bell size="16" />
+                    <span class="bg-red-500 text-white size-2 rounded-full -right-0.5 bottom-0 px-1 absolute"></span>
+                </div>
+            </Sheet.Trigger>
+            <Sheet.Content class="overflow-y-auto" side="right">
+                <Sheet.Header>
+                    <Sheet.Title class="text-xl">Notifications</Sheet.Title>
+                    <Sheet.Description>
+                        View all your notifications
+                    </Sheet.Description>
+                </Sheet.Header>
+                <div class="flex flex-col gap-y-4 mt-6">
+                    {#each Array.from({ length: 5 }, (_, i) => i) as _}
+                        <Card class="cursor-pointer" >
+                            <CardHeader>
+                                <CardTitle tag="h6">Logged In</CardTitle>
+                                <CardDescription class="flex w-full gap-x-2">
+                                    12/04/2024 12:00
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent class="text-sm line-clamp-3 pt-2 opacity-75">
+
+                            </CardContent>
+                        </Card>
+                    {/each}
+                </div>
+            </Sheet.Content>
+        </Sheet.Root>
         <div class="relative cursor-pointer">
             <Sparkles size="16" />
         </div>

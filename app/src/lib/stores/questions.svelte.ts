@@ -1,5 +1,4 @@
-import { testQuestions } from '@/utils';
+import { dummySurveys } from '@/utils';
+import type {Survey} from "@/types";
 
-export const questions = $state({
-	items: testQuestions
-});
+export const currentSurveyStore = $state<Survey>(dummySurveys[1]);

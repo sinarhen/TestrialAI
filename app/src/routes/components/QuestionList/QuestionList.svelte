@@ -2,7 +2,7 @@
     import QuestionItem from './QuestionItem.svelte';
     import AddQuestionButton from './AddQuestionButton.svelte';
     import GenerateQuestionButton from './GenerateQuestionButton.svelte';
-    import { questions } from '@/stores/questions.svelte';
+    import { currentSurveyStore } from '@/stores/questions.svelte';
     import { toast } from 'svelte-sonner';
     import { Button } from '@/components/ui/button';
     import {Grip, Save, Share2} from 'lucide-svelte';
@@ -12,11 +12,11 @@
     let draggedIndex: number | null = null;
 
     function handleEdit(id: number, updatedQuestion: Question) {
-        questions.items = questions.items.map(q => q.id === id ? updatedQuestion : q);
+        currentSurveyStore.questions = currentSurveyStore.questions.map(q => q.id === id ? updatedQuestion : q);
     }
 
     function onDeleteQuestion(id: number) {
-        const qs = questions.items;
+        const qs = currentSurveyStore.questions;
         const questionIndex = qs.findIndex(q => q.id === id);
         const question = qs[questionIndex];
 
@@ -25,8 +25,8 @@
                 action: {
                     label: 'Undo',
                     onClick: () => {
-                        const currentQs = questions.items;
-                        questions.items = [
+                        const currentQs = currentSurveyStore.questions;
+                        currentSurveyStore.questions = [
                             ...currentQs.slice(0, questionIndex),
                             question,
                             ...currentQs.slice(questionIndex),
@@ -34,15 +34,15 @@
                     },
                 },
             });
-            questions.items = qs.filter(q => q.id !== id);
+            currentSurveyStore.questions = qs.filter(q => q.id !== id);
         } else {
             toast.warning('Internal error');
         }
     }
 
     function onCreateQuestion() {
-        const qs = questions.items;
-        questions.items = [
+        const qs = currentSurveyStore.questions;
+        currentSurveyStore.questions = [
             ...qs,
             {
                 id: qs.length + 1,
@@ -75,11 +75,11 @@
     function onDrop(event: DragEvent, targetIndex: number) {
         event.preventDefault();
         if (draggedIndex !== null && draggedIndex !== targetIndex) {
-            const qs = questions.items;
+            const qs = currentSurveyStore.questions;
             const newQs = [...qs];
             const [draggedItem] = newQs.splice(draggedIndex, 1);
             newQs.splice(targetIndex, 0, draggedItem);
-            questions.items = newQs;
+            currentSurveyStore.questions = newQs;
         }
         draggedIndex = null;
     }
@@ -87,7 +87,7 @@
 
 <section class="flex flex-col w-full">
     <div class="flex flex-col gap-y-10 w-full">
-        {#each questions.items as question, index (question.id)}
+        {#each currentSurveyStore.questions as question, index (question.id)}
             <div
                     class="relative group"
                     animate:flip={{ duration: 300 }}

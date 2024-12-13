@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Improvement of validation  &amp; cleanup">
+    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="History of surveys">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/stores/questions.svelte.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/stores/questions.svelte.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/+page.svelte" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/routes/components/Header/Header.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/components/Header/Header.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/components/QuestionList/QuestionList.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/components/QuestionList/QuestionList.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -180,7 +184,7 @@
       <workItem from="1733868192784" duration="2369000" />
       <workItem from="1734026876661" duration="5489000" />
       <workItem from="1734081828259" duration="4919000" />
-      <workItem from="1734117649281" duration="2238000" />
+      <workItem from="1734117649281" duration="3555000" />
     </task>
     <task id="LOCAL-00010" summary="Popover svelte added &amp; using runes in global state &amp; Organizing components">
       <option name="closed" value="true" />
@@ -310,7 +314,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734118250392</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="History of surveys">
+      <option name="closed" value="true" />
+      <created>1734119905218</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1734119905218</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,7 +340,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Organizing files" />
     <MESSAGE value="Ignored" />
     <MESSAGE value="Delete bins" />
     <MESSAGE value="Fixed dragging" />
@@ -353,6 +364,7 @@
     <MESSAGE value="Design" />
     <MESSAGE value="progressive enhancement handling of auth forms" />
     <MESSAGE value="Improvement of validation  &amp; cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improvement of validation  &amp; cleanup" />
+    <MESSAGE value="History of surveys" />
+    <option name="LAST_COMMIT_MESSAGE" value="History of surveys" />
   </component>
 </project>
