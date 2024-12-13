@@ -65,10 +65,10 @@ export const actions: Actions = {
 		if (!validatePassword(password)) {
 			return fail(400, { password: 'Password must be between 6 and 255 characters' });
 		}
-		const existingUser = await db
+		const existingUser = (await db
 			.select()
 			.from(table.user)
-			.where(eq(table.user.username, username));
+			.where(eq(table.user.username, username))).at(0);
 		if (existingUser) {
 			return fail(400, { username: 'Username already exists' });
 		}

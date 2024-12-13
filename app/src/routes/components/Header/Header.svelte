@@ -61,7 +61,6 @@
     <div class="w-full flex justify-end">
         {#if data.user}
             <form use:enhance={onLogout} method="POST" action="?/logout">
-
                 <Button disabled={isLoggingOutInProgress} type="submit" variant="outline" size="sm">Logout</Button>
             </form>
         {:else}

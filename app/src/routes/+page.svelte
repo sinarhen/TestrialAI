@@ -24,8 +24,6 @@
     <span class="gap-x-1 flex items-center"><CircleHelp size="12"/> 8 Questions</span>
     <span class="gap-x-1 flex items-center"><Timer size="12"/> 10 Minutes</span>
     <span class="gap-x-1 flex items-center"><Gauge size="12"/> Hard</span>
-
-
 </div>
 <div class="w-full flex h-full gap-x-12 relative xl:flex-row flex-col mt-6">
     <QuestionList />
