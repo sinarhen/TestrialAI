@@ -1,9 +1,8 @@
 <script lang="ts">
     import {
-        ArrowDown, Brain,
+        Brain,
         CaseLower,
         ChevronDown, Globe,
-        Grip,
         Info,
         Pencil,
         Plus,

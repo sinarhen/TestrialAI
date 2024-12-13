@@ -6,16 +6,42 @@
     import { Button } from '@/components/ui/button';
     import { LogIn } from 'lucide-svelte';
     import type {ActionData} from "../../../../.svelte-kit/types/src/routes/$types";
+    import type {SubmitFunction} from "@sveltejs/kit";
+    import {toast} from "svelte-sonner";
+    import {applyAction} from "$app/forms";
+    import {invalidateAll} from "$app/navigation";
+    import {enhance} from "$app/forms";
 
     let {form} : {
         form: ActionData
     } = $props();
 
+    console.log(form)
     let isAuthDialogOpen: boolean = $state(!!form?.message);
     let isLoginMode: boolean = $state(true);
+    let isSigningIn = $state(false);
 
     function toggleAuthMode() {
         isLoginMode = !isLoginMode;
+    }
+    const onLogin: SubmitFunction = () => {
+        isSigningIn = true;
+        return async ({ result }) => {
+            switch (result.type) {
+                case 'success':
+                    toast.success("Successfully logged in")
+                    isAuthDialogOpen = false;
+                    break;
+                case "error":
+                    toast.error(result.error)
+                    break;
+                default: break;
+            }
+
+            await applyAction(result);
+            await invalidateAll()
+            isSigningIn = false;
+        }
     }
 </script>
 
@@ -36,31 +62,38 @@
                 </button>
             </DialogDescription>
         </DialogHeader>
-        <form method="POST" action={isLoginMode ? '?/login' : '?/register'} class="flex flex-col gap-y-2 gap-x-4">
+        <form method="POST" use:enhance={onLogin} action={isLoginMode ? '?/login' : '?/register'} class="flex flex-col gap-y-2 gap-x-4">
             <div class="col-span-1">
                 <Label for="username-input" id="username-input-label">Username</Label>
                 <Input required type="text" name="username" class="sm:max-w-[270px]" id="username-input" />
+                {#if form?.username }
+                    <p class="text-red-500 text-sm">{form.username}</p>
+                {/if}
             </div>
             {#if !isLoginMode}
                 <div class="col-span-1">
                     <Label for="email-input" id="email-input-label">Email</Label>
                     <Input required type="email" name="email" class="sm:max-w-[270px]" id="email-input" />
+
                 </div>
             {/if}
             <div class="col-span-1">
                 <Label for="password-input" id="password-input-label">Password</Label>
                 <Input required type="password" name="password" class="sm:max-w-[270px]" id="password-input" />
+                {#if form?.password }
+                    <p class="text-red-500 text-sm">{form.password}</p>
+                {/if}
             </div>
             {#if form?.message}
-                <p class="text-red-500 text-sm">{form.message}</p>
+                <p class="text-red-500 text-sm">{form?.message}</p>
             {/if}
-            <Button type="submit" class="sm:w-auto w-full">{isLoginMode ? 'Login' : 'Register'}</Button>
+            <Button disabled={isSigningIn} type="submit" class="sm:w-auto w-full">{isLoginMode ? 'Login' : 'Register'}</Button>
         </form>
         <div id="login-dialog-footer">
             <Separator class="mb-4" />
             <div class="flex flex-col gap-y-1 gap-x-2 text-sm items-center">
-                <Button class="w-full" variant="outline">Github</Button>
-                <Button class="w-full" variant="outline">Google</Button>
+                <Button disabled={isSigningIn} class="w-full" variant="outline">Github</Button>
+                <Button disabled={isSigningIn} class="w-full" variant="outline">Google</Button>
             </div>
         </div>
     </DialogContent>

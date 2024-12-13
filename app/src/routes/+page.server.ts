@@ -1,15 +1,13 @@
 import * as auth from '@/server/auth';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
-import type {PageServerLoad} from "../../.svelte-kit/types/src/routes/$types";
-import {db} from "@/server/db";
-import * as table from "@/server/db/schema";
-import {eq} from "drizzle-orm";
-import {hash, verify} from "@node-rs/argon2";
-import {encodeBase32LowerCase} from "@oslojs/encoding";
+import { type Actions, fail, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from '../../.svelte-kit/types/src/routes/$types';
+import { db } from '@/server/db';
+import * as table from '@/server/db/schema';
+import { eq } from 'drizzle-orm';
+import { hash, verify } from '@node-rs/argon2';
+import { encodeBase32LowerCase } from '@oslojs/encoding';
 
-export const load: PageServerLoad = async (event) => (
-	{ user: event.locals.user }
-);
+export const load: PageServerLoad = async (event) => ({ user: event.locals.user });
 
 export const actions: Actions = {
 	logout: async (event) => {
@@ -19,7 +17,7 @@ export const actions: Actions = {
 		await auth.invalidateSession(event.locals.session.id);
 		auth.deleteSessionTokenCookie(event);
 
-		return redirect(302, '/?');
+		return;
 	},
 	login: async (event) => {
 		const formData = await event.request.formData();
@@ -27,17 +25,17 @@ export const actions: Actions = {
 		const password = formData.get('password');
 
 		if (!validateUsername(username)) {
-			return fail(400, { message: 'Invalid username' });
+			return fail(400, { username: "Invalid username" });
 		}
 		if (!validatePassword(password)) {
-			return fail(400, { message: 'Invalid password' });
+			return fail(400, { password: "Invalid password" });
 		}
 
 		const results = await db.select().from(table.user).where(eq(table.user.username, username));
 
 		const existingUser = results.at(0);
 		if (!existingUser) {
-			return fail(400, { message: 'Incorrect username or password' });
+			return fail(400, { message: "Incorrect username or password" });
 		}
 
 		const validPassword = await verify(existingUser.passwordHash, password, {
@@ -47,14 +45,14 @@ export const actions: Actions = {
 			parallelism: 1
 		});
 		if (!validPassword) {
-			return fail(400, { message: 'Incorrect username or password' });
+			return fail(400, { password: 'Incorrect username or password' });
 		}
 
 		const sessionToken = auth.generateSessionToken();
 		const session = await auth.createSession(sessionToken, existingUser.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		return redirect(302, '/');
+		return { success: true };
 	},
 	register: async (event) => {
 		const formData = await event.request.formData();
@@ -62,14 +60,17 @@ export const actions: Actions = {
 		const password = formData.get('password');
 
 		if (!validateUsername(username)) {
-			return fail(400, { message: 'Invalid username' });
+			return fail(400, { username: 'Invalid username' });
 		}
 		if (!validatePassword(password)) {
-			return fail(400, { message: 'Invalid password' });
+			return fail(400, { password: 'Password must be between 6 and 255 characters' });
 		}
-		const existingUser = await db.select().from(table.user).where(eq(table.user.username, username));
+		const existingUser = await db
+			.select()
+			.from(table.user)
+			.where(eq(table.user.username, username));
 		if (existingUser) {
-			return fail(400, { message: 'Username already exists' });
+			return fail(400, { username: 'Username already exists' });
 		}
 		const userId = generateUserId();
 		const passwordHash = await hash(password, {
@@ -87,19 +88,17 @@ export const actions: Actions = {
 			const session = await auth.createSession(sessionToken, userId);
 			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 		} catch (e) {
-			console.log(e)
+			console.log(e);
 			return fail(500, { message: 'An error has occurred' });
 		}
-		return redirect(302, '/');
+		return { success: true };
 	}
 };
-
 
 function generateUserId() {
 	// ID with 120 bits of entropy, or about the same as UUID v4.
 	const bytes = crypto.getRandomValues(new Uint8Array(15));
-	const id = encodeBase32LowerCase(bytes);
-	return id;
+	return encodeBase32LowerCase(bytes);
 }
 
 function validateUsername(username: unknown): username is string {
@@ -114,4 +113,3 @@ function validateUsername(username: unknown): username is string {
 function validatePassword(password: unknown): password is string {
 	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
 }
-
