@@ -2,7 +2,7 @@
     import QuestionItem from './QuestionItem.svelte';
     import AddQuestionButton from './AddQuestionButton.svelte';
     import GenerateQuestionButton from './GenerateQuestionButton.svelte';
-    import { currentSurveyStore } from '@/stores/questions.svelte';
+    import { currentSurveyStore } from '@/stores/questions.svelte.js';
     import { toast } from 'svelte-sonner';
     import { Button } from '@/components/ui/button';
     import {Grip, Save, Share2} from 'lucide-svelte';
@@ -12,11 +12,14 @@
     let draggedIndex: number | null = null;
 
     function handleEdit(id: number, updatedQuestion: Question) {
-        currentSurveyStore.questions = currentSurveyStore.questions.map(q => q.id === id ? updatedQuestion : q);
+        if (!currentSurveyStore.survey) return;
+        currentSurveyStore.survey.questions = currentSurveyStore.survey.questions.map(q => q.id === id ? updatedQuestion : q);
     }
 
     function onDeleteQuestion(id: number) {
-        const qs = currentSurveyStore.questions;
+        if (!currentSurveyStore.survey) return;
+
+        const qs = currentSurveyStore.survey.questions;
         const questionIndex = qs.findIndex(q => q.id === id);
         const question = qs[questionIndex];
 
@@ -25,8 +28,8 @@
                 action: {
                     label: 'Undo',
                     onClick: () => {
-                        const currentQs = currentSurveyStore.questions;
-                        currentSurveyStore.questions = [
+                        const currentQs = currentSurveyStore.survey!.questions;
+                        currentSurveyStore.survey!.questions = [
                             ...currentQs.slice(0, questionIndex),
                             question,
                             ...currentQs.slice(questionIndex),
@@ -34,15 +37,16 @@
                     },
                 },
             });
-            currentSurveyStore.questions = qs.filter(q => q.id !== id);
+            currentSurveyStore.survey.questions = qs.filter(q => q.id !== id);
         } else {
             toast.warning('Internal error');
         }
     }
 
     function onCreateQuestion() {
-        const qs = currentSurveyStore.questions;
-        currentSurveyStore.questions = [
+        if (!currentSurveyStore.survey) return;
+        const qs = currentSurveyStore.survey.questions;
+        currentSurveyStore.survey.questions = [
             ...qs,
             {
                 id: qs.length + 1,
@@ -73,13 +77,14 @@
     }
 
     function onDrop(event: DragEvent, targetIndex: number) {
+        if (!currentSurveyStore.survey) return;
         event.preventDefault();
         if (draggedIndex !== null && draggedIndex !== targetIndex) {
-            const qs = currentSurveyStore.questions;
+            const qs = currentSurveyStore.survey.questions;
             const newQs = [...qs];
             const [draggedItem] = newQs.splice(draggedIndex, 1);
             newQs.splice(targetIndex, 0, draggedItem);
-            currentSurveyStore.questions = newQs;
+            currentSurveyStore.survey.questions = newQs;
         }
         draggedIndex = null;
     }
@@ -87,29 +92,32 @@
 
 <section class="flex flex-col w-full">
     <div class="flex flex-col gap-y-10 w-full">
-        {#each currentSurveyStore.questions as question, index (question.id)}
-            <div
-                    class="relative group"
-                    animate:flip={{ duration: 300 }}
-                    ondragover={onDragOver}
-                    ondrop={(event) => onDrop(event, index)}
-                    role="list"
-            >
+        {#if currentSurveyStore.survey}
+            {#each currentSurveyStore.survey.questions as question, index (question.question)}
                 <div
-                        role="listitem"
-                        class="absolute h-full flex cursor-grab active:cursor-grabbing opacity-10 group-hover:opacity-25 transition-opacity active:hover:opacity-50 items-center xl:-left-20 -left-14"
-                        draggable="true"
-                        ondragstart={(event) => onDragStart(event, index)}
+                        class="relative group"
+                        animate:flip={{ duration: 300 }}
+                        ondragover={onDragOver}
+                        ondrop={(event) => onDrop(event, index)}
+                        role="list"
                 >
-                    <Grip size="32" />
+                    <div
+                            role="listitem"
+                            class="absolute h-full flex cursor-grab active:cursor-grabbing opacity-10 group-hover:opacity-25 transition-opacity active:hover:opacity-50 items-center xl:-left-20 -left-14"
+                            draggable="true"
+                            ondragstart={(event) => onDragStart(event, index)}
+                    >
+                        <Grip size="32" />
+                    </div>
+                    <QuestionItem
+                            question={question}
+                            onDelete={onDeleteQuestion}
+                            onEdit={handleEdit}
+                    />
                 </div>
-                <QuestionItem
-                        question={question}
-                        onDelete={onDeleteQuestion}
-                        onEdit={handleEdit}
-                />
-            </div>
-        {/each}
+            {/each}
+        {/if}
+
         <div class="flex">
             <AddQuestionButton onCreate={onCreateQuestion} />
             <GenerateQuestionButton />

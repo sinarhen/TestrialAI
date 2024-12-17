@@ -5,7 +5,7 @@
     import { Separator } from '@/components/ui/separator';
     import { Button } from '@/components/ui/button';
     import { LogIn } from 'lucide-svelte';
-    import type {ActionData} from "../../../../.svelte-kit/types/src/routes/$types";
+    import type {ActionData} from "../../../../../.svelte-kit/types/src/routes/$types";
     import type {SubmitFunction} from "@sveltejs/kit";
     import {toast} from "svelte-sonner";
     import {applyAction} from "$app/forms";
@@ -16,10 +16,10 @@
         form: ActionData
     } = $props();
 
-    console.log(form)
     let isAuthDialogOpen: boolean = $state(!!form?.message);
     let isLoginMode: boolean = $state(true);
     let isSigningIn = $state(false);
+
 
     function toggleAuthMode() {
         isLoginMode = !isLoginMode;

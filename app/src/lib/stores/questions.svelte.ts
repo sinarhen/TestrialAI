@@ -1,4 +1,11 @@
-import { dummySurveys } from '@/utils';
 import type {Survey} from "@/types";
 
-export const currentSurveyStore = $state<Survey>(dummySurveys[1]);
+interface SurveyStore {
+    survey: Survey | null;
+    isGenerating: boolean;
+}
+
+export const currentSurveyStore = $state<SurveyStore>({
+	survey: null,
+    isGenerating: false
+});

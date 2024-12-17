@@ -1,15 +1,48 @@
 import * as auth from '@/server/auth';
 import { type Actions, fail, redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from '../../.svelte-kit/types/src/routes/$types';
 import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
+import { generateSurvey } from '@/server/openai/presets/generateSurvey';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => ({ user: event.locals.user });
 
 export const actions: Actions = {
+	startGeneration: async ({
+		request
+							}) => {
+		// if (!event.locals.session) {
+		// 	return redirect(302, '/');
+		// }
+		// const { prompt } = event.request.json();
+		// if (!prompt) {
+		// 	return fail(400, { prompt: 'Prompt is required' });
+		// }
+
+		const data = await request.formData();
+		const topic = data.get('topic');
+		if (!topic || typeof topic !== 'string') {
+			return fail(400, { prompt: 'Topic is required' });
+		}
+
+		try {
+			const response = await generateSurvey({
+				topic,
+				difficulty: 3,
+				numberOfQuestions: 5,
+			});
+			return {
+				generationResult: response
+			};
+		} catch (e) {
+			console.error(e);
+			return fail(500, { message: 'An error has occurred while generating.' });
+		}
+
+	},
 	logout: async (event) => {
 		if (!event.locals.session) {
 			return redirect(302, '/');
@@ -25,17 +58,17 @@ export const actions: Actions = {
 		const password = formData.get('password');
 
 		if (!validateUsername(username)) {
-			return fail(400, { username: "Invalid username" });
+			return fail(400, { username: 'Invalid username' });
 		}
 		if (!validatePassword(password)) {
-			return fail(400, { password: "Invalid password" });
+			return fail(400, { password: 'Invalid password' });
 		}
 
 		const results = await db.select().from(table.user).where(eq(table.user.username, username));
 
 		const existingUser = results.at(0);
 		if (!existingUser) {
-			return fail(400, { message: "Incorrect username or password" });
+			return fail(400, { message: 'Incorrect username or password' });
 		}
 
 		const validPassword = await verify(existingUser.passwordHash, password, {
@@ -65,10 +98,9 @@ export const actions: Actions = {
 		if (!validatePassword(password)) {
 			return fail(400, { password: 'Password must be between 6 and 255 characters' });
 		}
-		const existingUser = (await db
-			.select()
-			.from(table.user)
-			.where(eq(table.user.username, username))).at(0);
+		const existingUser = (
+			await db.select().from(table.user).where(eq(table.user.username, username))
+		).at(0);
 		if (existingUser) {
 			return fail(400, { username: 'Username already exists' });
 		}

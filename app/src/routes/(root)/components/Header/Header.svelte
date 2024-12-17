@@ -1,15 +1,15 @@
 <script lang="ts">
     import { Button } from '@/components/ui/button';
     import {Bell, ChevronDown, CircleHelp, Gauge, History, Sparkles, Timer} from 'lucide-svelte';
-    import type {ActionData, PageServerData} from "../../../../.svelte-kit/types/src/routes/$types";
     import AuthDialog from "./AuthDialog.svelte";
     import {applyAction, enhance} from "$app/forms";
     import type {SubmitFunction} from "@sveltejs/kit";
     import {toast} from "svelte-sonner";
     import {invalidateAll} from "$app/navigation";
-    import * as Sheet from "$lib/components/ui/sheet/index.js";
-    import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card/index.js";
+    import * as Sheet from "@/components/ui/sheet";
+    import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
     import {dummySurveys} from "@/utils";
+    import type {ActionData, PageServerData} from "../../../../../.svelte-kit/types/src/routes/(root)/$types";
 
     let { data, form }: { data: PageServerData, form: ActionData } = $props();
     let isLoggingOutInProgress = $state(false);

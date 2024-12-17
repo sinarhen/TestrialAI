@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Sparkles } from 'lucide-svelte';
     import { Button } from '@/components/ui/button';
-    import * as Popover from "$lib/components/ui/popover";
+    import * as Popover from "@/components/ui/popover";
     import {Input} from "@/components/ui/input";
     import {Label} from "@/components/ui/label";
 

@@ -11,10 +11,10 @@
         Trash2
     } from "lucide-svelte";
     import { Label } from "@/components/ui/label";
-    import * as RadioGroup from "$lib/components/ui/radio-group";
+    import * as RadioGroup from "@/components/ui/radio-group";
     import { Checkbox } from "@/components/ui/checkbox";
     import { fade } from 'svelte/transition';
-    import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+    import * as DropdownMenu from "@/components/ui/dropdown-menu";
     import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
     import { Button } from "@/components/ui/button";
     import type { Question } from "@/types";
@@ -169,7 +169,18 @@
                                 <span class="text-green">✅</span>
                             {/if}
                         </Label>
-                    </div>
+                    </div>           <RadioGroup.Root value="option-one">
+                    {#each question.options as option, index}
+                        <div class="flex items-center space-x-2">
+                            <RadioGroup.Item value={option.value} id={`radio-${question.id}-${index}`} />
+                            <Label for={`radio-${question.id}-${index}`}>{option.value}
+                                {#if option.isCorrect}
+                                    <span class="text-green">✅</span>
+                                {/if}
+                            </Label>
+                        </div>
+                    {/each}
+                </RadioGroup.Root>
                 {/each}
             </RadioGroup.Root>
         {:else if question.answerType === "multiple"}

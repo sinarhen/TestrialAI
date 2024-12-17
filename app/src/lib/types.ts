@@ -5,9 +5,17 @@ export interface Question {
 	options: Option[];
 }
 
+export const Difficulties = {
+	EASY: 1,
+	MEDIUM: 2,
+	HARD: 3
+} as const;
+
+export type Difficulty = typeof Difficulties[keyof typeof Difficulties];
 export interface Survey {
 	id: number;
 	title: string;
+	difficulty: Difficulty;
 	createdAt: Date;
 	updatedAt: Date;
 	questions: Question[];
