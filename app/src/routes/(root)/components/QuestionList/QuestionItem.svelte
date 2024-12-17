@@ -169,18 +169,7 @@
                                 <span class="text-green">✅</span>
                             {/if}
                         </Label>
-                    </div>           <RadioGroup.Root value="option-one">
-                    {#each question.options as option, index}
-                        <div class="flex items-center space-x-2">
-                            <RadioGroup.Item value={option.value} id={`radio-${question.id}-${index}`} />
-                            <Label for={`radio-${question.id}-${index}`}>{option.value}
-                                {#if option.isCorrect}
-                                    <span class="text-green">✅</span>
-                                {/if}
-                            </Label>
-                        </div>
-                    {/each}
-                </RadioGroup.Root>
+                    </div>
                 {/each}
             </RadioGroup.Root>
         {:else if question.answerType === "multiple"}

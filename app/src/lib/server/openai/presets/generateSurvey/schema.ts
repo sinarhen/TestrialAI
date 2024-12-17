@@ -52,7 +52,7 @@ export const generateSurveySchema = {
                             "description": "The type of answer expected (single or multiple choice)"
                         },
                         "difficulty": {
-                            "type": "integer",
+                            "type": "string",
                             "enum": [
                                 1,
                                 2,

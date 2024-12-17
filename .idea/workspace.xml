@@ -4,25 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="History of surveys">
-      <change afterPath="$PROJECT_DIR$/app/src/lib/server/openai/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/schema.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/Greeting.svelte" afterDir="false" />
+    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Generation works">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/.env" beforeDir="false" afterPath="$PROJECT_DIR$/app/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/lib/stores/questions.svelte.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/stores/questions.svelte.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/lib/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/+page.server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/+page.server.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/+page.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/ExportSection.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/ExportSection.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/Greeting.svelte" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/Header/AuthDialog.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/Header/AuthDialog.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/Header/Header.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/Header/Header.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/QuestionList/AddQuestionButton.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/AddQuestionButton.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/QuestionList/GenerateQuestionButton.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/GenerateQuestionButton.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/QuestionList/QuestionItem.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/QuestionItem.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/components/QuestionList/QuestionList.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/QuestionList.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/schema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/components/Greeting.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/Greeting.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/QuestionItem.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/QuestionItem.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -334,7 +323,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734119905218</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Generation works">
+      <option name="closed" value="true" />
+      <created>1734453040539</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1734453040539</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -352,7 +349,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Ignored" />
     <MESSAGE value="Delete bins" />
     <MESSAGE value="Fixed dragging" />
     <MESSAGE value="UI for actions is ready" />
@@ -377,6 +373,7 @@
     <MESSAGE value="progressive enhancement handling of auth forms" />
     <MESSAGE value="Improvement of validation  &amp; cleanup" />
     <MESSAGE value="History of surveys" />
-    <option name="LAST_COMMIT_MESSAGE" value="History of surveys" />
+    <MESSAGE value="Generation works" />
+    <option name="LAST_COMMIT_MESSAGE" value="Generation works" />
   </component>
 </project>
