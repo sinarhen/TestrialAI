@@ -7,16 +7,30 @@ import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
 import { generateSurvey } from '@/server/openai/presets/generateSurvey';
 import type { PageServerLoad } from './$types';
+import type { SurveySchema } from "@/types";
 
-export const load: PageServerLoad = async (event) => ({ user: event.locals.user });
+export const load: PageServerLoad = async ({locals}) => {
+
+	// select all surveys from the database related to the user with questions
+	const history = locals.user ? await db.query.user.findFirst({
+		with: {
+			surveys: true
+		},
+		where: (users, {eq}) => eq(users.id, locals.user!.id)
+	}): null;
+	return {
+		user: locals.user,
+		history
+	}
+};
 
 export const actions: Actions = {
 	startGeneration: async ({
-		request
+		request, locals
 							}) => {
-		// if (!event.locals.session) {
-		// 	return redirect(302, '/');
-		// }
+		if (!locals.session || !locals.user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
 		// const { prompt } = event.request.json();
 		// if (!prompt) {
 		// 	return fail(400, { prompt: 'Prompt is required' });
@@ -32,10 +46,23 @@ export const actions: Actions = {
 			const response = await generateSurvey({
 				topic,
 				difficulty: 3,
-				numberOfQuestions: 5,
+				numberOfQuestions: 8,
 			});
+			const content = response.choices[0].message.content;
+			if (!content) {
+				return fail(500, { message: 'An error has occurred while generating.' });
+			}
+
+			const generationResult = JSON.parse(content) as SurveySchema;
+
+			await db.insert(table.survey).values({
+				...generationResult,
+				userId: locals.user?.id,
+				description: generationResult.description, // Ensure description is included
+			})
+
 			return {
-				generationResult: response
+				generationResult,
 			};
 		} catch (e) {
 			console.error(e);

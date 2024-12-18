@@ -52,12 +52,7 @@
                         toast.success("Successfully generated")
                         await applyAction(result);
                         await invalidateAll()
-                        const generationResult = result.data?.generationResult.choices[0].message.content;
-                        if (!generationResult) {
-                            toast.error('An unknown error occurred');
-                            break;
-                        }
-                        currentSurveyStore.survey = JSON.parse(generationResult) as Survey;
+                        currentSurveyStore.survey = result.data?.generationResult as Survey;
                         break;
                     }
                 case "error":
@@ -88,7 +83,7 @@
             Give us a topic you want to create a survey on
         </p>
         <form use:enhance={onGenerate} method="POST" action="?/startGeneration" class="flex flex-col items-center">
-            <Input name="topic" bind:value={topic} placeholder="Napoleonic wars" class="w-[400px] mt-2" />
+            <Input name="topic" disabled={currentSurveyStore.isGenerating} bind:value={topic} placeholder="Napoleonic wars" class="w-[400px] mt-2" />
             <Button disabled={currentSurveyStore.isGenerating} type="submit" class="mt-2">
                 Create survey
             </Button>
