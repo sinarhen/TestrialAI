@@ -36,7 +36,6 @@ export const generateSurveySchema = {
                         "question",
                         "answerType",
                         "options",
-                        "difficulty"
                     ],
                     "properties": {
                         "question": {
@@ -50,15 +49,6 @@ export const generateSurveySchema = {
                                 "multiple"
                             ],
                             "description": "The type of answer expected (single or multiple choice)"
-                        },
-                        "difficulty": {
-                            "type": "string",
-                            "enum": [
-                                1,
-                                2,
-                                3
-                            ],
-                            "description": "The difficulty level of the question (1: EASY, 2: MEDIUM, 3: HARD)"
                         },
                         "options": {
                             "type": "array",

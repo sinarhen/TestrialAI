@@ -15,11 +15,15 @@ export type Difficulty = typeof Difficulties[keyof typeof Difficulties];
 export interface Survey {
 	id: number;
 	title: string;
+	description: string;
 	difficulty: Difficulty;
 	createdAt: Date;
 	updatedAt: Date;
 	questions: Question[];
 }
+
+export type SurveySchema = Omit<Survey, 'id' | 'createdAt' | 'updatedAt'>;
+
 type AnswerType = 'single' | 'multiple';
 
 export interface Option {

@@ -1,5 +1,7 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
+import { v4 as uuidv4 } from "uuid";
+import {sql} from "drizzle-orm/sql/sql";
 
 export const user = sqliteTable('user', {
 	id: text('id').primaryKey(),
@@ -15,23 +17,23 @@ export const session = sqliteTable('session', {
 });
 
 export const survey = sqliteTable('survey', {
-	id: text('id').primaryKey(),
-	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+	id: text('id').primaryKey().$defaultFn(() => uuidv4()),
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
+	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`).$onUpdate(() => sql`(unixepoch())`),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
 	userId: text('user_id').notNull()
 });
 
 export const question = sqliteTable('question', {
-	id: text('id').primaryKey(),
+	id: text('id').primaryKey().$defaultFn(() => uuidv4()),
 	question: text('question').notNull(),
 	answer: text('answer').notNull(),
 	options: text('options').notNull().$default(() => '[]'),
 	surveyId: text('survey_id').notNull()
 });
 
-export const userRelations = relations(user, ({ one, many }) => ({
+export const userRelations = relations(user, ({ many }) => ({
 	surveys: many(survey),
 	sessions: many(session)
 }));

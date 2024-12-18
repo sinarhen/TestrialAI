@@ -4,14 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Generation works">
+    <list default="true" id="272fead8-88a0-405e-a823-d93eb441ae12" name="Changes" comment="Generation handling of loading state">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.env" beforeDir="false" afterPath="$PROJECT_DIR$/app/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/server/db/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/server/db/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/server/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/server/db/schema.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/server/openai/presets/generateSurvey/schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/lib/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/lib/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/+page.server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/+page.server.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/components/Greeting.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/Greeting.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/QuestionItem.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/QuestionList/QuestionItem.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/routes/(root)/components/Header/Header.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/routes/(root)/components/Header/Header.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,6 +189,7 @@
       <workItem from="1734026876661" duration="5489000" />
       <workItem from="1734081828259" duration="4919000" />
       <workItem from="1734117649281" duration="3555000" />
+      <workItem from="1734526229316" duration="620000" />
     </task>
     <task id="LOCAL-00010" summary="Popover svelte added &amp; using runes in global state &amp; Organizing components">
       <option name="closed" value="true" />
@@ -331,7 +335,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734453040539</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Generation handling of loading state">
+      <option name="closed" value="true" />
+      <created>1734471305527</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1734471305527</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -349,7 +361,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Delete bins" />
     <MESSAGE value="Fixed dragging" />
     <MESSAGE value="UI for actions is ready" />
     <MESSAGE value="Refactor &amp; New icons for actions menu" />
@@ -374,6 +385,7 @@
     <MESSAGE value="Improvement of validation  &amp; cleanup" />
     <MESSAGE value="History of surveys" />
     <MESSAGE value="Generation works" />
-    <option name="LAST_COMMIT_MESSAGE" value="Generation works" />
+    <MESSAGE value="Generation handling of loading state" />
+    <option name="LAST_COMMIT_MESSAGE" value="Generation handling of loading state" />
   </component>
 </project>
