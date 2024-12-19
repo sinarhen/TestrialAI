@@ -10,14 +10,14 @@ import type { PageServerLoad } from './$types';
 import type { SurveySchema } from "@/types";
 
 export const load: PageServerLoad = async ({locals}) => {
-
 	// select all surveys from the database related to the user with questions
-	const history = locals.user ? await db.query.user.findFirst({
+	const history = locals.user ? await db.query.survey.findMany({
+		where: (surveys, {eq}) => eq(surveys.userId, locals.user!.id),
 		with: {
-			surveys: true
+			questions: true
 		},
-		where: (users, {eq}) => eq(users.id, locals.user!.id)
-	}): null;
+		orderBy: (surveys, {desc}) => desc(surveys.updatedAt)
+	}): null
 	return {
 		user: locals.user,
 		history
@@ -31,13 +31,9 @@ export const actions: Actions = {
 		if (!locals.session || !locals.user) {
 			return fail(401, { message: 'Unauthorized' });
 		}
-		// const { prompt } = event.request.json();
-		// if (!prompt) {
-		// 	return fail(400, { prompt: 'Prompt is required' });
-		// }
-
 		const data = await request.formData();
 		const topic = data.get('topic');
+
 		if (!topic || typeof topic !== 'string') {
 			return fail(400, { prompt: 'Topic is required' });
 		}
@@ -58,7 +54,6 @@ export const actions: Actions = {
 			await db.insert(table.survey).values({
 				...generationResult,
 				userId: locals.user?.id,
-				description: generationResult.description, // Ensure description is included
 			})
 
 			return {

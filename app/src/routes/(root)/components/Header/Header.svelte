@@ -8,7 +8,6 @@
     import {invalidateAll} from "$app/navigation";
     import * as Sheet from "@/components/ui/sheet";
     import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-    import {dummySurveys} from "@/utils";
     import type {ActionData, PageServerData} from "../../../../../.svelte-kit/types/src/routes/(root)/$types";
 
     let { data, form }: { data: PageServerData, form: ActionData } = $props();
@@ -58,22 +57,24 @@
                     </Sheet.Description>
                 </Sheet.Header>
                 <div class="flex flex-col gap-y-4 mt-6">
-                    {#each dummySurveys as survey}
-                        <Card class="cursor-pointer" >
-                            <CardHeader>
-                                <CardTitle tag="h6">{survey.title}</CardTitle>
-                                <CardDescription class="flex w-full gap-x-2">
-                                    <span class="gap-x-1 flex items-center"><CircleHelp size="12"/> {survey.questions.length} Questions</span>
-                                    <span class="gap-x-1 flex items-center"><Timer size="12"/> 10 Minutes</span>
-                                    <span class="gap-x-1 flex items-center"><Gauge size="12"/> Hard</span>
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent class="text-sm line-clamp-3 pt-2 opacity-75">
-                                This survey is about {survey.title} and it has {survey.questions.length} questions in total.
+                    {#if data.history}
+                        {#each data.history as survey}
+                            <Card class="cursor-pointer" >
+                                <CardHeader>
+                                    <CardTitle tag="h6">{survey.title}</CardTitle>
+                                    <CardDescription class="flex w-full gap-x-2">
+                                        <span class="gap-x-1 flex items-center"><CircleHelp size="12"/> {survey.questions.length} Questions</span>
+                                        <span class="gap-x-1 flex items-center"><Timer size="12"/> 10 Minutes</span>
+                                        <span class="gap-x-1 flex items-center"><Gauge size="12"/> Hard</span>
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent class="text-sm line-clamp-3 pt-2 opacity-75">
+                                    This survey is about {survey.title} and it has {survey.questions.length} questions in total.
 
-                            </CardContent>
-                        </Card>
-                    {/each}
+                                </CardContent>
+                            </Card>
+                        {/each}
+                    {/if}
                 </div>
             </Sheet.Content>
         </Sheet.Root>
