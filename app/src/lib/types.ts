@@ -1,19 +1,5 @@
-export interface Question {
-	id: number;
-	answerType: AnswerType;
-	question: string;
-	options: Option[];
-}
-
-export const Difficulties = {
-	EASY: 1,
-	MEDIUM: 2,
-	HARD: 3
-} as const;
-
-export type Difficulty = typeof Difficulties[keyof typeof Difficulties];
 export interface Survey {
-	id: number;
+	id: string;
 	title: string;
 	description: string;
 	difficulty: Difficulty;
@@ -21,10 +7,24 @@ export interface Survey {
 	updatedAt: Date;
 	questions: Question[];
 }
-
 export type SurveySchema = Omit<Survey, 'id' | 'createdAt' | 'updatedAt'>;
 
-type AnswerType = 'single' | 'multiple';
+export interface Question {
+	id: string;
+	answerType: AnswerType;
+	question: string;
+	options: Option[];
+}
+
+export const Difficulties ={
+	EASY: 'Easy',
+	MEDIUM: 'Medium',
+	HARD: 'Hard'
+} as const
+export type Difficulty = typeof Difficulties[keyof typeof Difficulties];
+export type AnswerType = 'single' | 'multiple'
+	// TODO: 'text';
+
 
 export interface Option {
 	value: string;

@@ -1,3 +1,5 @@
+import {Difficulties} from "@/types";
+
 export const generateSurveySchema = {
     "name": "generate_survey",
     "strict": true,
@@ -19,13 +21,13 @@ export const generateSurveySchema = {
                 "description": "A brief description of the survey purpose"
             },
             "difficulty": {
-                "type": "integer",
+                "type": "string",
                 "enum": [
-                    1,
-                    2,
-                    3
+                    Difficulties.EASY,
+                    Difficulties.MEDIUM,
+                    Difficulties.HARD
                 ],
-                "description": "The overall difficulty level of the survey (1: EASY, 2: MEDIUM, 3: HARD)"
+                "description": "The overall difficulty level of the survey (Easy, Medium, Hard)"
             },
             "questions": {
                 "type": "array",

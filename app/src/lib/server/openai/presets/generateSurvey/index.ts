@@ -14,8 +14,9 @@ const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
             You are a helpful assistant. Use the supplied tools to assist the user in generating a survey.
             The survey must follow these rules:
             - Questions must match the user's specified topic, number, and difficulty.
-            - Use "single" answer type for questions with single correct answer and "multiple" for questions with multiple correct answers.
-            - Difficulty levels must match the user's specified difficulty. 1(Easy), 2(MEDIUM), 3(HARD).
+            - Use "single" answer type for questions with single correct answer, "multiple" for questions with multiple 
+                correct answers and "text" for questions with text-based answers.
+            - Difficulty levels must match the user's specified difficulty: Easy, Medium, Hard.
             Format the survey as valid JSON.
             `
 	},

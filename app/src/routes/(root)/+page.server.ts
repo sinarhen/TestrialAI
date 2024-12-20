@@ -11,10 +11,14 @@ import type { SurveySchema } from "@/types";
 
 export const load: PageServerLoad = async ({locals}) => {
 	// select all surveys from the database related to the user with questions
-	const history = locals.user ? await db.query.survey.findMany({
+	const history = locals.user ? await db.query.surveys.findMany({
 		where: (surveys, {eq}) => eq(surveys.userId, locals.user!.id),
 		with: {
-			questions: true
+			questions: {
+				with: {
+					options: true
+				}
+			},
 		},
 		orderBy: (surveys, {desc}) => desc(surveys.updatedAt)
 	}): null
@@ -41,7 +45,7 @@ export const actions: Actions = {
 		try {
 			const response = await generateSurvey({
 				topic,
-				difficulty: 3,
+				difficulty: "Medium",
 				numberOfQuestions: 8,
 			});
 			const content = response.choices[0].message.content;
@@ -51,10 +55,39 @@ export const actions: Actions = {
 
 			const generationResult = JSON.parse(content) as SurveySchema;
 
-			await db.insert(table.survey).values({
-				...generationResult,
-				userId: locals.user?.id,
-			})
+
+			// Start transaction
+			await db.transaction(async (tx) => {
+				// Insert the survey
+				const [survey] = await tx.insert(table.surveys).values({
+					...generationResult,
+					userId: locals.user!.id,
+				}).returning({id: table.surveys.id}); // Returning the survey to get its ID
+
+				if (!survey) {
+					throw new Error("Failed to insert survey");
+				}
+
+				// Iterate over questions and insert them
+				for (const question of generationResult.questions) {
+					const [dbQuestion] = await tx.insert(table.questions).values({
+						...question,
+						surveyId: survey.id,
+					}).returning({id: table.questions.id}); // Returning the question to get its ID
+
+					if (!dbQuestion) {
+						throw new Error("Failed to insert question");
+					}
+
+					// Insert options related to the question
+					for (const option of question.options) {
+						await tx.insert(table.options).values({
+							...option,
+							questionId: dbQuestion.id, // Associate with question ID
+						});
+					}
+				}
+			});
 
 			return {
 				generationResult,
@@ -86,7 +119,7 @@ export const actions: Actions = {
 			return fail(400, { password: 'Invalid password' });
 		}
 
-		const results = await db.select().from(table.user).where(eq(table.user.username, username));
+		const results = await db.select().from(table.users).where(eq(table.users.username, username));
 
 		const existingUser = results.at(0);
 		if (!existingUser) {
@@ -121,7 +154,7 @@ export const actions: Actions = {
 			return fail(400, { password: 'Password must be between 6 and 255 characters' });
 		}
 		const existingUser = (
-			await db.select().from(table.user).where(eq(table.user.username, username))
+			await db.select().from(table.users).where(eq(table.users.username, username))
 		).at(0);
 		if (existingUser) {
 			return fail(400, { username: 'Username already exists' });
@@ -136,7 +169,7 @@ export const actions: Actions = {
 		});
 
 		try {
-			await db.insert(table.user).values({ id: userId, username, passwordHash });
+			await db.insert(table.users).values({ id: userId, username, passwordHash });
 
 			const sessionToken = auth.generateSessionToken();
 			const session = await auth.createSession(sessionToken, userId);
