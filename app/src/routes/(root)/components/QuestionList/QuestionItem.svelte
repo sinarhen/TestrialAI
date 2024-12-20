@@ -17,7 +17,7 @@
     import * as DropdownMenu from "@/components/ui/dropdown-menu";
     import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
     import { Button } from "@/components/ui/button";
-    import type { Question } from "@/types";
+    import {AnswerTypes, type Question} from "@/types";
     import { Input } from "@/components/ui/input";
     import cloneDeep from "lodash.clonedeep";
     import {currentSurveyStore} from "@/stores/questions.svelte";
@@ -33,10 +33,6 @@
     let isActionMenuOpen = $state(false);
 
     let updatedQuestion: Question = $state(cloneDeep(question));
-    function onEdit(id: string, updatedQuestion: Question) {
-        if (!currentSurveyStore.survey) return;
-        currentSurveyStore.survey.questions = currentSurveyStore.survey.questions.map(q => q.id === id ? updatedQuestion : q);
-    }
 
     function onDelete() {
         if (!currentSurveyStore.survey) return;
@@ -65,7 +61,12 @@
         }
     }
     function handleSave() {
-        onEdit(question.id, cloneDeep(updatedQuestion));
+        if (!currentSurveyStore.survey) return;
+        currentSurveyStore.survey.questions = currentSurveyStore.survey.questions.map(q => q.id === question.id ? {
+            ...updatedQuestion,
+            correctAnswer: updatedQuestion.answerType === AnswerTypes.TEXT ? updatedQuestion.correctAnswer : null,
+        } : q);
+
         isDialogOpen = false; // Close the dialog after saving
     }
 
@@ -88,11 +89,11 @@
             {question.question}
             <span class="flex h-full items-center gap-x-2 ">
                 <DropdownMenu.Root closeOnItemClick={true} open={isActionMenuOpen} onOpenChange={() => isActionMenuOpen = !isActionMenuOpen}>
-                  <DropdownMenu.Trigger class="inline-flex  opacity-25 lg:opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 cursor-pointer items-center transition-opacity hover:opacity-75">
+                  <DropdownMenu.Trigger class="inline-flex opacity-25 lg:opacity-0 group-hover:opacity-25 group-hover:hover:opacity-100 cursor-pointer items-center transition-opacity hover:opacity-75">
                         <Sparkles size="16" />
                         <ChevronDown size="12"/>
                   </DropdownMenu.Trigger>
-                  <DropdownMenu.Content class=" w-[200px] relative">
+                  <DropdownMenu.Content class="w-[200px] relative">
                     <DropdownMenu.Group>
                       <DropdownMenu.Label>Actions</DropdownMenu.Label>
                       <DropdownMenu.Separator />
@@ -127,12 +128,16 @@
                                 </Label>
                                 <RadioGroup.Root bind:value={updatedQuestion.answerType} class="mt-2 gap-x-2" id={`type-${question.id}`} >
                                     <div class="flex items-center space-x-2">
-                                        <RadioGroup.Item value="single" id="single" />
+                                        <RadioGroup.Item value={AnswerTypes.SINGLE} id="single" />
                                         <Label for="single" >Single</Label>
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <RadioGroup.Item value="multiple" id="multiple" />
+                                        <RadioGroup.Item value={AnswerTypes.MULTIPLE} id="multiple" />
                                         <Label for="multiple">Multiple</Label>
+                                    </div>
+                                    <div class="flex items center space-x-2">
+                                        <RadioGroup.Item value={AnswerTypes.TEXT} id="text" />
+                                        <Label for="text">Text</Label>
                                     </div>
                                 </RadioGroup.Root>
 
@@ -146,27 +151,39 @@
                                         id={`question-${updatedQuestion.id}`}
                                         bind:value={updatedQuestion.question}
                                 />
-
                             </div>
-                            <div>
-                                <Label>Options</Label>
-                                {#each updatedQuestion.options as option, index}
-                                    <div class="flex items-center space-x-2 mt-2">
-                                        <Input
-                                                type="text"
-                                                id={`option-${updatedQuestion.id}-${index}`}
-                                                bind:value={option.value}
-                                                class="input flex-1"
-                                        />
-                                        <Checkbox
-                                                id={`checkbox-${updatedQuestion.id}-${index}`}
-                                                bind:checked={option.isCorrect}
-                                        />
-                                        <Trash2 onclick={() => deleteOption(index)} class="text-destructive cursor-pointer" size="16" />
-                                    </div>
-                                {/each}
-                                <Button onclick={createOption} class="w-full mt-2" variant="link"><Plus size="16" />Add new</Button>
-                            </div>
+                            {#if updatedQuestion.answerType === "text"}
+                                <div>
+                                    <Label for={`correct-answer-${updatedQuestion.id}`} class="block">
+                                        Correct answer:
+                                    </Label>
+                                    <Input
+                                            class="mt-2"
+                                            id={`correct-answer-${updatedQuestion.id}`}
+                                            bind:value={updatedQuestion.correctAnswer}
+                                    />
+                                </div>
+                                {:else}
+                                <div>
+                                    <Label>Options</Label>
+                                        {#each updatedQuestion.options as option, index}
+                                        <div class="flex items-center space-x-2 mt-2">
+                                            <Input
+                                                    type="text"
+                                                    id={`option-${updatedQuestion.id}-${index}`}
+                                                    bind:value={option.value}
+                                                    class="input flex-1"
+                                            />
+                                            <Checkbox
+                                                    id={`checkbox-${updatedQuestion.id}-${index}`}
+                                                    bind:checked={option.isCorrect}
+                                            />
+                                            <Trash2 onclick={() => deleteOption(index)} class="text-destructive cursor-pointer" size="16" />
+                                        </div>
+                                    {/each}
+                                        <Button onclick={createOption} class="w-full mt-2" variant="link"><Plus size="16" />Add new</Button>
+                                </div>
+                            {/if}
                         </div>
                         <DialogFooter class="gap-y-2">
                             <Button on:click={handleSave}>Save</Button>

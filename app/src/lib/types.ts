@@ -12,7 +12,7 @@ export type SurveySchema = Omit<Survey, 'id' | 'createdAt' | 'updatedAt'>;
 export interface Question {
 	id: string;
 	answerType: AnswerType;
-	correctAnswer?: string; // Only for text-based answers
+	correctAnswer: string | null; // Only for text-based answers
 	question: string;
 	options: Option[];
 }
@@ -25,7 +25,13 @@ export const Difficulties ={
 
 export type Difficulty = typeof Difficulties[keyof typeof Difficulties];
 
-export type AnswerType = 'single' | 'multiple' | 'text';
+
+export const AnswerTypes = {
+	SINGLE: 'single',
+	MULTIPLE: 'multiple',
+	TEXT: 'text'
+}
+export type AnswerType = typeof AnswerTypes[keyof typeof AnswerTypes];
 
 export interface Option {
 	value: string;
