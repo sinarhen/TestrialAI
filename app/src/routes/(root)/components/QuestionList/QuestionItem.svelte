@@ -184,6 +184,9 @@
                     </Label>
                 </div>
             {/each}
+        {:else if question.answerType === "text"}
+            <Input type="text" class="mt-2 max-w-[400px]" />
+            <span class="text-xs text-gray-500">Answer: {question.correctAnswer}</span>
         {/if}
     </div>
 

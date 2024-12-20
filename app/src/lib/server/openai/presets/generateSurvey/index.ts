@@ -15,7 +15,7 @@ const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
             The survey must follow these rules:
             - Questions must match the user's specified topic, number, and difficulty.
             - Use "single" answer type for questions with single correct answer, "multiple" for questions with multiple 
-                correct answers and "text" for questions with text-based answers.
+                correct answers and "text" for questions with text-based answers. for questions with text-based answers there is a field correctAnswer
             - Difficulty levels must match the user's specified difficulty: Easy, Medium, Hard.
             Format the survey as valid JSON.
             `

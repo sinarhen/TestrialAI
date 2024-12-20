@@ -38,6 +38,7 @@ export const generateSurveySchema = {
                         "question",
                         "answerType",
                         "options",
+                        "correctAnswer"
                     ],
                     "properties": {
                         "question": {
@@ -48,9 +49,14 @@ export const generateSurveySchema = {
                             "type": "string",
                             "enum": [
                                 "single",
-                                "multiple"
+                                "multiple",
+                                "text"
                             ],
                             "description": "The type of answer expected (single or multiple choice)"
+                        },
+                        "correctAnswer": {
+                            "type": "string",
+                            "description": "The correct answer to the question if it is a text-based answer"
                         },
                         "options": {
                             "type": "array",
