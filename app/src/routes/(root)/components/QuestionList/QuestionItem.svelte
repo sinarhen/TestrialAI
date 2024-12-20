@@ -20,26 +20,50 @@
     import type { Question } from "@/types";
     import { Input } from "@/components/ui/input";
     import cloneDeep from "lodash.clonedeep";
+    import {currentSurveyStore} from "@/stores/questions.svelte";
+    import {toast} from "svelte-sonner";
 
     const {
         question,
-        onDelete,
-        onEdit
     }: {
         question: Question,
-        onDelete: (id: number) => void,
-        onEdit: (id: number, updatedQuestion: Question) => void
     } = $props();
 
     let isDialogOpen = $state(false);
     let isActionMenuOpen = $state(false);
 
     let updatedQuestion: Question = $state(cloneDeep(question));
-
-    function handleDelete() {
-        onDelete(question.id);
+    function onEdit(id: string, updatedQuestion: Question) {
+        if (!currentSurveyStore.survey) return;
+        currentSurveyStore.survey.questions = currentSurveyStore.survey.questions.map(q => q.id === id ? updatedQuestion : q);
     }
 
+    function onDelete() {
+        if (!currentSurveyStore.survey) return;
+
+        const qs = currentSurveyStore.survey.questions;
+        const questionIndex = qs.findIndex(q => q.id === question.id);
+        const question = qs[questionIndex];
+
+        if (question) {
+            toast.success('Question deleted successfully!', {
+                action: {
+                    label: 'Undo',
+                    onClick: () => {
+                        const currentQs = currentSurveyStore.survey!.questions;
+                        currentSurveyStore.survey!.questions = [
+                            ...currentQs.slice(0, questionIndex),
+                            question,
+                            ...currentQs.slice(questionIndex),
+                        ];
+                    },
+                },
+            });
+            currentSurveyStore.survey.questions = qs.filter(q => q.id !== question.id);
+        } else {
+            toast.warning('Internal error');
+        }
+    }
     function handleSave() {
         onEdit(question.id, cloneDeep(updatedQuestion));
         isDialogOpen = false; // Close the dialog after saving
@@ -151,7 +175,7 @@
                     </DialogContent>
                 </Dialog>
                 <button
-                        onclick={handleDelete}
+                        onclick={onDelete}
                         class="text-destructive transition-opacity opacity-25 lg:opacity-0 group-hover:opacity-25 group-hover:hover:opacity-75"
                 >
                     <Trash2 size="16" />

@@ -3,45 +3,11 @@
     import AddQuestionButton from './AddQuestionButton.svelte';
     import GenerateQuestionButton from './GenerateQuestionButton.svelte';
     import { currentSurveyStore } from '@/stores/questions.svelte.js';
-    import { toast } from 'svelte-sonner';
     import { Button } from '@/components/ui/button';
     import {Grip, Save, Share2} from 'lucide-svelte';
-    import type {Question} from "@/types";
     import {flip} from 'svelte/animate';
-
+    import { v4 as uuidv4 } from 'uuid';
     let draggedIndex: number | null = null;
-
-    function handleEdit(id: number, updatedQuestion: Question) {
-        if (!currentSurveyStore.survey) return;
-        currentSurveyStore.survey.questions = currentSurveyStore.survey.questions.map(q => q.id === id ? updatedQuestion : q);
-    }
-
-    function onDeleteQuestion(id: number) {
-        if (!currentSurveyStore.survey) return;
-
-        const qs = currentSurveyStore.survey.questions;
-        const questionIndex = qs.findIndex(q => q.id === id);
-        const question = qs[questionIndex];
-
-        if (question) {
-            toast.success('Question deleted successfully!', {
-                action: {
-                    label: 'Undo',
-                    onClick: () => {
-                        const currentQs = currentSurveyStore.survey!.questions;
-                        currentSurveyStore.survey!.questions = [
-                            ...currentQs.slice(0, questionIndex),
-                            question,
-                            ...currentQs.slice(questionIndex),
-                        ];
-                    },
-                },
-            });
-            currentSurveyStore.survey.questions = qs.filter(q => q.id !== id);
-        } else {
-            toast.warning('Internal error');
-        }
-    }
 
     function onCreateQuestion() {
         if (!currentSurveyStore.survey) return;
@@ -49,7 +15,7 @@
         currentSurveyStore.survey.questions = [
             ...qs,
             {
-                id: qs.length + 1,
+                id: uuidv4(),
                 question: 'New question',
                 answerType: 'single',
                 options: [
@@ -111,8 +77,6 @@
                     </div>
                     <QuestionItem
                             question={question}
-                            onDelete={onDeleteQuestion}
-                            onEdit={handleEdit}
                     />
                 </div>
             {/each}
