@@ -36,45 +36,7 @@ export const actions: Actions = {
 		if (!locals.session || !locals.user) {
 			return fail(401, { message: 'Unauthorized' });
 		}
-		const survey = await request.json() as Survey;
-		// Check if survey is valid
-		if (!survey) {
-			return fail(400, { message: 'Invalid survey' });
-		}
-
-		// Start transaction
-		await db.transaction(async tx => {
-			tx.update(table.surveys).set({
-				title: survey.title,
-				description: survey.description,
-				difficulty: survey.difficulty,
-				updatedAt: new Date(),
-			}).where(eq(table.surveys.userId, locals.user!.id));
-
-
-			const optionIds = survey.questions.flatMap(question => question.options.map(option => option.id));
-			const questionIds = survey.questions.map(question => question.id);
-
-			// Iterate over questions and insert them
-			await tx.delete(table.options)
-				.where(sql`id NOT IN (${optionIds})`);
-
-			await tx.delete(table.questions)
-				.where(sql`id NOT IN (${questionIds})`);
-
-			await tx.insert(table.questions).values(survey.questions.map(question => ({
-				surveyId: survey.id,
-				answerType: question.answerType,
-				correctAnswer: question.correctAnswer,
-				question: question.question,
-			})));
-
-			await tx.insert(table.options).values(survey.questions.flatMap(question => question.options.map(option => ({
-				questionId: question.id,
-				value: option.value,
-				isCorrect: option.isCorrect,
-			}))));
-		})
+		
 	},
 	startGeneration: async ({
 		request, locals

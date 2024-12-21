@@ -8,6 +8,7 @@
     import {flip} from 'svelte/animate';
     import axios, {type AxiosError} from "axios";
     import {toast} from "svelte-sonner";
+    import { v4 as uuidv4 } from 'uuid';
 
     let draggedIndex: number | null = $state<number | null>(null);
 
@@ -17,15 +18,15 @@
         currentSurveyStore.survey.questions = [
             ...qs,
             {
-                // id: uuidv4(),
+                id: uuidv4(),
                 question: 'New question',
                 correctAnswer: null,
                 answerType: 'single',
                 options: [
-                    { value: 'Option 1', isCorrect: true },
-                    { value: 'Option 2', isCorrect: false },
-                    { value: 'Option 3', isCorrect: false },
-                    { value: 'Option 4', isCorrect: false },
+                    { id: uuidv4(), value: 'Option 1', isCorrect: true },
+                    { id: uuidv4(), value: 'Option 2', isCorrect: false },
+                    { id: uuidv4(), value: 'Option 3', isCorrect: false },
+                    { id: uuidv4(), value: 'Option 4', isCorrect: false },
                 ],
             },
         ];
@@ -63,7 +64,7 @@
     const saveCurrentSurvey = () => {
         if (!currentSurveyStore.survey) return;
 
-        axios.post("?/saveSurvey", currentSurveyStore.survey).then(r => {
+        axios.post("/save", currentSurveyStore.survey).then(r => {
             if (r.status !== 200){
                 toast.error(r.statusText)
                 return;
@@ -75,13 +76,12 @@
             console.log(e)
         });
     }
-    $inspect(currentSurveyStore.survey)
 </script>
 
 <section class="flex flex-col w-full">
     <div class="flex flex-col gap-y-10 w-full">
         {#if currentSurveyStore.survey}
-            {#each currentSurveyStore.survey.questions as question, index (question.question)}
+            {#each currentSurveyStore.survey.questions as question, index (question.id)}
                 <div
                         class="relative group"
                         animate:flip={{ duration: 300 }}
@@ -98,7 +98,7 @@
                         <Grip size="32" />
                     </div>
                     <QuestionItem
-                            {question}
+                        question={question}
                     />
                 </div>
             {/each}

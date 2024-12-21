@@ -22,6 +22,7 @@
     import cloneDeep from "lodash.clonedeep";
     import {currentSurveyStore} from "@/stores/questions.svelte";
     import {toast} from "svelte-sonner";
+	import { v4 as uuidv4 } from "uuid";
 
     const {
         question,
@@ -33,15 +34,15 @@
     let isActionMenuOpen = $state(false);
 
     let updatedQuestion: Question = $state(cloneDeep(question));
-
+    
     function onDelete() {
         if (!currentSurveyStore.survey) return;
 
         const qs = currentSurveyStore.survey.questions;
         const questionIndex = qs.findIndex(q => q.id === question.id);
-        const question = qs[questionIndex];
 
-        if (question) {
+        if (questionIndex !== -1) {
+            const question = qs[questionIndex];
             toast.success('Question deleted successfully!', {
                 action: {
                     label: 'Undo',
@@ -50,7 +51,7 @@
                         currentSurveyStore.survey!.questions = [
                             ...currentQs.slice(0, questionIndex),
                             question,
-                            ...currentQs.slice(questionIndex),
+                            ...currentQs.slice(questionIndex + 1),
                         ];
                     },
                 },
@@ -78,6 +79,7 @@
 
     function createOption() {
         updatedQuestion.options.push({
+            id: uuidv4(),
             value: "New option",
             isCorrect: false,
         });
