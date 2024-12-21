@@ -49,6 +49,8 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"drizzle-orm": "^0.38.2",
-		"tailwindcss-animate": "^1.0.7"
+		"openai": "^4.77.0",
+		"tailwindcss-animate": "^1.0.7",
+		"uuid": "^11.0.3"
 	}
 }

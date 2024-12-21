@@ -6,8 +6,10 @@
     import { Button } from '@/components/ui/button';
     import {Grip, Save, Share2} from 'lucide-svelte';
     import {flip} from 'svelte/animate';
-    import { v4 as uuidv4 } from 'uuid';
-    let draggedIndex: number | null = null;
+    import axios, {type AxiosError} from "axios";
+    import {toast} from "svelte-sonner";
+
+    let draggedIndex: number | null = $state<number | null>(null);
 
     function onCreateQuestion() {
         if (!currentSurveyStore.survey) return;
@@ -15,8 +17,9 @@
         currentSurveyStore.survey.questions = [
             ...qs,
             {
-                id: uuidv4(),
+                // id: uuidv4(),
                 question: 'New question',
+                correctAnswer: null,
                 answerType: 'single',
                 options: [
                     { value: 'Option 1', isCorrect: true },
@@ -26,6 +29,8 @@
                 ],
             },
         ];
+
+        currentSurveyStore.isDirty = true;
     }
 
     function onDragStart(event: DragEvent, index: number) {
@@ -54,6 +59,23 @@
         }
         draggedIndex = null;
     }
+
+    const saveCurrentSurvey = () => {
+        if (!currentSurveyStore.survey) return;
+
+        axios.post("?/saveSurvey", currentSurveyStore.survey).then(r => {
+            if (r.status !== 200){
+                toast.error(r.statusText)
+                return;
+            }
+            currentSurveyStore.isDirty = false;
+            toast.success("Changes were successfully applied")
+        }).catch((e: AxiosError) => {
+            toast.error(e.message);
+            console.log(e)
+        });
+    }
+    $inspect(currentSurveyStore.survey)
 </script>
 
 <section class="flex flex-col w-full">
@@ -76,7 +98,7 @@
                         <Grip size="32" />
                     </div>
                     <QuestionItem
-                            question={question}
+                            {question}
                     />
                 </div>
             {/each}
@@ -89,8 +111,8 @@
     </div>
 
     <div class="flex mt-16 w-full xl:justify-start justify-center">
-        <div class="grid w-full gap-y-2 gap-x-2 grid-cols-4">
-            <Button class="col-span-4 gap-x-1">
+        <div class="flex w-full gap-x-2">
+            <Button onclick={saveCurrentSurvey} type="submit" disabled={!currentSurveyStore.isDirty} class="w-full gap-x-1">
                 <Save size="16" />
                 Save
             </Button>

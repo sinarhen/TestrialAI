@@ -5,14 +5,14 @@
     import type { PageServerData } from "../../../../../.svelte-kit/types/src/routes/(root)/$types";
     import type {Survey} from "@/types";
     import {currentSurveyStore} from "@/stores/questions.svelte";
+    import {toast} from "svelte-sonner";
 
     const {data }:{ data: PageServerData} = $props()
 
     const onClick = (survey: Survey) => {
         currentSurveyStore.survey = survey;
+        currentSurveyStore.isDirty = false;
     }
-
-    $inspect(data)
 </script>
 
 <Sheet.Root>
@@ -27,7 +27,7 @@
         <div class="flex flex-col gap-y-4 mt-6">
             {#if data.history}
                 {#each data.history as survey}
-                    <Card onclick={() => onClick(survey)} class="cursor-pointer">
+                    <Card onclick={() => currentSurveyStore.isGenerating ? toast.warning("Generation in progress!") : onClick(survey)} class="cursor-pointer">
                         <CardHeader>
                             <CardTitle tag="h6">{survey.title}</CardTitle>
                             <CardDescription class="flex w-full gap-x-2">

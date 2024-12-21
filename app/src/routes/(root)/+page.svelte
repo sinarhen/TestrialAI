@@ -9,6 +9,7 @@
     import type {ActionData, PageServerData} from "../../../.svelte-kit/types/src/routes/(root)/$types";
     let topic: string = $state("Geography test");
     let { data, form }: { data: PageServerData, form: ActionData } = $props();
+
 </script>
 
 <Header {data} {form} />

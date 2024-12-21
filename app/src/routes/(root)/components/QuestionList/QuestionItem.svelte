@@ -56,18 +56,20 @@
                 },
             });
             currentSurveyStore.survey.questions = qs.filter(q => q.id !== question.id);
+            currentSurveyStore.isDirty = true;
         } else {
             toast.warning('Internal error');
         }
     }
+
     function handleSave() {
         if (!currentSurveyStore.survey) return;
         currentSurveyStore.survey.questions = currentSurveyStore.survey.questions.map(q => q.id === question.id ? {
             ...updatedQuestion,
             correctAnswer: updatedQuestion.answerType === AnswerTypes.TEXT ? updatedQuestion.correctAnswer : null,
         } : q);
-
         isDialogOpen = false; // Close the dialog after saving
+        currentSurveyStore.isDirty = true;
     }
 
     function deleteOption(index: number) {
@@ -80,10 +82,10 @@
             isCorrect: false,
         });
     }
+
 </script>
 
 <div class="group flex gap-x-6" transition:fade>
-
     <div class="w-full">
         <h3 class="text-xl w-full mb-5 font-medium inline-flex justify-between gap-x-2">
             {question.question}

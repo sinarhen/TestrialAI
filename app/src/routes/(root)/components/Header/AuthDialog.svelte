@@ -5,12 +5,12 @@
     import { Separator } from '@/components/ui/separator';
     import { Button } from '@/components/ui/button';
     import { LogIn } from 'lucide-svelte';
-    import type {ActionData} from "../../../../../.svelte-kit/types/src/routes/$types";
     import type {SubmitFunction} from "@sveltejs/kit";
     import {toast} from "svelte-sonner";
     import {applyAction} from "$app/forms";
     import {invalidateAll} from "$app/navigation";
     import {enhance} from "$app/forms";
+    import type {ActionData} from "../../../../../.svelte-kit/types/src/routes/(root)/$types";
 
     let {form} : {
         form: ActionData
