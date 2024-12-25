@@ -5,51 +5,62 @@
     import {Input} from "@/components/ui/input";
     import {Label} from "@/components/ui/label";
 	import { currentSurveyStore } from '@/stores/questions.svelte';
-	import type { SubmitFunction } from '@sveltejs/kit';
-	import { applyAction, enhance } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
-	import type { Question, Survey } from '@/types';
+	import axios from 'axios';
+	import type { GenerateQuestionDto } from '../../../(actions)/generate-question/+server';
 
     let isPopoverOpen = $state(false);
-    let isGenerating = $state(false);
+    let questionTopic = $state("");
 
     function togglePopover() {
         isPopoverOpen = !isPopoverOpen;
     }
 
-   
 
-    const onGenerate: SubmitFunction = () => {
-        toast.success("Generation started")
-        isGenerating = true;
-        return async ({ result }) => {
-            switch (result.type) {
-                case 'success':
-                    toast.success("Successfully generated a question")
-                    console.log(result.data)
-                    currentSurveyStore.survey?.questions.push(result.data as Question);
-                    break;
-                // case 'failure':
-                //     console.error(result)
-                // case "error":
-                //     consol
-                //     break;
-                default: console.error(result);
+    const onGenerate = async () => {
+            try {
+                currentSurveyStore.isGenerating = true;
+
+                const body =  {
+                    topic: questionTopic,
+                    survey: currentSurveyStore.survey
+                } as GenerateQuestionDto
+                const res = await axios.post("/generate-question", body);
+        
+                if (res.status !== 200) {
+                   toast.error(res.statusText);
+                   return;
+                }
+                if (!res.data) {
+                    toast.error("No question generated");
+                    return;
+                }
+
+                currentSurveyStore.survey?.questions.push(res.data);
+                isPopoverOpen = false
+                
+                toast.success("Successfully generated a question");
+            }  
+            catch (err) {
+                if (axios.isAxiosError(err)) {
+                    toast.error(err.message);
+                    console.log(err.status);
+                } else {
+                    console.log(err);
+                    toast.error("Failed to generate a question");
+                }
             }
-
-            await applyAction(result);
-            await invalidateAll()
-            isGenerating = false;
+            finally {
+                currentSurveyStore.isGenerating = false;
+            }
         }
-    }
 </script>
 
 <div class="relative w-full">
     <Popover.Root>
         <Popover.Trigger class="w-full">
             <Button
-                    disabled={isGenerating}
+                    disabled={currentSurveyStore.isGenerating}
                     size="sm"
                     variant="outline"
                     class="flex relative w-full rounded-l-none items-center justify-center gap-x-1"
@@ -66,20 +77,17 @@
             <p class="text-xs opacity-50">
                 Enter a topic to generate a question about
             </p>
-            <form method="POST" action="?/generateQuestion" use:enhance={onGenerate}>
-                <Input disabled={isGenerating} name="topic" class="mt-1.5"/>
-                <Input type="hidden" name="survey" value={JSON.stringify(currentSurveyStore.survey)} />
-                <Button
-                        disabled={isGenerating}
-                        type="submit"
-                        variant="ghost"
-                        size="sm"
-                        class="mt-2 gap-x-1"
-                >
-                    <Sparkles size="16"/>
-                    Generate
-                </Button>
-            </form>
+            <Input disabled={currentSurveyStore.isGenerating} bind:value={questionTopic} class="mt-1.5"/>
+            <Button
+                    onclick={onGenerate}
+                    disabled={currentSurveyStore.isGenerating}
+                    variant="ghost"
+                    size="sm"
+                    class="mt-2 gap-x-1"
+            >
+                <Sparkles size="16"/>
+                Generate
+            </Button>
         </Popover.Content>
     </Popover.Root>
 

@@ -19,9 +19,9 @@
 {#if currentSurveyStore.survey}
     <h2 class="font-bold text-2xl">{currentSurveyStore.survey.title}</h2>
     <div class="text-sm flex mt-1 gap-x-4">
-        <span class="gap-x-1 flex items-center"><CircleHelp size="12"/> 8 Questions</span>
+        <span class="gap-x-1 flex items-center"><CircleHelp size="12"/> {currentSurveyStore.survey.questions.length} Questions</span>
         <span class="gap-x-1 flex items-center"><Timer size="12"/> 10 Minutes</span>
-        <span class="gap-x-1 flex items-center"><Gauge size="12"/> Hard</span>
+        <span class="gap-x-1 flex items-center"><Gauge size="12"/> {currentSurveyStore.survey.difficulty}</span>
     </div>
     <div class="w-full flex h-full gap-x-12 relative xl:flex-row flex-col mt-6">
         <QuestionList />

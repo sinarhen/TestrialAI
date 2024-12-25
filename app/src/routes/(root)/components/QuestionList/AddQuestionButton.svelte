@@ -1,10 +1,12 @@
 <script lang="ts">
     import { Plus } from 'lucide-svelte';
     import { Button } from '@/components/ui/button';
+	import { currentSurveyStore } from '@/stores/questions.svelte';
     export let onCreate: () => void;
 </script>
 
 <Button
+        disabled={currentSurveyStore.isGenerating}
         size="sm"
         on:click={onCreate}
         variant="outline"

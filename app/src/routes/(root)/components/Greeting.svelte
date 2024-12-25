@@ -4,7 +4,7 @@
     import {toast} from "svelte-sonner";
     import {currentSurveyStore} from "@/stores/questions.svelte";
     import { fade } from 'svelte/transition';
-	import axios, { AxiosError } from "axios";
+	import axios from "axios";
 	import { invalidate } from "$app/navigation";
 
     let {
