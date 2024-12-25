@@ -13,7 +13,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   if (!survey) {
     return new Response("Invalid data", { status: 400 });
   }
-  console.dir(survey, { depth: null });
 
   await db.transaction(async (tx) => {
     await tx

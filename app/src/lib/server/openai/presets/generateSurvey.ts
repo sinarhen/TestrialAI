@@ -1,7 +1,7 @@
 import {openai} from "@/server/openai";
 import type {ChatCompletionMessageParam} from "openai/resources/chat/completions";
 import type {Difficulty} from "@/types";
-import {generateSurveySchema} from "@/server/openai/presets/generateSurvey/schema";
+import { generateSurveySchema } from "../schema/survey";
 
 const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	topic,

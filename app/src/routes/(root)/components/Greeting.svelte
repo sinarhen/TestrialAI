@@ -1,14 +1,11 @@
 <script lang="ts">
     import {Input} from "@/components/ui/input";
     import {Button} from "@/components/ui/button";
-    import type {SubmitFunction} from "@sveltejs/kit";
     import {toast} from "svelte-sonner";
-    import {applyAction, enhance} from "$app/forms";
-    import {invalidateAll} from "$app/navigation";
     import {currentSurveyStore} from "@/stores/questions.svelte";
-    import type {Survey} from "@/types";
-    import {onMount} from "svelte";
     import { fade } from 'svelte/transition';
+	import axios, { AxiosError } from "axios";
+	import { invalidate } from "$app/navigation";
 
     let {
         topic = $bindable("Napoleonic wars"),
@@ -17,60 +14,33 @@
         topic: string;
         userName?: string;
     } = $props();
-    export const fakeLoadings = $state(["Sending request", "Processing data", "Generating questions", "Loading questions", "Almost there", "Finishing up"]);
 
-    let visibleLoadings = $state([fakeLoadings[0]]);
-    let currentIndex = 1;
-
-    const INTERVAL_DURATION = 2000;
-
-    onMount(() => {
-        const interval = setInterval(() => {
-            if (currentIndex < fakeLoadings.length) {
-                visibleLoadings.push(fakeLoadings[currentIndex]);
-                currentIndex++;
-            } else {
-                clearInterval(interval);
-            }
-        }, INTERVAL_DURATION);
-
-        return () => clearInterval(interval);
-    });
-
-    $effect(() => {
-        if (!currentSurveyStore.isGenerating){
-            currentIndex = 1;
-            visibleLoadings = [fakeLoadings[0]];
-        }
-    })
-    const onGenerate: SubmitFunction = () => {
+    const onGenerate = async () => {
         currentSurveyStore.isGenerating = true;
-        return async ({ result }) => {
-            switch (result.type) {
-                case 'success':
-                    {
-                        toast.success("Successfully generated")
-                        await applyAction(result);
-                        await invalidateAll()
-                        currentSurveyStore.survey = result.data?.generationResult as Survey;
-                        break;
-                    }
-                case "error":
-                    toast.error(result.error)
-                    break;
-                case "failure":
-                    if (result.data && typeof result.data === 'object') {
-                        toast.error(Object.entries(result.data).map(([key, value]) => `${key}: ${value}`).join('\n'));
-                    } else {
-                        toast.error('An unknown error occurred');
-                    }
-                    break;
-                default:
-                    toast.warning("Something went wrong. Please try reloading the page.")
-                    break;
+        
+        try {
+            const res = await axios.post("generate-survey", {
+                topic
+            })
+            if (res.status !== 200){
+                toast.error(res.statusText)
+                return;
             }
+            invalidate('/');
+            currentSurveyStore.survey = res.data;
+            toast.success("Successfully generated a survey")
+            
+        } catch (err){
+            if (axios.isAxiosError(err)){
+                toast.error(err.message);
+                console.log(err.status);
+            } else {
+                console.log(err)
+            }
+        } finally {
             currentSurveyStore.isGenerating = false;
         }
+
     }
 </script>
 
@@ -82,21 +52,17 @@
         <p class="opacity-0 mt-0.5 animate-fadeInSlide [animation-delay:0.3s]">
             Give us a topic you want to create a survey on
         </p>
-        <form use:enhance={onGenerate} method="POST" action="?/startGeneration" class="flex flex-col items-center">
-            <Input name="topic" disabled={currentSurveyStore.isGenerating} bind:value={topic} placeholder="Napoleonic wars" class="w-[400px] mt-2" />
-            <Button disabled={currentSurveyStore.isGenerating} type="submit" class="mt-2">
-                Create survey
-            </Button>
-        </form>
+        <Input name="topic" disabled={currentSurveyStore.isGenerating} bind:value={topic} placeholder="Napoleonic wars" class="w-[400px] mt-2" />
+        <Button onclick={onGenerate} disabled={currentSurveyStore.isGenerating} type="submit" class="mt-2">
+            Create survey
+        </Button>
     </div>
 </div>
 
 {#if currentSurveyStore.isGenerating}
     <div class="flex h-full flex-col justify-center text-gray-500 text-sm items-center w-full relative">
-        {#each visibleLoadings as loading, i}
-            <div class:animate-pulse={visibleLoadings.length - 1 === i} transition:fade={{duration: 500}} class="flex  gap-x-2 items-center">
-                <span>{loading}</span>
+            <div transition:fade={{duration: 500}} class="flex animate-pulse gap-x-2 items-center">
+                <span>Loading...</span>
             </div>
-        {/each}
     </div>
 {/if}

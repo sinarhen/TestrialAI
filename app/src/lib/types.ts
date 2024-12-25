@@ -7,7 +7,6 @@ export interface Survey {
 	updatedAt: Date;
 	questions: Question[];
 }
-export type SurveySchema = Omit<Survey, 'id' | 'createdAt' | 'updatedAt'>;
 
 export interface Question {
 	id: string;
@@ -39,3 +38,6 @@ export interface Option {
 	isCorrect: boolean;
 }
 
+
+export type SurveySchema = Omit<Survey, 'id' | 'createdAt' | 'updatedAt'>;
+export type QuestionSchema = Omit<Question, 'id'>

@@ -7,8 +7,8 @@ import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
 import { generateSurvey } from '@/server/openai/presets/generateSurvey';
 import type { PageServerLoad } from './$types';
-import type { Survey, SurveySchema} from "@/types";
-import {sql} from "drizzle-orm/sql/sql";
+import type { Question, QuestionSchema, Survey, SurveySchema} from "@/types";
+import { generateQuestion } from '@/server/openai/presets/generateQuestion';
 
 export const load: PageServerLoad = async ({locals}) => {
 	// select all surveys from the database related to the user with questions
@@ -30,13 +30,64 @@ export const load: PageServerLoad = async ({locals}) => {
 };
 
 export const actions: Actions = {
-	saveSurvey: async ({
-		request, locals
-					   }) => {
-		if (!locals.session || !locals.user) {
-			return fail(401, { message: 'Unauthorized' });
+	generateQuestion: async ({request, locals}) => {
+		if (!locals.session || !locals.user){
+			return fail(401, {message: "Unauthorized"})
 		}
-		
+		const data = await request.formData();
+		const topic = data.get('topic');
+
+		if (!topic || typeof topic !== 'string') {
+			return fail(400, { prompt: 'Topic is required' });
+		}
+
+		const survey = data.get('survey');
+		if (!survey || typeof survey !== 'string') {
+			return fail(400, { prompt: 'Survey is required' });
+		}
+		try {
+			const currentSurvey = JSON.parse(survey) as Survey;
+
+			if (!currentSurvey) {
+				console.error("Invalid survey")
+				console.dir(currentSurvey, {depth: null})
+				return fail(400, { prompt: 'Invalid survey' });
+			}
+
+			const response = await generateQuestion({
+				topic,
+				currentSurvey
+			});
+			const content = response.choices[0].message.content;
+			if (!content) {
+				return fail(500, { message: 'An error has occurred while generating.' });
+			}
+
+			const generationResult = JSON.parse(content) as QuestionSchema;
+
+			console.dir(generationResult, {depth: null});
+			await db.transaction(async (tx) => {
+				const [dbQuestion] = await tx.insert(table.questions).values({
+					...generationResult,
+					surveyId: currentSurvey.id,
+				}).returning({id: table.questions.id});
+
+				if (!dbQuestion) {
+					throw new Error("Failed to insert question");
+				}
+
+				for (const option of generationResult.options) {
+					await tx.insert(table.options).values({
+						...option,
+						questionId: dbQuestion.id, 
+					});
+				}
+			})
+
+		} catch (e) {
+			console.error(e);
+			return fail(500, { message: 'An error has occurred while generating.' });
+		}
 	},
 	startGeneration: async ({
 		request, locals

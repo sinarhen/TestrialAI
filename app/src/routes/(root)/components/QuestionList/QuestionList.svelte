@@ -81,7 +81,7 @@
 <section class="flex flex-col w-full">
     <div class="flex flex-col gap-y-10 w-full">
         {#if currentSurveyStore.survey}
-            {#each currentSurveyStore.survey.questions as question, index (question.id)}
+            {#each currentSurveyStore.survey.questions as question, index (question.question)}
                 <div
                         class="relative group"
                         animate:flip={{ duration: 300 }}
