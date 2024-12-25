@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import { generateSurvey } from "@/server/openai/presets/generateSurvey";
-import { type QuestionSchema, type Survey, type SurveySchema } from "@/types";
+import { type Question, type QuestionSchema, type Option, type Survey, type SurveySchema } from "@/types";
 import type { RequestHandler } from "@sveltejs/kit";
 import * as table from "@/server/db/schema";
 import { generateQuestion } from "@/server/openai/presets/generateQuestion";
@@ -36,36 +36,44 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             currentSurvey: survey,
         });
         const content = response.choices[0].message.content;
+
         if (!content) {
             return new Response("An error has occurred while generating.", { status: 500 });
         }
 
-        const generationResult = JSON.parse(content) as QuestionSchema;
+        const aiGenerationResult = JSON.parse(content) as QuestionSchema;
 
-        console.dir(generationResult, { depth: null });
+        const finalQuestion = {
+            ...aiGenerationResult,
+            options: [] as Option[],
+            id: '',
+        } as Question;
 
         await db.transaction(async (tx) => {
             const [dbQuestion] = await tx
                 .insert(table.questions)
                 .values({
-                    ...generationResult,
+                    ...aiGenerationResult,
                     surveyId: survey.id,
                 })
                 .returning({ id: table.questions.id });
-
+            
+            finalQuestion.id = dbQuestion.id;
+            
             if (!dbQuestion) {
                 throw new Error("Failed to insert question");
             }
 
-            for (const option of generationResult.options) {
-                await tx.insert(table.options).values({
+            for (const option of aiGenerationResult.options) {
+                const [dbOption] = await tx.insert(table.options).values({
                     ...option,
                     questionId: dbQuestion.id,
-                });
+                }).returning({ id: table.options.id });
+                finalQuestion.options.push({ ...option, id: dbOption.id });
             }
         });
 
-        return new Response(JSON.stringify(generationResult), { status: 200 });
+        return new Response(JSON.stringify(finalQuestion), { status: 200 });
 
     } catch (e) {
         console.error(e);

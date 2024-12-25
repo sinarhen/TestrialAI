@@ -1,72 +1,114 @@
 import { db } from "@/server/db";
 import { generateSurvey } from "@/server/openai/presets/generateSurvey";
-import { Difficulties, type SurveySchema } from "@/types";
+import { Difficulties, type Question, type Survey, type SurveySchema } from "@/types";
 import type { RequestHandler } from "@sveltejs/kit";
-import * as table from "@/server/db/schema"
+import * as table from "@/server/db/schema";
 
-export const POST: RequestHandler = async ({
-    request, locals
-                        }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
     if (!locals.session || !locals.user) {
-        return new Response("Unauthorized", {status: 401});
+        return new Response("Unauthorized", { status: 401 });
     }
-    const topic = (await request.json()).topic;
 
-    if (!topic || typeof topic !== 'string') {
+    const { topic } = await request.json();
+    if (!topic || typeof topic !== "string") {
         return new Response("Topic is required", { status: 400 });
     }
 
     try {
-        const response = await generateSurvey({
+        const openaiResponse = await generateSurvey({
             topic,
             difficulty: Difficulties.EASY,
             numberOfQuestions: 8,
         });
-        const content = response.choices[0].message.content;
-        if (!content) {
+
+        const aiContent = openaiResponse.choices[0]?.message?.content;
+        if (!aiContent) {
             return new Response("An error has occurred while generating.", { status: 500 });
         }
+        
+        const aiGeneratedSurvey = JSON.parse(aiContent) as SurveySchema;
 
-        const generationResult = JSON.parse(content) as SurveySchema;
+        const finalSurvey = {
+            ...aiGeneratedSurvey,
+            id: '',
+            questions: [] as Question[],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        } as Survey;
 
-
-        // Start transaction
         await db.transaction(async (tx) => {
-            // Insert the survey
-            const [survey] = await tx.insert(table.surveys).values({
-                ...generationResult,
-                userId: locals.user!.id,
-            }).returning({id: table.surveys.id}); // Returning the survey to get its ID
+            // Insert SURVEY
+            const [insertedSurvey] = await tx
+                .insert(table.surveys)
+                .values({
+                    ...aiGeneratedSurvey,
+                    userId: locals.user!.id, // associate with user
+                })
+                .returning({ 
+                    id: table.surveys.id, 
+                    createdAt: table.surveys.createdAt,
+                    updatedAt: table.surveys.updatedAt 
+                });
 
-            if (!survey) {
+            if (!insertedSurvey) {
                 throw new Error("Failed to insert survey");
             }
+            finalSurvey.id = insertedSurvey.id;
+            finalSurvey.createdAt = insertedSurvey.createdAt;
+            finalSurvey.updatedAt = insertedSurvey.updatedAt;
 
-            // Iterate over questions and insert them
-            for (const question of generationResult.questions) {
-                const [dbQuestion] = await tx.insert(table.questions).values({
-                    ...question,
-                    surveyId: survey.id,
-                }).returning({id: table.questions.id}); // Returning the question to get its ID
+            // Insert QUESTIONS and OPTIONS
+            for (const question of aiGeneratedSurvey.questions) {
 
-                if (!dbQuestion) {
+                const [insertedQuestion] = await tx
+                    .insert(table.questions)
+                    .values({
+                        ...question,
+                        surveyId: insertedSurvey.id,
+                    })
+                    .returning({ 
+                        id: table.questions.id
+                 });
+
+                if (!insertedQuestion) {
                     throw new Error("Failed to insert question");
                 }
 
-                // Insert options related to the question
+                const finalOptions = [];
                 for (const option of question.options) {
-                    await tx.insert(table.options).values({
+                    const [insertedOption] = await tx
+                        .insert(table.options)
+                        .values({
+                            // id: newOptionId,
+                            ...option,
+                            questionId: insertedQuestion.id,
+                        })
+                        .returning({ id: table.options.id });
+
+                    if (!insertedOption) {
+                        throw new Error("Failed to insert option");
+                    }
+
+                    finalOptions.push({
                         ...option,
-                        questionId: dbQuestion.id, // Associate with question ID
-                    }).returning({id: table.options.id});
+                        id: insertedOption.id,
+                    });
                 }
+
+                finalSurvey.questions.push({
+                    ...question,
+                    id: insertedQuestion.id,
+                    options: finalOptions,
+                });
             }
         });
 
-        return new Response(content, {status: 200});
-    } catch (e) {
-        console.error(e);
-        return new Response('An error has occurred while generating.', {status: 500});
+        return new Response(JSON.stringify(finalSurvey), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+        });
+    } catch (err) {
+        console.error(err);
+        return new Response("An error has occurred while generating.", { status: 500 });
     }
-
-}
+};

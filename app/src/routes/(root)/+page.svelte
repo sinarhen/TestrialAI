@@ -7,9 +7,10 @@
     import {CircleHelp, Gauge, Timer} from "lucide-svelte";
     import {currentSurveyStore} from "@/stores/questions.svelte.js";
     import type {ActionData, PageServerData} from "../../../.svelte-kit/types/src/routes/(root)/$types";
-    let topic: string = $state("Geography test");
-    let { data, form }: { data: PageServerData, form: ActionData } = $props();
 
+    let topic: string = $state("Geography test");
+
+    let { data, form }: { data: PageServerData, form: ActionData } = $props();
 </script>
 
 <Header {data} {form} />
