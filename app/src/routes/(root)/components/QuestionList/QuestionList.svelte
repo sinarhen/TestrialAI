@@ -16,7 +16,7 @@
         if (!currentSurveyStore.survey) return;
         const qs = currentSurveyStore.survey.questions;
         currentSurveyStore.survey.questions = [
-            ...qs,
+            ...qs ?? [],
             {
                 id: uuidv4(),
                 question: 'New question',
@@ -53,7 +53,7 @@
         event.preventDefault();
         if (draggedIndex !== null && draggedIndex !== targetIndex) {
             const qs = currentSurveyStore.survey.questions;
-            const newQs = [...qs];
+            const newQs = [...qs ?? []];
             const [draggedItem] = newQs.splice(draggedIndex, 1);
             newQs.splice(targetIndex, 0, draggedItem);
             currentSurveyStore.survey.questions = newQs;
@@ -81,7 +81,7 @@
 <section class="flex flex-col w-full">
     <div class="flex flex-col gap-y-10 w-full">
         {#if currentSurveyStore.survey}
-            {#each currentSurveyStore.survey.questions as question, index (question.id)}
+            {#each currentSurveyStore.survey.questions ?? [] as question, index (question.question)}
                 <div
                         class="relative group"
                         animate:flip={{ duration: 300 }}

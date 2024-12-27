@@ -5,10 +5,7 @@ import * as table from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
-import { generateSurvey } from '@/server/openai/presets/generateSurvey';
 import type { PageServerLoad } from './$types';
-import type { Question, QuestionSchema, Survey, SurveySchema} from "@/types";
-import { generateQuestion } from '@/server/openai/presets/generateQuestion';
 
 export const load: PageServerLoad = async ({locals}) => {
 	// select all surveys from the database related to the user with questions

@@ -1,9 +1,8 @@
 import { db } from "@/server/db";
-import { generateSurvey } from "@/server/openai/presets/generateSurvey";
-import { type Question, type QuestionSchema, type Option, type Survey, type SurveySchema } from "@/types";
 import type { RequestHandler } from "@sveltejs/kit";
 import * as table from "@/server/db/schema";
-import { generateQuestion } from "@/server/openai/presets/generateQuestion";
+import { generateQuestion } from "@/server/openai/completions/generateQuestion";
+import type { Survey, Question, Option } from "@/types";
 
 export interface GenerateQuestionDto {
     topic: string;
@@ -31,17 +30,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             return new Response("Invalid survey", { status: 400 });
         }
 
-        const response = await generateQuestion({
+        const aiGenerationResult = await generateQuestion({
             topic,
             currentSurvey: survey,
         });
-        const content = response.choices[0].message.content;
 
-        if (!content) {
+        if (!aiGenerationResult) {
             return new Response("An error has occurred while generating.", { status: 500 });
         }
-
-        const aiGenerationResult = JSON.parse(content) as QuestionSchema;
 
         const finalQuestion = {
             ...aiGenerationResult,

@@ -1,68 +1,160 @@
 <script lang="ts">
-    import {Input} from "@/components/ui/input";
-    import {Button} from "@/components/ui/button";
-    import {toast} from "svelte-sonner";
-    import {currentSurveyStore} from "@/stores/questions.svelte";
-    import { fade } from 'svelte/transition';
-	import axios from "axios";
-	import { invalidate } from "$app/navigation";
+	import { Difficulties, Models } from './../../../lib/types';
+	import { Input } from '@/components/ui/input';
+	import { Button } from '@/components/ui/button';
+	import { toast } from 'svelte-sonner';
+	import { currentSurveyStore } from '@/stores/questions.svelte';
+	import { fade } from 'svelte/transition';
+	import type { Model, SurveySchemaType } from '@/types';
+	import type { Selected } from 'bits-ui';
 
-    let {
-        topic = $bindable("Napoleonic wars"),
-        userName = "stranger"
-    }: {
-        topic: string;
-        userName?: string;
-    } = $props();
+	import * as RadioGroup from '@/components/ui/radio-group';
+	import * as Select from '$lib/components/ui/select';
+	import { Label } from '@/components/ui/label';
+	import { v4 } from 'uuid';
+	import lodash from 'lodash';
 
-    const onGenerate = async () => {
-        currentSurveyStore.isGenerating = true;
-        
-        try {
-            const res = await axios.post("generate-survey", {
-                topic
-            })
-            if (res.status !== 200){
-                toast.error(res.statusText)
-                return;
-            }
-            invalidate('/');
-            currentSurveyStore.survey = res.data;
-            toast.success("Successfully generated a survey")
-            
-        } catch (err){
-            if (axios.isAxiosError(err)){
-                toast.error(err.message);
-                console.log(err.status);
-            } else {
-                console.log(err)
-            }
-        } finally {
-            currentSurveyStore.isGenerating = false;
-        }
+	let {
+		userName = 'stranger'
+	}: {
+		userName?: string;
+	} = $props();
 
-    }
+	const modelList = Object.entries(Models).map(([k, v]) => ({
+		label: k,
+		value: v
+	}));
+
+	let topic = $state<string | undefined>();
+	let modelSelected = $state<Selected<Model> | undefined>(modelList[0]);
+	let difficulty = $state<string | undefined>(Difficulties.HARD);
+	let numberOfQuestions = 6;
+
+	let es: EventSource;
+
+	let partialSurveyBuffer: SurveySchemaType | null = null;
+
+	async function onGenerate() {
+		if (!topic || !difficulty || !modelSelected) {
+			toast.error('Please fill in all fields');
+			return;
+		}
+		currentSurveyStore.isGenerating = true;
+		currentSurveyStore.survey = null;
+
+		es = new EventSource(
+			`/generate-survey?topic=${encodeURIComponent(topic)}&difficulty=${encodeURIComponent(difficulty)}&numberOfQuestions=${numberOfQuestions}`
+		);
+
+		const updateStoreDebounced = lodash.throttle(() => {
+			if (!partialSurveyBuffer) return;
+			currentSurveyStore.survey = {
+				id: 'TEMP',
+				...partialSurveyBuffer,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				questions: partialSurveyBuffer.questions.map((q) => ({
+					...q,
+					id: v4(),
+					options: q.options.map((o) => ({ ...o, id: v4() }))
+				}))
+			};
+		}, 50);
+
+		es.addEventListener('partial', (event) => {
+			partialSurveyBuffer = JSON.parse(event.data);
+			updateStoreDebounced();
+		});
+
+		es.addEventListener('done', (event) => {
+			const data = JSON.parse(event.data) as SurveySchemaType;
+			partialSurveyBuffer = null;
+
+			currentSurveyStore.survey = {
+				...data,
+				id: Date.now().toString(),
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				questions: data.questions.map((q) => ({
+					...q,
+					id: Date.now().toString(),
+					options: q.options.map((o) => ({ ...o, id: v4() }))
+				}))
+			};
+			es.close();
+			currentSurveyStore.isGenerating = false;
+			toast.success('Successfully generated a survey');
+		});
+
+		es.onerror = (e) => {
+			console.error('SSE error', e);
+			currentSurveyStore.isGenerating = false;
+			toast.error('Error generating survey');
+			es.close();
+		};
+	}
 </script>
 
-<div class="w-full h-[65vh] flex flex-grow flex-col justify-center items-center">
-    <div class="flex  flex-col justify-end items-center">
-        <h1 class="text-3xl animate-fadeInSlide">
-            Hello, <span class="font-semibold">{userName}</span>👋
-        </h1>
-        <p class="opacity-0 mt-0.5 animate-fadeInSlide [animation-delay:0.3s]">
-            Give us a topic you want to create a survey on
-        </p>
-        <Input name="topic" disabled={currentSurveyStore.isGenerating} bind:value={topic} placeholder="Napoleonic wars" class="w-[400px] mt-2" />
-        <Button onclick={onGenerate} disabled={currentSurveyStore.isGenerating} type="submit" class="mt-2">
-            Create survey
-        </Button>
-    </div>
+<div class="flex h-[65vh] w-full flex-grow flex-col items-center justify-center">
+	<div class="flex flex-col items-center justify-end">
+		<h1 class="animate-fadeInSlide text-3xl">
+			Hello, <span class="font-semibold">{userName}</span>👋
+		</h1>
+		<p class="animate-fadeInSlide mt-0.5 opacity-0 [animation-delay:0.3s]">
+			Give us a topic you want to create a survey on
+		</p>
+		<div class="mt-2 flex w-full items-center justify-center gap-x-1">
+			<Input
+				name="topic"
+				disabled={currentSurveyStore.isGenerating}
+				bind:value={topic}
+				placeholder="Napoleonic wars"
+				class="w-[350px]"
+			/>
+			<Select.Root
+				selected={modelSelected}
+				items={modelList}
+				onSelectedChange={(val) => (modelSelected = val)}
+				name="model"
+			>
+				<Select.Trigger class="w-32 whitespace-nowrap ">
+					<Select.Value />
+				</Select.Trigger>
+				<Select.Content>
+					{#each modelList as model (model)}
+						<Select.Item class="whitespace-nowrap" value={model.value}>
+							{model.label}
+						</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
+		<RadioGroup.Root bind:value={difficulty} class="mt-2 flex w-full gap-x-4">
+			{#each Object.values(Difficulties) as diff}
+				<div class="items center flex space-x-2">
+					<RadioGroup.Item value={diff} id={diff} />
+					<Label for={diff}>{diff}</Label>
+				</div>
+			{/each}
+		</RadioGroup.Root>
+
+		<Button
+			onclick={onGenerate}
+			disabled={currentSurveyStore.isGenerating}
+			type="submit"
+			class="mt-2"
+		>
+			Create survey
+		</Button>
+	</div>
 </div>
 
 {#if currentSurveyStore.isGenerating}
-    <div class="flex h-full flex-col justify-center text-gray-500 text-sm items-center w-full relative">
-            <div transition:fade={{duration: 500}} class="flex animate-pulse gap-x-2 items-center">
-                <span>Loading...</span>
-            </div>
-    </div>
+	<div
+		class="relative flex h-full w-full flex-col items-center justify-center text-sm text-gray-500"
+	>
+		<div transition:fade={{ duration: 500 }} class="flex animate-pulse items-center gap-x-2">
+			<span>Loading...</span>
+		</div>
+	</div>
 {/if}

@@ -1,7 +1,7 @@
-import {openai} from "@/server/openai";
 import type {ChatCompletionMessageParam} from "openai/resources/chat/completions";
-import type {Survey} from "@/types";
-import { generateQuestionSchema } from "../schema/question";
+import {questionSchema, type Survey} from "@/types";
+import { zodResponseFormat } from "openai/helpers/zod.mjs";
+import { openai } from "..";
 
 const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	topic,
@@ -28,20 +28,20 @@ const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	}
 ];
 
-export function generateQuestion(parameters: Parameters) {
-    return openai.chat.completions.create({
-        model: "gpt-4o-mini",
+export async function generateQuestion(parameters: Parameters) {
+    const completion = await openai.beta.chat.completions.parse({
+        model: "gpt-4o",
         messages: getMessages(parameters),
-        response_format: {
-            "type": "json_schema",
-            "json_schema": generateQuestionSchema,
-        },
+        response_format: zodResponseFormat(questionSchema, "generateQuestion"),
         temperature: 1,
         max_completion_tokens: 2048,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
     });
+
+    const message = completion.choices[0]?.message;
+    return message?.parsed;
 }
 
 interface Parameters {
