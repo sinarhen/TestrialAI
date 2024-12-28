@@ -1,74 +1,35 @@
 import { db } from '@/server/db';
 import {
-	Difficulties,
-	type Difficulty,
 	type Question,
-	type Survey,
-	type SurveySchemaType
+	type Survey, surveySchema, type SurveySchemaType,
 } from '@/types';
 import type { RequestHandler } from '@sveltejs/kit';
 import * as table from '@/server/db/schema';
-import { generateSurvey, getMessages } from '@/server/openai/completions/generateSurvey';
+import { getMessages } from '@/server/openai/completions/generateSurvey';
 import { openai } from '@/server/openai';
-import { surveySchema } from '@/types';
-import { zodResponseFormat } from 'openai/helpers/zod.mjs';
+import {zodResponseFormat} from "openai/helpers/zod.mjs";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.session || !locals.user) {
 		return new Response('Unauthorized', { status: 401 });
 	}
-
 	const { topic, difficulty, numberOfQuestions } = await request.json();
 	if (!topic || typeof topic !== 'string') {
 		return new Response('Topic is required', { status: 400 });
 	}
-	const stream = new ReadableStream({
-		start: async (controller) => {
-			const encoder = new TextEncoder();
 
-			// A helper to send SSE event data
-			function sendSSE(eventName: string, data: any) {
-				controller.enqueue(encoder.encode(`event: ${eventName}\n`));
-				controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
-			}
+	const openAIStream = openai.beta.chat.completions
+		.stream({
+			model: 'gpt-4o',
+			messages: getMessages({ topic, difficulty, numberOfQuestions }),
+			response_format: zodResponseFormat(surveySchema, "generateSurvey")
+		}).on('content.done', async (content) => {
+			if (!content.parsed) return;
 
-			try {
-				const openAIStream = await openai.beta.chat.completions
-					.stream({
-						model: 'gpt-4o',
-						messages: getMessages({ topic, difficulty, numberOfQuestions }),
-						response_format: zodResponseFormat(surveySchema, 'generateSurvey')
-					})
-					.on('content.delta', ({ parsed }) => {
-						if (!parsed) return;
-						sendSSE('partial', parsed);
-					})
-					.on('content.done', (props) => {
-						if (props.parsed) {
-							sendSSE('done', props.parsed);
-						}
+			await saveSurveyToDatabase(content.parsed, locals.user!.id);
+		});
 
-						controller.close();
-					});
-
-				await openAIStream.done();
-			} catch (err) {
-				sendSSE('error', { message: (err as Error)?.message || 'Unknown error' });
-
-				controller.close();
-			}
-		}
-	});
-
-	return new Response(stream, {
-		status: 200,
-		headers: {
-			'Content-Type': 'text/event-stream',
-			'Cache-Control': 'no-cache',
-			// "no-transform" is also recommended so proxies don't buffer SSE
-			Connection: 'keep-alive'
-		}
-	});
+	return new Response(openAIStream.toReadableStream());
 };
 
 // export const GET: RequestHandler = async ({ request }) => {
@@ -85,13 +46,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 // 	});
 // };
 
-async function createSurvey(survey: Survey, createdBy: string) {
+async function saveSurveyToDatabase(parsedSurvey: SurveySchemaType, createdBy: string) {
+	const finalSurvey: Survey = {
+		...parsedSurvey,
+		questions: [] as Question[],
+		id: '',
+		createdAt: new Date(),
+		updatedAt: new Date()
+	};
 	await db.transaction(async (tx) => {
 		// Insert SURVEY
 		const [insertedSurvey] = await tx
 			.insert(table.surveys)
 			.values({
-				...survey,
+				...parsedSurvey,
 				userId: createdBy
 			})
 			.returning({
@@ -103,12 +71,12 @@ async function createSurvey(survey: Survey, createdBy: string) {
 		if (!insertedSurvey) {
 			throw new Error('Failed to insert survey');
 		}
-		survey.id = insertedSurvey.id;
-		survey.createdAt = insertedSurvey.createdAt;
-		survey.updatedAt = insertedSurvey.updatedAt;
+		finalSurvey.id = insertedSurvey.id;
+		finalSurvey.createdAt = insertedSurvey.createdAt;
+		finalSurvey.updatedAt = insertedSurvey.updatedAt;
 
 		// Insert QUESTIONS and OPTIONS
-		for (const question of survey.questions ?? []) {
+		for (const question of parsedSurvey.questions ?? []) {
 			const [insertedQuestion] = await tx
 				.insert(table.questions)
 				.values({
@@ -144,12 +112,12 @@ async function createSurvey(survey: Survey, createdBy: string) {
 				});
 			}
 
-			survey.questions?.push({
+			finalSurvey.questions?.push({
 				...question,
 				id: insertedQuestion.id,
 				options: finalOptions
 			});
 		}
 	});
-	return survey;
+	return finalSurvey;
 }

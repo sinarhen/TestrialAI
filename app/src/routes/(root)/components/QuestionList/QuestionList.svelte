@@ -84,7 +84,6 @@
             {#each currentSurveyStore.survey.questions ?? [] as question, index (question.question)}
                 <div
                         class="relative group"
-                        animate:flip={{ duration: 300 }}
                         ondragover={onDragOver}
                         ondrop={(event) => onDrop(event, index)}
                         role="list"

@@ -36,7 +36,7 @@
     let updatedQuestion: Question = $state(cloneDeep(question));
     
     function onDelete() {
-        if (!currentSurveyStore.survey) return;
+        if (!currentSurveyStore.survey || !currentSurveyStore.survey.questions) return;
 
         const qs = currentSurveyStore.survey.questions;
         const questionIndex = qs.findIndex(q => q.id === question.id);
@@ -49,9 +49,9 @@
                     onClick: () => {
                         const currentQs = currentSurveyStore.survey!.questions;
                         currentSurveyStore.survey!.questions = [
-                            ...currentQs.slice(0, questionIndex),
+                            ...(currentQs?? []).slice(0, questionIndex),
                             question,
-                            ...currentQs.slice(questionIndex + 1),
+                            ...(currentQs ?? []).slice(questionIndex + 1),
                         ];
                     },
                 },
@@ -65,7 +65,7 @@
 
     function handleSave() {
         if (!currentSurveyStore.survey) return;
-        currentSurveyStore.survey.questions = currentSurveyStore.survey.questions.map(q => q.id === question.id ? {
+        currentSurveyStore.survey.questions = currentSurveyStore.survey.questions?.map(q => q.id === question.id ? {
             ...updatedQuestion,
             correctAnswer: updatedQuestion.answerType === AnswerTypes.TEXT ? updatedQuestion.correctAnswer : null,
         } : q);
@@ -87,7 +87,7 @@
 
 </script>
 
-<div class="group flex gap-x-6" transition:fade>
+<div class="group flex gap-x-6">
     <div class="w-full">
         <h3 class="text-xl w-full mb-5 font-medium inline-flex justify-between gap-x-2">
             {question.question}

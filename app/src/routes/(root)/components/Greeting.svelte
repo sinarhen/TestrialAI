@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { Difficulties, Models } from './../../../lib/types';
+	import {Difficulties, Models} from '@/types';
 	import { Input } from '@/components/ui/input';
 	import { Button } from '@/components/ui/button';
 	import { toast } from 'svelte-sonner';
 	import { currentSurveyStore } from '@/stores/questions.svelte';
 	import { fade } from 'svelte/transition';
-	import type { Model, SurveySchemaType } from '@/types';
+	import type { Model } from '@/types';
 	import type { Selected } from 'bits-ui';
+	import { parse } from "partial-json";
 
 	import * as RadioGroup from '@/components/ui/radio-group';
 	import * as Select from '$lib/components/ui/select';
 	import { Label } from '@/components/ui/label';
-	import { v4 } from 'uuid';
-	import lodash from 'lodash';
+	import {ChatCompletionStream} from "openai/lib/ChatCompletionStream";
 
 	let {
 		userName = 'stranger'
@@ -30,68 +30,47 @@
 	let difficulty = $state<string | undefined>(Difficulties.HARD);
 	let numberOfQuestions = 6;
 
-	let es: EventSource;
-
-	let partialSurveyBuffer: SurveySchemaType | null = null;
-
-	async function onGenerate() {
+	function onGenerate() {
 		if (!topic || !difficulty || !modelSelected) {
 			toast.error('Please fill in all fields');
 			return;
 		}
-		currentSurveyStore.isGenerating = true;
-		currentSurveyStore.survey = null;
+		fetch('/generate-survey', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				topic,
+				difficulty,
+				model: modelSelected.value,
+				numberOfQuestions
+			})
+		}).then(async res => {
+			if (res.body && res.status === 200) {
+				const runner = ChatCompletionStream.fromReadableStream(res.body);
 
-		es = new EventSource(
-			`/generate-survey?topic=${encodeURIComponent(topic)}&difficulty=${encodeURIComponent(difficulty)}&numberOfQuestions=${numberOfQuestions}`
-		);
+				runner.on('content.delta', ({snapshot}) => {
+					const survey = parse(snapshot);
+					currentSurveyStore.survey = survey;
+				})
 
-		const updateStoreDebounced = lodash.throttle(() => {
-			if (!partialSurveyBuffer) return;
-			currentSurveyStore.survey = {
-				id: 'TEMP',
-				...partialSurveyBuffer,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				questions: partialSurveyBuffer.questions.map((q) => ({
-					...q,
-					id: v4(),
-					options: q.options.map((o) => ({ ...o, id: v4() }))
-				}))
-			};
-		}, 50);
+				runner.on('content.done', (content) => {
+					const survey = parse(content.content);
+					currentSurveyStore.survey = survey;
+					toast.success('Survey generated');
+				})
 
-		es.addEventListener('partial', (event) => {
-			partialSurveyBuffer = JSON.parse(event.data);
-			updateStoreDebounced();
+			} else {
+				toast.error('Failed to generate survey');
+			}
+		}).catch(e => {
+			console.error(e)
+			toast.error('Failed to generate survey');
+		}).finally(() => {
+			currentSurveyStore.isGenerating = false;
 		});
 
-		es.addEventListener('done', (event) => {
-			const data = JSON.parse(event.data) as SurveySchemaType;
-			partialSurveyBuffer = null;
-
-			currentSurveyStore.survey = {
-				...data,
-				id: Date.now().toString(),
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				questions: data.questions.map((q) => ({
-					...q,
-					id: Date.now().toString(),
-					options: q.options.map((o) => ({ ...o, id: v4() }))
-				}))
-			};
-			es.close();
-			currentSurveyStore.isGenerating = false;
-			toast.success('Successfully generated a survey');
-		});
-
-		es.onerror = (e) => {
-			console.error('SSE error', e);
-			currentSurveyStore.isGenerating = false;
-			toast.error('Error generating survey');
-			es.close();
-		};
 	}
 </script>
 
