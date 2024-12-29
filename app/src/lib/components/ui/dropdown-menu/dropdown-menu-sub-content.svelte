@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
-	import { cn, flyAndScale } from "@/utils/utils.js";
+	import { cn, flyAndScale } from "@/utils/shadcn.js";
 
 	type $$Props = DropdownMenuPrimitive.SubContentProps;
 	type $$Events = DropdownMenuPrimitive.SubContentEvents;
