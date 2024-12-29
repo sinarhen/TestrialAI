@@ -1,8 +1,11 @@
-import {openai} from "@/server/openai";
-import type {ChatCompletionMessageParam} from "openai/resources/chat/completions";
-import {surveySchema, type Difficulty, type Survey} from "@/types";
-import { zodResponseFormat } from "openai/helpers/zod.mjs";
-import _ from "lodash";
+import { openai } from '@/server/openai';
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import { surveySchema, type Difficulty, type Survey } from '@/types/entities';
+import { zodResponseFormat } from 'openai/helpers/zod.mjs';
+import _ from 'lodash';
+import type { ChatCompletionCreateParams } from 'openai/resources/index.mjs';
+import type { ChatCompletionStreamParams } from 'openai/lib/ChatCompletionStream';
+import type { CustomChatCompletionStreamParams } from '@/types/openai';
 
 export const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	topic,
@@ -27,75 +30,21 @@ export const getMessages: (parameters: Parameters) => ChatCompletionMessageParam
 	}
 ];
 
-export async function generateSurvey(parameters: Parameters) {
-    let oldParsed: Survey | null = null;
+export const generateSurvey = (
+	parameters: Parameters,
+	customChatCompletionParams: CustomChatCompletionStreamParams = {
+		model: 'gpt-4o'
+	}
+) =>
+	openai.beta.chat.completions.stream({
+		response_format: zodResponseFormat(surveySchema, 'generateSurvey'),
+		messages: getMessages(parameters),
 
-    // Flags to track if a field has been finalized
-    let titleFinalized = false;
-    let descriptionFinalized = false;
-    let questionsFinalized = 0;
+		...customChatCompletionParams
+	});
 
-    const stream = await openai.beta.chat.completions
-        .stream({
-            model: "gpt-4o",
-            messages: getMessages(parameters),
-            response_format: zodResponseFormat(surveySchema, "generateSurvey"),
-        })
-        .on("content.delta", ({ parsed }) => {
-            const latestParsed = parsed as Survey | undefined;
-
-            if (!latestParsed) return; // If JSON is not parseable yet
-
-            // If this is the first chunk
-            if (!oldParsed) {
-                oldParsed = latestParsed;
-                return;
-            }
-
-            // Track final states of specific fields
-
-            // 1. Title
-            if (!titleFinalized && latestParsed.title && latestParsed.title === oldParsed.title) {
-                console.log("Title finished:", latestParsed.title);
-                titleFinalized = true; // Mark as finalized
-            }
-
-            // 2. Description
-            if (!descriptionFinalized && latestParsed.description && latestParsed.description === oldParsed.description) {
-                console.log("Description finished:", latestParsed.description);
-                descriptionFinalized = true; // Mark as finalized
-            }
-
-            // 3. Questions
-            const oldQuestions = oldParsed.questions ?? [];
-            const newQuestions = latestParsed.questions ?? [];
-
-            if ((newQuestions.length > oldQuestions.length || newQuestions.length === parameters.numberOfQuestions) && _.isEqual(oldQuestions[questionsFinalized], newQuestions[questionsFinalized])) {
-                console.log(`Question ${questionsFinalized+1} is finished: `, newQuestions.at(questionsFinalized))
-                questionsFinalized += 1
-            }
-            
-            oldParsed = latestParsed;
-        })
-        .on("content.done", (props) => {
-            if (props.parsed) {
-                console.log("\n\nFinished parsing the entire survey!");
-                console.log("Final Survey Object:", props.parsed);
-
-                // Final actions, e.g., WebSocket notification
-            }
-        });
-
-    // Wait for the stream to finish
-    await stream.done();
-
-    // Retrieve the final ChatCompletion
-    const completion = await stream.finalChatCompletion();
-
-    return completion.choices[0]?.message?.parsed;
+interface Parameters {
+	topic: string;
+	difficulty: Difficulty;
+	numberOfQuestions: number;
 }
-    interface Parameters {
-        topic: string;
-        difficulty: Difficulty;
-        numberOfQuestions: number;
-    }

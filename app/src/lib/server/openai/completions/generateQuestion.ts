@@ -1,11 +1,12 @@
-import type {ChatCompletionMessageParam} from "openai/resources/chat/completions";
-import {questionSchema, type Survey} from "@/types";
-import { zodResponseFormat } from "openai/helpers/zod.mjs";
-import { openai } from "..";
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import { questionSchema, type Survey } from '@/types/entities';
+import { zodResponseFormat } from 'openai/helpers/zod.mjs';
+import { openai } from '..';
+import type { CustomChatCompletionStreamParams } from '@/types/openai';
 
 const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	topic,
-    currentSurvey
+	existingQuestions
 }) => [
 	{
 		role: 'system',
@@ -22,29 +23,25 @@ const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	{
 		role: 'user',
 		content: `Generate a question about ${topic} to the existing survey with the title: ${currentSurvey.title}, with a difficulty of ${currentSurvey.difficulty}.
-            Do not create any question that is too similar to the following existing questions:
-            ${currentSurvey.questions.map(question => question.question).join(', ')}.
+            ${existingQuestions.join(', ')}
+            
         `
 	}
 ];
 
-export async function generateQuestion(parameters: Parameters) {
-    const completion = await openai.beta.chat.completions.parse({
-        model: "gpt-4o",
-        messages: getMessages(parameters),
-        response_format: zodResponseFormat(questionSchema, "generateQuestion"),
-        temperature: 1,
-        max_completion_tokens: 2048,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-    });
-
-    const message = completion.choices[0]?.message;
-    return message?.parsed;
-}
+export const generateQuestion = (
+	parameters: Parameters,
+	customCreateCompletionParams: CustomChatCompletionStreamParams = {
+		model: 'gpt-4o'
+	}
+) =>
+	openai.beta.chat.completions.stream({
+		response_format: zodResponseFormat(questionSchema, 'generateQuestion'),
+		messages: getMessages(parameters),
+		...customCreateCompletionParams
+	});
 
 interface Parameters {
-    topic: string;
-    currentSurvey: Survey;
+	topic: string;
+	existingQuestions: string[];
 }

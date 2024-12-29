@@ -2,7 +2,7 @@ import { db } from '@/server/db';
 import {
 	type Question,
 	type Survey, surveySchema, type SurveySchemaType,
-} from '@/types';
+} from '@/types/entities';
 import type { RequestHandler } from '@sveltejs/kit';
 import * as table from '@/server/db/schema';
 import { getMessages } from '@/server/openai/completions/generateSurvey';

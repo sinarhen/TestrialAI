@@ -1,18 +1,18 @@
 <script lang="ts">
-	import {Difficulties, Models} from '@/types';
+	import { Difficulties, type Survey, type SurveySchemaType } from '@/types/entities';
 	import { Input } from '@/components/ui/input';
 	import { Button } from '@/components/ui/button';
 	import { toast } from 'svelte-sonner';
 	import { currentSurveyStore } from '@/stores/questions.svelte';
 	import { fade } from 'svelte/transition';
-	import type { Model } from '@/types';
+	import type { SupportedModel } from '@/types/openai';
 	import type { Selected } from 'bits-ui';
-	import { parse } from "partial-json";
+	import { parse } from 'partial-json';
 
 	import * as RadioGroup from '@/components/ui/radio-group';
 	import * as Select from '$lib/components/ui/select';
 	import { Label } from '@/components/ui/label';
-	import {ChatCompletionStream} from "openai/lib/ChatCompletionStream";
+	import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 
 	let {
 		userName = 'stranger'
@@ -20,15 +20,63 @@
 		userName?: string;
 	} = $props();
 
-	const modelList = Object.entries(Models).map(([k, v]) => ({
-		label: k,
-		value: v
-	}));
+	const modelList: Selected<SupportedModel>[] = [
+		{ label: 'GPT-4o', value: 'gpt-4o' },
+		{ label: 'GPT-4o mini', value: 'gpt-4o-mini' }
+	];
 
 	let topic = $state<string | undefined>();
-	let modelSelected = $state<Selected<Model> | undefined>(modelList[0]);
+	let modelSelected = $state<Selected<SupportedModel> | undefined>(modelList[0]);
 	let difficulty = $state<string | undefined>(Difficulties.HARD);
 	let numberOfQuestions = 6;
+
+	const streamOpenAiResponse = async (
+		endpoint: string,
+		{
+			body,
+			onChunkReceived,
+			onCompletionDone
+		}: {
+			body?: BodyInit;
+			onChunkReceived: <T>(parsed: T) => void;
+			onCompletionDone: <T>(parsed: T) => void;
+		}
+	) =>
+		await fetch(endpoint, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: body ? JSON.stringify(body) : undefined
+		}).then(async (res) => {
+			if (res.body && res.status === 200) {
+				const runner = ChatCompletionStream.fromReadableStream(res.body);
+
+				runner.on('content.delta', ({ snapshot }) => {
+					const survey = parse(snapshot) as SurveySchemaType;
+					onChunkReceived(survey);
+				});
+
+				runner.on('content.done', (content) => {
+					onCompletionDone(parse(content.content));
+				});
+			} else {
+				toast.error('Failed to generate survey');
+			}
+		});
+
+	streamOpenAiResponse('/generate-survey', {
+		onChunkReceived: (parsed) => console.log(parsed),
+		onCompletionDone: (parsed) => console.log(parsed)
+	});
+
+	// .catch((e) => {
+	// 	console.error(e);
+	// 	toast.error('Failed to generate survey');
+	// })
+	// .finally(() => {
+	// 	currentSurveyStore.isGenerating = false;
+	// });
 
 	function onGenerate() {
 		if (!topic || !difficulty || !modelSelected) {
@@ -46,31 +94,32 @@
 				model: modelSelected.value,
 				numberOfQuestions
 			})
-		}).then(async res => {
-			if (res.body && res.status === 200) {
-				const runner = ChatCompletionStream.fromReadableStream(res.body);
+		})
+			.then(async (res) => {
+				if (res.body && res.status === 200) {
+					const runner = ChatCompletionStream.fromReadableStream(res.body);
 
-				runner.on('content.delta', ({snapshot}) => {
-					const survey = parse(snapshot);
-					currentSurveyStore.survey = survey;
-				})
+					runner.on('content.delta', ({ snapshot }) => {
+						const survey = parse(snapshot);
+						currentSurveyStore.survey = survey;
+					});
 
-				runner.on('content.done', (content) => {
-					const survey = parse(content.content);
-					currentSurveyStore.survey = survey;
-					toast.success('Survey generated');
-				})
-
-			} else {
+					runner.on('content.done', (content) => {
+						const survey = parse(content.content);
+						currentSurveyStore.survey = survey;
+						toast.success('Survey generated');
+					});
+				} else {
+					toast.error('Failed to generate survey');
+				}
+			})
+			.catch((e) => {
+				console.error(e);
 				toast.error('Failed to generate survey');
-			}
-		}).catch(e => {
-			console.error(e)
-			toast.error('Failed to generate survey');
-		}).finally(() => {
-			currentSurveyStore.isGenerating = false;
-		});
-
+			})
+			.finally(() => {
+				currentSurveyStore.isGenerating = false;
+			});
 	}
 </script>
 
@@ -92,7 +141,6 @@
 			/>
 			<Select.Root
 				selected={modelSelected}
-				items={modelList}
 				onSelectedChange={(val) => (modelSelected = val)}
 				name="model"
 			>

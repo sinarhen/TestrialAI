@@ -3,7 +3,7 @@
     import { History, CircleHelp, Timer, Gauge } from 'lucide-svelte';
     import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
     import type { PageServerData } from "../../../../../.svelte-kit/types/src/routes/(root)/$types";
-    import type {Survey} from "@/types";
+    import type {Survey} from "@/types/entities";
     import {currentSurveyStore} from "@/stores/questions.svelte";
     import {toast} from "svelte-sonner";
 

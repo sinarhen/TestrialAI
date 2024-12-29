@@ -1,4 +1,4 @@
-import type {Survey} from "@/types";
+import type {Survey} from "@/types/entities";
 
 interface SurveyStore {
     survey: Survey | null;

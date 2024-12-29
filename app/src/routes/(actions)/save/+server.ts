@@ -1,4 +1,4 @@
-import type { Survey } from "@/types";
+import type { Survey } from "@/types/entities";
 import type { RequestHandler } from "@sveltejs/kit";
 import { db } from "@/server/db";
 import { questions, options } from "@/server/db/schema";

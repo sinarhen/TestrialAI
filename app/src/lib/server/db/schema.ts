@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from "uuid";
 import {sql} from "drizzle-orm/sql/sql";
-import {type AnswerType, type Difficulty} from "@/types";
+import {type AnswerType, type Difficulty} from "@/types/entities";
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),

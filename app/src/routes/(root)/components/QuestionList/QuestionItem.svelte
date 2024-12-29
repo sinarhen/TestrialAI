@@ -13,11 +13,10 @@
     import { Label } from "@/components/ui/label";
     import * as RadioGroup from "@/components/ui/radio-group";
     import { Checkbox } from "@/components/ui/checkbox";
-    import { fade } from 'svelte/transition';
     import * as DropdownMenu from "@/components/ui/dropdown-menu";
     import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
     import { Button } from "@/components/ui/button";
-    import {AnswerTypes, type Question} from "@/types";
+    import {AnswerTypes, type Question} from "@/types/entities";
     import { Input } from "@/components/ui/input";
     import cloneDeep from "lodash.clonedeep";
     import {currentSurveyStore} from "@/stores/questions.svelte";
