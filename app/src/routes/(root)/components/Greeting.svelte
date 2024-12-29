@@ -13,6 +13,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import { Label } from '@/components/ui/label';
 	import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
+	import { streamOpenAiResponse } from '@/utils/openai-stream';
 
 	let {
 		userName = 'stranger'
@@ -30,97 +31,32 @@
 	let difficulty = $state<string | undefined>(Difficulties.HARD);
 	let numberOfQuestions = 6;
 
-	const streamOpenAiResponse = async (
-		endpoint: string,
-		{
-			body,
-			onChunkReceived,
-			onCompletionDone
-		}: {
-			body?: BodyInit;
-			onChunkReceived: <T>(parsed: T) => void;
-			onCompletionDone: <T>(parsed: T) => void;
-		}
-	) =>
-		await fetch(endpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: body ? JSON.stringify(body) : undefined
-		}).then(async (res) => {
-			if (res.body && res.status === 200) {
-				const runner = ChatCompletionStream.fromReadableStream(res.body);
-
-				runner.on('content.delta', ({ snapshot }) => {
-					const survey = parse(snapshot) as SurveySchemaType;
-					onChunkReceived(survey);
-				});
-
-				runner.on('content.done', (content) => {
-					onCompletionDone(parse(content.content));
-				});
-			} else {
-				toast.error('Failed to generate survey');
-			}
-		});
-
-	streamOpenAiResponse('/generate-survey', {
-		onChunkReceived: (parsed) => console.log(parsed),
-		onCompletionDone: (parsed) => console.log(parsed)
-	});
-
-	// .catch((e) => {
-	// 	console.error(e);
-	// 	toast.error('Failed to generate survey');
-	// })
-	// .finally(() => {
-	// 	currentSurveyStore.isGenerating = false;
-	// });
-
-	function onGenerate() {
-		if (!topic || !difficulty || !modelSelected) {
-			toast.error('Please fill in all fields');
-			return;
-		}
-		fetch('/generate-survey', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
+	const onGenerateSurvey = async () =>
+		await streamOpenAiResponse<Partial<Survey>, Survey>({
+			endpoint: '/generate-survey',
+			body: {
 				topic,
 				difficulty,
-				model: modelSelected.value,
 				numberOfQuestions
-			})
-		})
-			.then(async (res) => {
-				if (res.body && res.status === 200) {
-					const runner = ChatCompletionStream.fromReadableStream(res.body);
+			},
+			onPartial: (partialSurvey) => {
+				// You can update the UI with partial data
+				currentSurveyStore.isGenerating = true;
 
-					runner.on('content.delta', ({ snapshot }) => {
-						const survey = parse(snapshot);
-						currentSurveyStore.survey = survey;
-					});
-
-					runner.on('content.done', (content) => {
-						const survey = parse(content.content);
-						currentSurveyStore.survey = survey;
-						toast.success('Survey generated');
-					});
-				} else {
-					toast.error('Failed to generate survey');
-				}
-			})
-			.catch((e) => {
-				console.error(e);
+				currentSurveyStore.survey = partialSurvey;
+			},
+			onComplete: (finalSurvey) => {
+				currentSurveyStore.survey = finalSurvey;
+				toast.success('Survey generated');
+			},
+			onError: (err) => {
+				console.error(err);
 				toast.error('Failed to generate survey');
-			})
-			.finally(() => {
+			},
+			onFinish: () => {
 				currentSurveyStore.isGenerating = false;
-			});
-	}
+			}
+		});
 </script>
 
 <div class="flex h-[65vh] w-full flex-grow flex-col items-center justify-center">
@@ -166,7 +102,7 @@
 		</RadioGroup.Root>
 
 		<Button
-			onclick={onGenerate}
+			onclick={onGenerateSurvey}
 			disabled={currentSurveyStore.isGenerating}
 			type="submit"
 			class="mt-2"

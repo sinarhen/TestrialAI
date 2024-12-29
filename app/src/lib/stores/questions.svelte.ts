@@ -1,13 +1,13 @@
-import type {Survey} from "@/types/entities";
+import type { Survey } from '@/types/entities';
 
 interface SurveyStore {
-    survey: Survey | null;
-    isGenerating: boolean;
-    isDirty: boolean;
+	survey: Partial<Survey> | null;
+	isGenerating: boolean;
+	isDirty: boolean;
 }
 
 export const currentSurveyStore = $state<SurveyStore>({
 	survey: null,
-    isGenerating: false,
-    isDirty: false
+	isGenerating: false,
+	isDirty: false
 });
