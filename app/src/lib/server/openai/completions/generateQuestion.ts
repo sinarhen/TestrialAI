@@ -24,7 +24,7 @@ const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	},
 	{
 		role: 'user',
-		content: `Generate a question about ${topic} to the existing survey with the title: ${surveyTitle}, with a difficulty of ${surveyDifficulty}.
+		content: `Generate a question about ${topic} to the existing survey with the title: ${surveyTitle}, with a difficulty of ${surveyDifficulty}. You can choose answer type from "single", "multiple" or "text". Don't repeat the following questions:
             ${existingQuestions.join(', ')}
             
         `

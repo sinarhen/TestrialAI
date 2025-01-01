@@ -22,6 +22,10 @@
 	}
 
 	const onGenerate = async () => {
+		if (currentSurveyStore.isGenerating) {
+			toast.error('Already generating a question');
+			return;
+		}
 		const existingQuestions = currentSurveyStore.survey?.questions?.map((q) => q.question);
 		if (!existingQuestions || !currentSurveyStore.survey?.id) {
 			toast.error('Internal error: no existing survey');
@@ -36,7 +40,7 @@
 			surveyTitle: currentSurveyStore.survey.title
 		};
 
-		let optionsIds = [];
+		let optionsIds: string[] = [];
 
 		let newQuestion = {
 			id: v4(),
@@ -46,29 +50,72 @@
 			options: []
 		} as Question;
 
-		currentSurveyStore.survey.questions?.push(newQuestion);
+		currentSurveyStore.isGenerating = true;
 
-		await streamOpenAiResponse<Partial<QuestionSchemaType>, QuestionSchemaType>({
+		currentSurveyStore.survey.questions?.push(newQuestion);
+		const generatedQuestionIndex = currentSurveyStore.survey?.questions.length ?? 1 - 1;
+
+		const stream = streamOpenAiResponse<Partial<QuestionSchemaType>, QuestionSchemaType>({
 			endpoint: '/generate-question',
 			body,
-			onPartial: (partial) => {
-				if (partial.options?.length && partial.options?.length > optionsIds.length) {
+			onPartial: ({ partialData }) => {
+				if (partialData.options?.length && partialData.options?.length > optionsIds.length) {
 					optionsIds.push(v4());
 				}
-				const questionIndex = currentSurveyStore.survey?.questions.length - 1;
+				if (currentSurveyStore.survey?.questions[generatedQuestionIndex]) {
+					currentSurveyStore.survey.questions[generatedQuestionIndex] = {
+						...newQuestion,
+						...partialData,
+						options:
+							partialData.options?.map((option, index) => ({
+								...option,
+								id: optionsIds[index]
+							})) ?? []
+					};
+				}
+			},
+			onComplete: ({ finalData }) => {
+				const questionIndex = (currentSurveyStore.survey?.questions.length ?? 0) - 1;
 				if (questionIndex < 0) {
 					return;
 				}
+				const question = finalData;
+
 				if (currentSurveyStore.survey?.questions[questionIndex]) {
 					currentSurveyStore.survey.questions[questionIndex] = {
 						...newQuestion,
-						...partial
+						...question,
+						options:
+							question.options?.map((option, index) => ({
+								...option,
+								id: optionsIds[index]
+							})) ?? []
 					};
-					return;
 				}
+			},
+			onError: ({ error, runner }) => {
+				const isQuestionCreated = currentSurveyStore.survey?.questions.at(generatedQuestionIndex);
+				if (isQuestionCreated) {
+					currentSurveyStore.survey?.questions?.splice(generatedQuestionIndex - 1, 1);
+				}
+				if (!runner?.aborted) {
+					runner?.abort();
+				}
+				// rethrow error to handle it in toast.promise
+				throw error;
+			},
+			onFinish: () => {
+				isPopoverOpen = false;
+				currentSurveyStore.isGenerating = false;
 			}
 		});
+		toast.promise(stream, {
+			loading: 'Generating question...',
+			success: 'Question is generated',
+			error: 'Failed to generate question'
+		});
 	};
+	$inspect(currentSurveyStore.survey?.questions);
 </script>
 
 <div class="relative w-full">

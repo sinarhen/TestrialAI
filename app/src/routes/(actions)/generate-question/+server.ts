@@ -1,6 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { generateQuestion } from '@/server/openai/completions/generateQuestion';
 import type { Difficulty } from '@/types/entities';
+import type { SupportedModel } from '@/types/openai';
 
 export interface GenerateQuestionDto {
 	topic: string;
@@ -8,6 +9,7 @@ export interface GenerateQuestionDto {
 	surveyTitle: string;
 	surveyDifficulty: Difficulty;
 	existingQuestions: string[];
+	model?: SupportedModel;
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -46,12 +48,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return new Response('existingQuestions is required', { status: 400 });
 		}
 
-		const openAIStream = generateQuestion({
-			topic,
-			existingQuestions,
-			surveyDifficulty: data.surveyDifficulty,
-			surveyTitle: data.surveyTitle
-		});
+		const openAIStream = generateQuestion(
+			{
+				topic,
+				existingQuestions,
+				surveyDifficulty: data.surveyDifficulty,
+				surveyTitle: data.surveyTitle
+			},
+			{
+				model: data.model ?? 'gpt-4o-mini'
+			}
+		);
 
 		return new Response(openAIStream.toReadableStream());
 	} catch (e) {

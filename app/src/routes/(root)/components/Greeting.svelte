@@ -39,6 +39,10 @@
 	let numberOfQuestions = $state<number>(10);
 
 	const onGenerateSurvey = async () => {
+		if (currentSurveyStore.isGenerating) {
+			toast.error('Already generating a survey');
+			return;
+		}
 		const tempSurveyId = v4();
 
 		const questionsIds: string[] = Array.from({ length: numberOfQuestions }, () => v4());
@@ -53,14 +57,14 @@
 				difficulty,
 				numberOfQuestions
 			},
-			onPartial: (partialSurvey) => {
+			onPartial: ({ partialData }) => {
 				currentSurveyStore.survey = {
-					...partialSurvey,
+					...partialData,
 
 					id: tempSurveyId,
 					title: '',
 					questions:
-						partialSurvey.questions?.map(
+						partialData.questions?.map(
 							(question, questionIndex) =>
 								({
 									...question,
@@ -82,9 +86,9 @@
 					difficulty
 				};
 			},
-			onComplete: async (finalSurvey) => {
+			onComplete: async ({ finalData }) => {
 				toast.success('Survey generated successfully');
-				const resp = toast.promise(saveSurvey(finalSurvey), {
+				const resp = toast.promise(saveSurvey(finalData), {
 					loading: 'Saving survey...',
 					success: (data) => {
 						if (!resp) {

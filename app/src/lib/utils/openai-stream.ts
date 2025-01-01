@@ -3,17 +3,27 @@
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';
 import { toast } from 'svelte-sonner';
+import { POST } from '../../routes/(actions)/generate-question/+server';
+
+type FuncWithRunner<
+	T extends {
+		[key: string]: any;
+	} = {}
+> = (
+	args: T & {
+		runner: ChatCompletionStream<null> | null;
+	}
+) => void;
 
 interface StreamOpenAiOptions<TPartial, TFinal> {
 	endpoint: string;
 	method?: string;
 	body?: unknown;
-	onPartial?: (chunk: TPartial) => void;
-	onComplete?: (finalData: TFinal) => void;
-	onError?: (err: unknown) => void;
-	onFinish?: () => void;
+	onPartial?: FuncWithRunner<{ partialData: TPartial }>;
+	onComplete?: FuncWithRunner<{ finalData: TFinal }>;
+	onError?: FuncWithRunner<{ error: unknown }>;
+	onFinish?: FuncWithRunner;
 }
-
 export async function streamOpenAiResponse<TPartial, TFinal>({
 	endpoint,
 	method = 'POST',
@@ -23,6 +33,8 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 	onError,
 	onFinish
 }: StreamOpenAiOptions<TPartial, TFinal>): Promise<void> {
+	let runner: ChatCompletionStream<null> | null = null;
+
 	try {
 		const res = await fetch(endpoint, {
 			method,
@@ -40,13 +52,13 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 			throw new Error('Response body is empty');
 		}
 
-		const runner = ChatCompletionStream.fromReadableStream(res.body);
+		runner = ChatCompletionStream.fromReadableStream(res.body);
 
 		runner.on('content.delta', ({ snapshot }) => {
 			if (onPartial) {
 				try {
-					const chunk = parse(snapshot) as TPartial;
-					onPartial(chunk);
+					const partialData = parse(snapshot) as TPartial;
+					onPartial({ partialData, runner });
 				} catch (err) {
 					console.error('Partial parse error:', err);
 				}
@@ -57,7 +69,7 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 			if (onComplete) {
 				try {
 					const finalData = parse(content) as TFinal;
-					onComplete(finalData);
+					onComplete({ finalData, runner });
 				} catch (err) {
 					console.error('Final parse error:', err);
 				}
@@ -65,14 +77,13 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 		});
 	} catch (err) {
 		if (onError) {
-			onError(err);
+			onError({ error: err, runner });
 		} else {
-			console.error(err);
 			toast.error('Failed to stream from OpenAI');
 		}
 	} finally {
 		if (onFinish) {
-			onFinish();
+			onFinish({ runner });
 		}
 	}
 }
