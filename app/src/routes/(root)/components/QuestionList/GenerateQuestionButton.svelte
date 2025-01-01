@@ -10,8 +10,9 @@
 	import type { GenerateQuestionDto } from '../../../(actions)/generate-question/+server';
 	import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs';
 	import { v4 } from 'uuid';
-	import type { Question } from '@/types/entities';
+	import type { Question, QuestionSchemaType, Survey } from '@/types/entities';
 	import { parse } from 'partial-json';
+	import { streamOpenAiResponse } from '@/utils/openai-stream';
 
 	let isPopoverOpen = $state(false);
 	let questionTopic = $state('');
@@ -26,55 +27,47 @@
 			toast.error('Internal error: no existing survey');
 			return;
 		}
+
 		const body: GenerateQuestionDto = {
 			topic: questionTopic,
 			existingQuestions,
-			surveyId: currentSurveyStore.survey?.id
+			surveyId: currentSurveyStore.survey.id,
+			surveyDifficulty: currentSurveyStore.survey.difficulty,
+			surveyTitle: currentSurveyStore.survey.title
 		};
-		fetch('/generate-question', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(body)
-		})
-			.then(async (res) => {
-				if (res.ok && res.body) {
-					const runner = ChatCompletionStream.fromReadableStream(res.body);
-					const newQuestionTempId = v4();
 
-					currentSurveyStore.survey?.questions?.push({
-						id: newQuestionTempId,
-						correctAnswer: null,
-						options: [],
-						question: '',
-						answerType: ''
-					});
+		let optionsIds = [];
 
-					function updateQuestionById(question: Question) {
-						const index = currentSurveyStore.survey?.questions?.findIndex(
-							(q) => q.id === newQuestionTempId
-						);
-						if (index && index !== -1 && currentSurveyStore.survey?.questions?.[index]) {
-						}
-					}
-					runner.on('content.delta', ({ snapshot }) => updateQuestionById(parse(snapshot)));
-					runner.on('content.done', ({ content }) => {
-						updateQuestionById(parse(content));
-						toast.success('Successfully generated a question');
-					});
-				} else {
-					throw new Error(res.statusText);
+		let newQuestion = {
+			id: v4(),
+			question: '',
+			answerType: '',
+			correctAnswer: '',
+			options: []
+		} as Question;
+
+		currentSurveyStore.survey.questions?.push(newQuestion);
+
+		await streamOpenAiResponse<Partial<QuestionSchemaType>, QuestionSchemaType>({
+			endpoint: '/generate-question',
+			body,
+			onPartial: (partial) => {
+				if (partial.options?.length && partial.options?.length > optionsIds.length) {
+					optionsIds.push(v4());
 				}
-			})
-			.catch((e) => {
-				console.error(e);
-				toast.error('Failed to generate a question');
-			})
-			.finally(() => {
-				currentSurveyStore.isGenerating = false;
-				isPopoverOpen = false;
-			});
+				const questionIndex = currentSurveyStore.survey?.questions.length - 1;
+				if (questionIndex < 0) {
+					return;
+				}
+				if (currentSurveyStore.survey?.questions[questionIndex]) {
+					currentSurveyStore.survey.questions[questionIndex] = {
+						...newQuestion,
+						...partial
+					};
+					return;
+				}
+			}
+		});
 	};
 </script>
 

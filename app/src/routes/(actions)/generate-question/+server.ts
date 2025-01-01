@@ -1,9 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { generateQuestion } from '@/server/openai/completions/generateQuestion';
+import type { Difficulty } from '@/types/entities';
 
 export interface GenerateQuestionDto {
 	topic: string;
 	surveyId: string;
+	surveyTitle: string;
+	surveyDifficulty: Difficulty;
 	existingQuestions: string[];
 }
 
@@ -27,6 +30,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return new Response('Survey id is required', { status: 400 });
 		}
 
+		if (!data.surveyTitle) {
+			console.error('Survey title is required');
+			return new Response('Survey title is required', { status: 400 });
+		}
+
+		if (!data.surveyDifficulty) {
+			console.error('Survey difficulty is required');
+			return new Response('Survey difficulty is required', { status: 400 });
+		}
+
 		const existingQuestions = data.existingQuestions;
 		if (!data.existingQuestions) {
 			console.error('Existing questions is required to generate single questions');
@@ -35,43 +48,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const openAIStream = generateQuestion({
 			topic,
-			existingQuestions
+			existingQuestions,
+			surveyDifficulty: data.surveyDifficulty,
+			surveyTitle: data.surveyTitle
 		});
 
 		return new Response(openAIStream.toReadableStream());
-
-		// const finalQuestion = {
-		// 	...aiGenerationResult,
-		// 	options: [] as Option[],
-		// 	id: ''
-		// } as Question;
-		//
-		// await db.transaction(async (tx) => {
-		// 	const [dbQuestion] = await tx
-		// 		.insert(table.questions)
-		// 		.values({
-		// 			...aiGenerationResult,
-		// 			surveyId: survey.id
-		// 		})
-		// 		.returning({ id: table.questions.id });
-		//
-		// 	finalQuestion.id = dbQuestion.id;
-		//
-		// 	if (!dbQuestion) {
-		// 		throw new Error('Failed to insert question');
-		// 	}
-		//
-		// 	for (const option of aiGenerationResult.options) {
-		// 		const [dbOption] = await tx
-		// 			.insert(table.options)
-		// 			.values({
-		// 				...option,
-		// 				questionId: dbQuestion.id
-		// 			})
-		// 			.returning({ id: table.options.id });
-		// 		finalQuestion.options.push({ ...option, id: dbOption.id });
-		// 	}
-		// });
 	} catch (e) {
 		console.error(e);
 		return new Response('An error has occurred while generating.', { status: 500 });

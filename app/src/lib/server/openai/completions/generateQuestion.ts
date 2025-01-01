@@ -1,12 +1,14 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
-import { questionSchema, type Survey } from '@/types/entities';
+import { questionSchema, type Difficulty, type Survey } from '@/types/entities';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
 import { openai } from '..';
 import type { CustomChatCompletionStreamParams } from '@/types/openai';
 
 const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	topic,
-	existingQuestions
+	existingQuestions,
+	surveyTitle,
+	surveyDifficulty
 }) => [
 	{
 		role: 'system',
@@ -22,7 +24,7 @@ const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	},
 	{
 		role: 'user',
-		content: `Generate a question about ${topic} to the existing survey with the title: ${currentSurvey.title}, with a difficulty of ${currentSurvey.difficulty}.
+		content: `Generate a question about ${topic} to the existing survey with the title: ${surveyTitle}, with a difficulty of ${surveyDifficulty}.
             ${existingQuestions.join(', ')}
             
         `
@@ -44,4 +46,6 @@ export const generateQuestion = (
 interface Parameters {
 	topic: string;
 	existingQuestions: string[];
+	surveyTitle: string;
+	surveyDifficulty: Difficulty;
 }

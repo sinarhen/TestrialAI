@@ -1,83 +1,101 @@
-import type { Survey } from "@/types/entities";
-import type { RequestHandler } from "@sveltejs/kit";
-import { db } from "@/server/db";
-import { questions, options } from "@/server/db/schema";
-import { sql, and, eq, notInArray, inArray } from "drizzle-orm";
+import { type Question, type Survey, surveySchema, type SurveySchemaType } from '@/types/entities';
+import type { RequestHandler } from '@sveltejs/kit';
+import { db } from '@/server/db';
+import * as table from '@/server/db/schema';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  if (!locals.user) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+	if (!locals.user) {
+		return new Response('Unauthorized', { status: 401 });
+	}
 
-  const survey = (await request.json()) as Survey;
-  if (!survey) {
-    return new Response("Invalid data", { status: 400 });
-  }
+	const survey = await request.json();
+	if (!survey) {
+		return new Response('Invalid data', { status: 400 });
+	}
 
-  await db.transaction(async (tx) => {
-    await tx
-      .insert(questions)
-      .values(
-        survey.questions.map((q) => ({
-          id: q.id,
-          surveyId: survey.id,
-          question: q.question,
-          answerType: q.answerType,
-          correctAnswer: q.correctAnswer,
-        }))
-      )
-      .onConflictDoUpdate({
-        target: questions.id,
-        set: {
-          surveyId: sql`excluded.survey_id`,
-          question: sql`excluded.question`,
-          answerType: sql`excluded.answer_type`,
-          correctAnswer: sql`excluded.correct_answer`,
-        },
-      });
+	const parsed = await surveySchema.safeParseAsync(survey);
+	if (!parsed.success) {
+		console.log(parsed.error);
+		return new Response('Invalid data', { status: 400 });
+	}
 
-    await tx
-      .insert(options)
-      .values(
-        survey.questions.flatMap((q) =>
-          q.options.map((o) => ({
-            id: o.id,
-            questionId: q.id,
-            value: o.value,
-            isCorrect: o.isCorrect,
-          }))
-        )
-      )
-      .onConflictDoUpdate({
-        target: options.id,
-        set: {
-          questionId: sql`excluded.question_id`,
-          value: sql`excluded.value`,
-          isCorrect: sql`excluded.is_correct`,
-        },
-      });
+	const finalSurvey = await saveSurveyToDatabase(parsed.data, locals.user.id);
 
-    const questionIds = survey.questions.map((q) => q.id);
-    const optionIds = survey.questions.flatMap((q) =>
-      q.options.map((o) => o.id)
-    );
-
-    // Delete old options
-    await tx.delete(options).where(
-      and(
-        inArray(
-          options.questionId,
-          sql`(SELECT id FROM ${questions} WHERE ${eq(questions.surveyId, survey.id)})`
-        ),
-        notInArray(options.id, optionIds)
-      )
-    );
-
-    // Delete old questions
-    await tx.delete(questions).where(
-      and(eq(questions.surveyId, survey.id), notInArray(questions.id, questionIds))
-    );
-  });
-
-  return new Response("Survey saved successfully", { status: 200 });
+	return new Response(JSON.stringify(finalSurvey), { status: 200 });
 };
+
+async function saveSurveyToDatabase(parsedSurvey: SurveySchemaType, createdBy: string) {
+	const finalSurvey: Survey = {
+		...parsedSurvey,
+		questions: [] as Question[],
+		id: '',
+		createdAt: new Date(),
+		updatedAt: new Date()
+	};
+	await db.transaction(async (tx) => {
+		// Insert SURVEY
+		const [insertedSurvey] = await tx
+			.insert(table.surveys)
+			.values({
+				...parsedSurvey,
+				userId: createdBy
+			})
+			.returning({
+				id: table.surveys.id,
+				createdAt: table.surveys.createdAt,
+				updatedAt: table.surveys.updatedAt
+			});
+
+		if (!insertedSurvey) {
+			throw new Error('Failed to insert survey');
+		}
+		finalSurvey.id = insertedSurvey.id;
+		finalSurvey.createdAt = insertedSurvey.createdAt;
+		finalSurvey.updatedAt = insertedSurvey.updatedAt;
+
+		// Insert QUESTIONS and OPTIONS
+		for (const question of parsedSurvey.questions ?? []) {
+			const [insertedQuestion] = await tx
+				.insert(table.questions)
+				.values({
+					...question,
+					surveyId: insertedSurvey.id
+				})
+				.returning({
+					id: table.questions.id
+				});
+
+			if (!insertedQuestion) {
+				throw new Error('Failed to insert question');
+			}
+
+			const finalOptions = [];
+			for (const option of question.options) {
+				const [insertedOption] = await tx
+					.insert(table.options)
+					.values({
+						// id: newOptionId,
+						...option,
+						questionId: insertedQuestion.id
+					})
+					.returning({ id: table.options.id });
+
+				if (!insertedOption) {
+					throw new Error('Failed to insert option');
+				}
+
+				finalOptions.push({
+					...option,
+					id: insertedOption.id
+				});
+			}
+
+			finalSurvey.questions?.push({
+				...question,
+				id: insertedQuestion.id,
+				options: finalOptions
+			});
+		}
+	});
+	return finalSurvey;
+}

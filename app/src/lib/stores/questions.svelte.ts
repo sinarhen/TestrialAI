@@ -1,13 +1,19 @@
 import type { Survey } from '@/types/entities';
 
-interface SurveyStore {
-	survey: Partial<Survey> | null;
-	isGenerating: boolean;
-	isDirty: boolean;
-}
+export type DeepPartial<T> = T extends object
+	? {
+			[K in keyof T]?: DeepPartial<T[K]>;
+		}
+	: T;
 
-export const currentSurveyStore = $state<SurveyStore>({
+type SurveyStoreState = {
+	isDirty: boolean;
+	survey: Survey | null;
+	isGenerating: boolean;
+};
+
+export const currentSurveyStore = $state<SurveyStoreState>({
+	isDirty: false,
 	survey: null,
-	isGenerating: false,
-	isDirty: false
+	isGenerating: false
 });
