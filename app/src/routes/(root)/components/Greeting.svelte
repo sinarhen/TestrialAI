@@ -106,9 +106,11 @@
 			onError: (err) => {
 				console.error(err);
 				toast.error('Failed to generate survey');
+			},
+			onFinish: () => {
+				currentSurveyStore.isGenerating = false;
 			}
 		});
-		currentSurveyStore.isGenerating = false;
 	};
 </script>
 
@@ -155,9 +157,7 @@
 				{/each}
 			</RadioGroup.Root>
 
-			<div
-				class="items-centerwhitespace-nowrap mt-4 flex w-full flex-col items-end gap-y-1 text-right text-sm"
-			>
+			<div class="mt-4 flex w-full flex-col items-end gap-y-1 whitespace-nowrap text-right text-sm">
 				<Slider
 					class="mt-2 w-1/2"
 					disabled={currentSurveyStore.isGenerating}
