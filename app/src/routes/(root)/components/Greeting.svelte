@@ -21,6 +21,7 @@
 	import { v4 } from 'uuid';
 	import { saveSurvey } from '@/actions';
 	import { Slider } from '$lib/components/ui/slider/index';
+	import { goto } from '$app/navigation';
 
 	let {
 		userName = 'stranger'
@@ -39,6 +40,7 @@
 	let numberOfQuestions = $state<number>(10);
 
 	const onGenerateSurvey = async () => {
+		goto('/generate');
 		if (currentSurveyStore.isGenerating) {
 			toast.error('Already generating a survey');
 			return;

@@ -6,7 +6,7 @@
 	import { Label } from '@/components/ui/label';
 	import { currentSurveyStore } from '@/stores/questions.svelte';
 	import { toast } from 'svelte-sonner';
-	import type { GenerateQuestionDto } from '../../../(actions)/generate-question/+server';
+	import type { GenerateQuestionDto } from '../../../(api)/generate-question/+server';
 	import { v4 } from 'uuid';
 	import type { Question, QuestionSchemaType, Survey } from '@/types/entities';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
@@ -55,7 +55,6 @@
 				if (partialData.options?.length && partialData.options?.length > optionsIds.length) {
 					optionsIds.push(v4());
 				}
-				console.log(currentSurveyStore.survey?.questions, generatedQuestionIndex);
 				if (currentSurveyStore.survey?.questions[generatedQuestionIndex]) {
 					currentSurveyStore.survey.questions[generatedQuestionIndex] = {
 						...newQuestion,
@@ -66,6 +65,7 @@
 								id: optionsIds[index]
 							})) ?? []
 					};
+					currentSurveyStore.isDirty = true;
 				}
 			},
 			onComplete: ({ finalData }) => {
@@ -87,14 +87,19 @@
 					};
 				}
 
+				isPopoverOpen = false;
+				questionTopic = '';
+				currentSurveyStore.isDirty = true;
 				currentSurveyStore.isGenerating = false;
 			},
 			onError: ({ error, runner }) => {
 				const isQuestionCreated = currentSurveyStore.survey?.questions.at(generatedQuestionIndex);
 				if (isQuestionCreated) {
 					currentSurveyStore.survey?.questions?.splice(generatedQuestionIndex - 1, 1);
+					currentSurveyStore.isDirty = false;
 				}
 				if (!runner?.aborted) {
+					// Possible when error caused by something else rather than stream response
 					runner?.abort();
 				}
 				// rethrow error to handle it in toast.promise

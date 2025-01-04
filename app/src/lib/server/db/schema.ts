@@ -23,11 +23,13 @@ export const surveys = sqliteTable('surveys', {
 		.$defaultFn(() => uuidv4()),
 	createdAt: integer('created_at', { mode: 'timestamp' })
 		.notNull()
-		.default(sql`(unixepoch())`),
+		.default(sql`(unixepoch())`)
+		.$type<Date>(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.notNull()
 		.default(sql`(unixepoch())`)
-		.$onUpdateFn(() => new Date()),
+		.$onUpdateFn(() => new Date())
+		.$type<Date>(),
 	difficulty: text('difficulty').notNull().$type<Difficulty>(),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
