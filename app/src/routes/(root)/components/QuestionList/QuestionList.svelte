@@ -9,6 +9,7 @@
 	import axios, { type AxiosError } from 'axios';
 	import { toast } from 'svelte-sonner';
 	import { v4 as uuidv4 } from 'uuid';
+	import { updateSurvey } from '@/actions';
 
 	let draggedIndex: number | null = $state<number | null>(null);
 
@@ -61,23 +62,22 @@
 		draggedIndex = null;
 	}
 
-	const saveCurrentSurvey = () => {
+	const saveCurrentSurvey = async () => {
 		if (!currentSurveyStore.survey) return;
 
-		axios
-			.post('/save', currentSurveyStore.survey)
-			.then((r) => {
-				if (r.status !== 200) {
-					toast.error(r.statusText);
-					return;
-				}
-				currentSurveyStore.isDirty = false;
-				toast.success('Changes were successfully applied');
-			})
-			.catch((e: AxiosError) => {
-				toast.error(e.message);
-				console.log(e);
-			});
+		try {
+			const res = await updateSurvey(currentSurveyStore.survey);
+			if (res.status !== 200) {
+				throw new Error('Failed to save survey');
+			}
+			currentSurveyStore.isDirty = false;
+			toast.success('Survey saved');
+		} catch (e: unknown) {
+			console.error(e);
+			if (axios.isAxiosError(e)) {
+				toast.error('Failed to save survey');
+			}
+		}
 	};
 </script>
 

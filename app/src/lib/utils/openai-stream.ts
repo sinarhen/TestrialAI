@@ -3,7 +3,6 @@
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';
 import { toast } from 'svelte-sonner';
-import { POST } from '../../routes/(actions)/generate-question/+server';
 
 type FuncWithRunner<
 	T extends {

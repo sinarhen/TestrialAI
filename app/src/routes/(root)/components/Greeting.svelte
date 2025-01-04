@@ -86,33 +86,27 @@
 					difficulty
 				};
 			},
-			onComplete: async ({ finalData }) => {
-				toast.success('Survey generated successfully');
-				const resp = toast.promise(saveSurvey(finalData), {
+			onComplete: async ({ finalData, runner }) => {
+				currentSurveyStore.isGenerating = false;
+				toast.promise(saveSurvey(finalData), {
 					loading: 'Saving survey...',
-					success: (data) => {
-						if (!resp) {
-							return 'Failed to save survey. Try to do it manually';
-						}
-						data.json().then((survey: Survey) => {
-							console.log(survey);
-							currentSurveyStore.survey = survey;
-						});
-						return 'Survey saved successfully';
+					success: ({ data }) => {
+						currentSurveyStore.survey = data;
+						return 'Survey is generated and saved successfully';
 					},
 					error: (err) => {
-						currentSurveyStore.isDirty = true;
+						currentSurveyStore.isDirty = false;
+						currentSurveyStore.survey = null;
 						console.error(err);
-						return 'Failed to save survey. Try to do it manually';
+						return 'Survey is generated successfully but not saved. Try to do it manually';
 					}
 				});
 			},
 			onError: (err) => {
 				console.error(err);
-				toast.error('Failed to generate survey');
-			},
-			onFinish: () => {
 				currentSurveyStore.isGenerating = false;
+				currentSurveyStore.survey = null;
+				toast.error('Failed to generate survey');
 			}
 		});
 	};

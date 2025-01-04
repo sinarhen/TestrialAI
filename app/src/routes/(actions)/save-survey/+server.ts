@@ -14,6 +14,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const parsed = await surveySchema.safeParseAsync(survey);
+
 	if (!parsed.success) {
 		console.log(parsed.error);
 		return new Response('Invalid data', { status: 400 });

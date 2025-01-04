@@ -6,26 +6,20 @@
 	import { Label } from '@/components/ui/label';
 	import { currentSurveyStore } from '@/stores/questions.svelte';
 	import { toast } from 'svelte-sonner';
-	import axios from 'axios';
 	import type { GenerateQuestionDto } from '../../../(actions)/generate-question/+server';
-	import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs';
 	import { v4 } from 'uuid';
 	import type { Question, QuestionSchemaType, Survey } from '@/types/entities';
-	import { parse } from 'partial-json';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 
 	let isPopoverOpen = $state(false);
 	let questionTopic = $state('');
-
-	function togglePopover() {
-		isPopoverOpen = !isPopoverOpen;
-	}
 
 	const onGenerate = async () => {
 		if (currentSurveyStore.isGenerating) {
 			toast.error('Already generating a question');
 			return;
 		}
+
 		const existingQuestions = currentSurveyStore.survey?.questions?.map((q) => q.question);
 		if (!existingQuestions || !currentSurveyStore.survey?.id) {
 			toast.error('Internal error: no existing survey');
@@ -50,18 +44,18 @@
 			options: []
 		} as Question;
 
-		currentSurveyStore.isGenerating = true;
-
 		currentSurveyStore.survey.questions?.push(newQuestion);
-		const generatedQuestionIndex = currentSurveyStore.survey?.questions.length ?? 1 - 1;
+		const generatedQuestionIndex = (currentSurveyStore.survey?.questions.length ?? 1) - 1;
 
-		const stream = streamOpenAiResponse<Partial<QuestionSchemaType>, QuestionSchemaType>({
+		currentSurveyStore.isGenerating = true;
+		await streamOpenAiResponse<Partial<QuestionSchemaType>, QuestionSchemaType>({
 			endpoint: '/generate-question',
 			body,
 			onPartial: ({ partialData }) => {
 				if (partialData.options?.length && partialData.options?.length > optionsIds.length) {
 					optionsIds.push(v4());
 				}
+				console.log(currentSurveyStore.survey?.questions, generatedQuestionIndex);
 				if (currentSurveyStore.survey?.questions[generatedQuestionIndex]) {
 					currentSurveyStore.survey.questions[generatedQuestionIndex] = {
 						...newQuestion,
@@ -92,6 +86,8 @@
 							})) ?? []
 					};
 				}
+
+				currentSurveyStore.isGenerating = false;
 			},
 			onError: ({ error, runner }) => {
 				const isQuestionCreated = currentSurveyStore.survey?.questions.at(generatedQuestionIndex);
@@ -103,30 +99,19 @@
 				}
 				// rethrow error to handle it in toast.promise
 				throw error;
-			},
-			onFinish: () => {
-				isPopoverOpen = false;
-				currentSurveyStore.isGenerating = false;
 			}
 		});
-		toast.promise(stream, {
-			loading: 'Generating question...',
-			success: 'Question is generated',
-			error: 'Failed to generate question'
-		});
 	};
-	$inspect(currentSurveyStore.survey?.questions);
 </script>
 
 <div class="relative w-full">
-	<Popover.Root>
-		<Popover.Trigger class="w-full">
+	<Popover.Root open={isPopoverOpen} onOpenChange={(val) => (isPopoverOpen = val)}>
+		<Popover.Trigger disabled={currentSurveyStore.isGenerating} class="w-full">
 			<Button
 				disabled={currentSurveyStore.isGenerating}
 				size="sm"
 				variant="outline"
 				class="relative flex w-full items-center justify-center gap-x-1 rounded-l-none"
-				on:click={togglePopover}
 			>
 				<Sparkles size="16" />
 				Generate question
