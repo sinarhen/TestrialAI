@@ -1,8 +1,8 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
-import { v4 as uuidv4 } from "uuid";
-import {sql} from "drizzle-orm/sql/sql";
-import {type AnswerType, type Difficulty} from "@/types/entities";
+import { v4 as uuidv4 } from 'uuid';
+import { sql } from 'drizzle-orm/sql/sql';
+import { type AnswerType, type Difficulty } from '@/types/entities';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -18,9 +18,16 @@ export const sessions = sqliteTable('sessions', {
 });
 
 export const surveys = sqliteTable('surveys', {
-	id: text('id').primaryKey().$defaultFn(() => uuidv4()),
-	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`).$onUpdate(() => sql`(unixepoch())`),
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.notNull()
+		.default(sql`(unixepoch())`),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.notNull()
+		.default(sql`(unixepoch())`)
+		.$onUpdateFn(() => new Date()),
 	difficulty: text('difficulty').notNull().$type<Difficulty>(),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
@@ -28,7 +35,9 @@ export const surveys = sqliteTable('surveys', {
 });
 
 export const questions = sqliteTable('questions', {
-	id: text('id').primaryKey().$defaultFn(() => uuidv4()),
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
 	question: text('question').notNull(),
 	answerType: text('answer_type').notNull().$type<AnswerType>(), // 'single' | 'multiple' | 'text'
 	// For text-based answers:
@@ -38,10 +47,12 @@ export const questions = sqliteTable('questions', {
 });
 
 export const options = sqliteTable('options', {
-	id: text('id').primaryKey().$defaultFn(() => uuidv4()),
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
 	questionId: text('question_id').notNull(),
 	value: text('value').notNull(),
-	isCorrect: integer('is_correct', {mode: "boolean"}).notNull().default(false) // 0 = false, 1 = true
+	isCorrect: integer('is_correct', { mode: 'boolean' }).notNull().default(false) // 0 = false, 1 = true
 });
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -64,7 +75,7 @@ export const surveyRelations = relations(surveys, ({ one, many }) => ({
 	questions: many(questions)
 }));
 
-export const questionRelations = relations(questions, ({ one, many}) => ({
+export const questionRelations = relations(questions, ({ one, many }) => ({
 	survey: one(surveys, {
 		fields: [questions.surveyId],
 		references: [surveys.id]
