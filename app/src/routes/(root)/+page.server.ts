@@ -7,27 +7,6 @@ import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
-	// select all surveys from the database related to the user with questions
-	const history = locals.user
-		? await db.query.surveys.findMany({
-				where: (surveys, { eq }) => eq(surveys.userId, locals.user!.id),
-				with: {
-					questions: {
-						with: {
-							options: true
-						}
-					}
-				},
-				orderBy: (surveys, { desc }) => desc(surveys.updatedAt)
-			})
-		: null;
-	return {
-		user: locals.user,
-		history
-	};
-};
-
 export const actions: Actions = {
 	logout: async (event) => {
 		if (!event.locals.session) {

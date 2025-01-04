@@ -1,6 +1,6 @@
 import type { Survey, SurveySchemaType } from '@/types/entities';
 import axios from 'axios';
-import type { POST } from '../../routes/(actions)/save-survey/+server';
+import type { POST } from '../../routes/(api)/save-survey/+server';
 import type { RequestHandler } from '../../routes/(actions)/save-survey/$types';
 
 export const saveSurvey = (parsedSurvey: SurveySchemaType) =>

@@ -9,9 +9,15 @@
 	import NotificationsSheet from './NotificationsSheet.svelte';
 	import PlanButton from './PlanButton.svelte';
 	import LogoutButton from './LogoutButton.svelte';
+	import type { LayoutData } from '../../$types';
 
-	export let data: PageServerData;
-	export let form: ActionData;
+	const {
+		data,
+		form
+	}: {
+		data: LayoutData;
+		form: ActionData;
+	} = $props();
 </script>
 
 <header class="flex h-12 w-full items-center justify-between pt-4">
@@ -28,7 +34,7 @@
 	</div>
 
 	<div class="flex w-full justify-end">
-		{#if data.user}
+		{#if data?.user}
 			<LogoutButton />
 		{:else}
 			<AuthDialog {form} />
