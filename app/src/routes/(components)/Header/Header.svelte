@@ -3,7 +3,7 @@
 	import type {
 		PageServerData,
 		ActionData
-	} from '../../../../.svelte-kit/types/src/routes/(root)/$types';
+	} from '../../(root)/$types';
 	import AuthDialog from './AuthDialog.svelte';
 	import SurveyHistorySheet from './SurveyHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';

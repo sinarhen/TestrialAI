@@ -81,7 +81,7 @@
 	};
 </script>
 
-<section class="flex w-full flex-col">
+<section class="relative mt-6 flex h-full w-full flex-col">
 	<div class="flex w-full flex-col gap-y-12">
 		{#if currentSurveyStore.survey}
 			{#each currentSurveyStore.survey.questions ?? [] as question, index (question.id)}

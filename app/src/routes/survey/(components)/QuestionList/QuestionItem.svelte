@@ -45,7 +45,6 @@
 
 	$effect(() => {
 		if (!question || currentSurveyStore.isGenerating) return;
-		console.log('updated');
 		updatedQuestion = cloneDeep(question);
 	});
 
