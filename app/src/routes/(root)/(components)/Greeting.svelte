@@ -40,7 +40,7 @@
 	let numberOfQuestions = $state<number>(10);
 
 	const onGenerateSurvey = async () => {
-		goto('/generate?topic=' + topic);
+		goto('/survey/generate?topic=' + topic);
 		if (currentSurveyStore.isGenerating) {
 			toast.error('Already generating a survey');
 			return;

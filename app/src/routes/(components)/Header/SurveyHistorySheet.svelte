@@ -10,12 +10,15 @@
 
 	const { data }: { data: LayoutData } = $props();
 
+	let isSheetOpen = $state(false);
+
 	const onClick = (surveyId: string) => {
-		goto(`/generate/${surveyId}`);
+		goto(`/survey/${surveyId}`);
+		isSheetOpen = false;
 	};
 </script>
 
-<Sheet.Root>
+<Sheet.Root open={isSheetOpen} onOpenChange={(val) => (isSheetOpen = val)}>
 	<Sheet.Trigger>
 		<History size="16" />
 	</Sheet.Trigger>

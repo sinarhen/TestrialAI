@@ -66,10 +66,10 @@ const config = {
 			},
 			animation: {
 				fadeInSlide: 'fadeInSlide 1s forwards'
-			},
-			plugins: []
+			}
 		}
-	}
+	},
+	plugins: [tailwindcssMotion]
 };
 
 export default config;

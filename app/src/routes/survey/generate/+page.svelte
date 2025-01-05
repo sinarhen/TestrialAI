@@ -1,20 +1,20 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { currentSurveyStore } from '@/stores/questions.svelte';
 	import { CircleHelp, Gauge, Timer } from 'lucide-svelte';
 	import QuestionList from '../(components)/QuestionList/QuestionList.svelte';
 	import { onMount } from 'svelte';
+	import { Button } from '@/components/ui/button';
 
-	let titlePlaceholder = $state<null | string>(null);
-
-	onMount(() => {
-		titlePlaceholder = new URLSearchParams(location.search).get('topic') ?? 'Generating a Survey';
-	});
+	let titlePlaceholder = browser
+		? (new URLSearchParams(location.search).get('topic') ?? 'Generating a Survey')
+		: 'Generating a Survey';
 </script>
 
 {#if currentSurveyStore.survey}
 	<div>
 		{#if currentSurveyStore.survey.title}
-			<h2 class="motion-preset-typewriter text-2xl font-bold">{currentSurveyStore.survey.title}</h2>
+			<h2 class="motion-preset-typewrite text-2xl font-bold">{currentSurveyStore.survey.title}</h2>
 		{:else}
 			<h2 class="motion-preset-typewriter animate-pulse text-2xl font-bold text-opacity-50">
 				{titlePlaceholder}
