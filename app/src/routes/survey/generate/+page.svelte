@@ -3,8 +3,6 @@
 	import { currentSurveyStore } from '@/stores/questions.svelte';
 	import { CircleHelp, Gauge, Timer } from 'lucide-svelte';
 	import QuestionList from '../(components)/QuestionList/QuestionList.svelte';
-	import { onMount } from 'svelte';
-	import { Button } from '@/components/ui/button';
 
 	let titlePlaceholder = browser
 		? (new URLSearchParams(location.search).get('topic') ?? 'Generating a Survey')

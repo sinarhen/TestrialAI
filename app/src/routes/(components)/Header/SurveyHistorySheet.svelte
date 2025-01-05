@@ -8,7 +8,7 @@
 	import type { LayoutData } from '../../$types';
 	import { goto } from '$app/navigation';
 
-	const { data }: { data: LayoutData } = $props();
+	const { history }: { history: Survey[] | null } = $props();
 
 	let isSheetOpen = $state(false);
 
@@ -28,8 +28,8 @@
 			<Sheet.Description>View all your past surveys</Sheet.Description>
 		</Sheet.Header>
 		<div class="mt-6 flex flex-col gap-y-4">
-			{#if data.history}
-				{#each data.history as survey}
+			{#if history}
+				{#each history as survey}
 					<Card
 						onclick={() =>
 							currentSurveyStore.isGenerating

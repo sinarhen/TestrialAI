@@ -88,6 +88,7 @@
 					loading: 'Saving survey...',
 					success: ({ data }) => {
 						currentSurveyStore.survey = data;
+						goto(`/survey/${data.id}`);
 						return 'Survey is generated and saved successfully';
 					},
 					error: (err) => {

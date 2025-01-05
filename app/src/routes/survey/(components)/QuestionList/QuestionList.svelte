@@ -1,39 +1,10 @@
 <script lang="ts">
-	import QuestionItem from './QuestionItem.svelte';
-	import AddQuestionButton from './AddQuestionButton.svelte';
-	import GenerateQuestionButton from './GenerateQuestionButton.svelte';
-	import { currentSurveyStore } from '@/stores/questions.svelte.js';
-	import { Button } from '@/components/ui/button';
-	import { Grip, Save, Share2 } from 'lucide-svelte';
 	import { flip } from 'svelte/animate';
-	import axios, { type AxiosError } from 'axios';
-	import { toast } from 'svelte-sonner';
-	import { v4 as uuidv4 } from 'uuid';
-	import { updateSurvey } from '@/actions';
+	import QuestionItem from './QuestionItem.svelte';
+	import { currentSurveyStore } from '@/stores/questions.svelte.js';
+	import { Grip } from 'lucide-svelte';
 
 	let draggedIndex: number | null = $state<number | null>(null);
-
-	function onCreateQuestion() {
-		if (!currentSurveyStore.survey) return;
-		const qs = currentSurveyStore.survey.questions;
-		currentSurveyStore.survey.questions = [
-			...(qs ?? []),
-			{
-				id: uuidv4(),
-				question: 'New question',
-				correctAnswer: null,
-				answerType: 'single',
-				options: [
-					{ id: uuidv4(), value: 'Option 1', isCorrect: true },
-					{ id: uuidv4(), value: 'Option 2', isCorrect: false },
-					{ id: uuidv4(), value: 'Option 3', isCorrect: false },
-					{ id: uuidv4(), value: 'Option 4', isCorrect: false }
-				]
-			}
-		];
-
-		currentSurveyStore.isDirty = true;
-	}
 
 	function onDragStart(event: DragEvent, index: number) {
 		draggedIndex = index;
@@ -61,33 +32,15 @@
 		}
 		draggedIndex = null;
 	}
-
-	const saveCurrentSurvey = async () => {
-		if (!currentSurveyStore.survey) return;
-
-		try {
-			const res = await updateSurvey(currentSurveyStore.survey);
-			if (res.status !== 200) {
-				throw new Error('Failed to save survey');
-			}
-			currentSurveyStore.isDirty = false;
-			toast.success('Survey saved');
-		} catch (e: unknown) {
-			console.error(e);
-			if (axios.isAxiosError(e)) {
-				toast.error('Failed to save survey');
-			}
-		}
-	};
 </script>
 
 <section class="relative mt-8 flex h-full w-full flex-col">
 	<div class="flex w-full flex-col gap-y-12">
 		{#if currentSurveyStore.survey}
-			{#each currentSurveyStore.survey.questions ?? [] as question, index (question.id)}
+			{#each currentSurveyStore.survey.questions ?? [] as question, index (index)}
 				<div
 					class={`motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[--delay] group relative`}
-					style={`--delay: ${300 + 200 * (index + 1)}ms`}
+					style={`--delay: ${currentSurveyStore.isGenerating ? 0 : 200 + 150 * (index + 1)}ms`}
 					ondragover={onDragOver}
 					ondrop={(event) => onDrop(event, index)}
 					role="list"
@@ -104,28 +57,5 @@
 				</div>
 			{/each}
 		{/if}
-
-		<div class="flex">
-			<AddQuestionButton onCreate={onCreateQuestion} />
-			<GenerateQuestionButton />
-		</div>
-	</div>
-
-	<div class="mt-16 flex w-full justify-center xl:justify-start">
-		<div class="flex w-full gap-x-2">
-			<Button
-				onclick={saveCurrentSurvey}
-				type="submit"
-				disabled={!currentSurveyStore.isDirty}
-				class="w-full gap-x-1"
-			>
-				<Save size="16" />
-				Save
-			</Button>
-			<Button variant="outline" class="col-span-4 inline-flex gap-x-1 xl:hidden">
-				<Share2 size="16" />
-				Share
-			</Button>
-		</div>
 	</div>
 </section>

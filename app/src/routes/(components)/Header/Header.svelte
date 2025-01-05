@@ -1,9 +1,6 @@
 <script lang="ts">
 	import { Sparkles } from 'lucide-svelte';
-	import type {
-		PageServerData,
-		ActionData
-	} from '../../(root)/$types';
+	import type { PageServerData, ActionData } from '../../(root)/$types';
 	import AuthDialog from './AuthDialog.svelte';
 	import SurveyHistorySheet from './SurveyHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';
@@ -22,7 +19,7 @@
 
 <header class="flex h-12 w-full items-center justify-between pt-4">
 	<div class="flex w-full items-center gap-x-2 text-sm">
-		<SurveyHistorySheet {data} />
+		<SurveyHistorySheet history={data.history} />
 		<NotificationsSheet />
 		<div class="relative cursor-pointer">
 			<Sparkles size="16" />
