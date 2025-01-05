@@ -81,12 +81,13 @@
 	};
 </script>
 
-<section class="relative mt-6 flex h-full w-full flex-col">
+<section class="relative mt-8 flex h-full w-full flex-col">
 	<div class="flex w-full flex-col gap-y-12">
 		{#if currentSurveyStore.survey}
 			{#each currentSurveyStore.survey.questions ?? [] as question, index (question.id)}
 				<div
-					class="group relative"
+					class={`motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[--delay] group relative`}
+					style={`--delay: ${300 + 200 * (index + 1)}ms`}
 					ondragover={onDragOver}
 					ondrop={(event) => onDrop(event, index)}
 					role="list"

@@ -5,7 +5,6 @@ import * as table from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { hash, verify } from '@node-rs/argon2';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
-import type { PageServerLoad } from './$types';
 
 export const actions: Actions = {
 	logout: async (event) => {

@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { type Question } from '@/types/entities';
-	import {
-		Difficulties,
-		type Difficulty,
-		type Option,
-		type Survey,
-		type SurveySchemaType
-	} from '@/types/entities';
+	import { Difficulties, type Difficulty, type SurveySchemaType } from '@/types/entities';
 	import { Input } from '@/components/ui/input';
 	import { Button } from '@/components/ui/button';
 	import { toast } from 'svelte-sonner';
