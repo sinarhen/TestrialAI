@@ -12,7 +12,6 @@
 	import { currentSurvey } from '@/stores/survey-details.svelte';
 	import * as Dialog from '@/components/ui/dialog';
 	import Separator from '@/components/ui/separator/separator.svelte';
-	import { Input } from '@/components/ui/input';
 	import * as Card from '@/components/ui/card';
 
 	const {
@@ -56,7 +55,7 @@
 				goto('/');
 			}}>Generate new <PlusCircle size="12" /></Button
 		>
-		<Dialog.Root open={true}>
+		<Dialog.Root>
 			<Dialog.Trigger>
 				<Button
 					variant="outline"
