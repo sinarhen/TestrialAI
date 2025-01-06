@@ -7,10 +7,9 @@
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import type { GenerateSurveyDto } from '../../(api)/generate-survey/+server';
 	import { saveSurvey } from '@/actions';
 	import { Button } from '@/components/ui/button';
-	import { is } from 'drizzle-orm';
+	import type {GenerateSurveyDto} from "../../api/survey/generate/+server";
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
@@ -29,7 +28,7 @@
 
 	onMount(async () => {
 		await streamOpenAiResponse<GeneratingSurveyCompletion, SurveyCompletion>({
-			endpoint: '/generate-survey',
+			endpoint: '/api/survey/generate',
 			body: {
 				topic,
 				difficulty,
@@ -51,7 +50,7 @@
 			onError: (err) => {
 				console.error(err);
 				goto('/');
-				toast.error('Failed to generate survey');
+				toast.error('Failed to generate-question survey');
 			}
 		});
 	});

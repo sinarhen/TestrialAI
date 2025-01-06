@@ -5,7 +5,7 @@
 	import { Input } from '@/components/ui/input';
 	import { Label } from '@/components/ui/label';
 	import { toast } from 'svelte-sonner';
-	import type { GenerateQuestionDto } from '../../../(api)/generate-question/+server';
+	import type { GenerateQuestionDto } from '../../../api/survey/generate-question/+server';
 	import { v4 } from 'uuid';
 	import type { Question, QuestionCompletion, Survey } from '@/types/entities';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
@@ -49,7 +49,7 @@
 
 		currentSurvey.isGenerating = true;
 		await streamOpenAiResponse<Partial<QuestionCompletion>, QuestionCompletion>({
-			endpoint: '/generate-question',
+			endpoint: '/api/survey/generate-question',
 			body,
 			onPartial: ({ partialData }) => {
 				if (partialData.options?.length && partialData.options?.length > optionsIds.length) {

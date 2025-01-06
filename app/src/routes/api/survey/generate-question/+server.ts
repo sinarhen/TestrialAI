@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const existingQuestions = data.existingQuestions;
 		if (!data.existingQuestions) {
-			console.error('Existing questions is required to generate single questions');
+			console.error('Existing questions is required to generate-question single questions');
 			return new Response('existingQuestions is required', { status: 400 });
 		}
 

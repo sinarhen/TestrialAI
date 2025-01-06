@@ -12,8 +12,12 @@ export const users = sqliteTable('users', {
 });
 
 export const sessions = sqliteTable('sessions', {
-	id: text('id').primaryKey(),
-	userId: text('user_id').notNull(),
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
+	userId: text('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
 
@@ -30,10 +34,14 @@ export const surveys = sqliteTable('surveys', {
 		.default(sql`(unixepoch())`)
 		.$onUpdateFn(() => new Date())
 		.$type<Date>(),
+
 	difficulty: text('difficulty').notNull().$type<Difficulty>(),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
-	userId: text('user_id').notNull()
+
+	userId: text('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' })
 });
 
 export const questions = sqliteTable('questions', {
@@ -41,20 +49,22 @@ export const questions = sqliteTable('questions', {
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
 	question: text('question').notNull(),
-	answerType: text('answer_type').notNull().$type<AnswerType>(), // 'single' | 'multiple' | 'text'
-	// For text-based answers:
+	answerType: text('answer_type').notNull().$type<AnswerType>(),
 	correctAnswer: text('correct_answer'),
-	// If the question is multiple-choice, `correctAnswer` might be null.
-	surveyId: text('survey_id').notNull()
+	surveyId: text('survey_id')
+		.notNull()
+		.references(() => surveys.id, { onDelete: 'cascade' })
 });
 
 export const options = sqliteTable('options', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
-	questionId: text('question_id').notNull(),
+	questionId: text('question_id')
+		.notNull()
+		.references(() => questions.id, { onDelete: 'cascade' }),
 	value: text('value').notNull(),
-	isCorrect: integer('is_correct', { mode: 'boolean' }).notNull().default(false) // 0 = false, 1 = true
+	isCorrect: integer('is_correct', { mode: 'boolean' }).notNull().default(false)
 });
 
 export const userRelations = relations(users, ({ many }) => ({
@@ -82,7 +92,7 @@ export const questionRelations = relations(questions, ({ one, many }) => ({
 		fields: [questions.surveyId],
 		references: [surveys.id]
 	}),
-	options: many(options) // Adds a relation to option
+	options: many(options)
 }));
 
 export const optionRelations = relations(options, ({ one }) => ({

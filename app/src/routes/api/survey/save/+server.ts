@@ -1,5 +1,5 @@
 import { type Question, type Survey, surveySchema, type SurveyCompletion } from '@/types/entities';
-import type { RequestHandler } from '@sveltejs/kit';
+import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
 
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const finalSurvey = await saveSurveyToDatabase(parsed.data, locals.user.id);
 
-	return new Response(JSON.stringify(finalSurvey), { status: 200 });
+	return json(finalSurvey);
 };
 
 async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: string) {
