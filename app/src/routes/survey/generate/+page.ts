@@ -9,9 +9,9 @@ export const load: PageLoad = ({ url }) => {
 	const difficulty = params.get('difficulty');
 	const model = params.get('model');
 
-	// if (!topic || !numberOfQuestions || !difficulty || !model) {
-	// 	error(400, 'Missing required parameters');
-	// }
+	if (!topic || !numberOfQuestions || !difficulty || !model) {
+		error(400, 'Missing required parameters');
+	}
 
 	return {
 		generationParams: {
