@@ -12,7 +12,7 @@ type SurveyStoreState = {
 	isGenerating: boolean;
 };
 
-export const currentSurveyStore = $state<SurveyStoreState>({
+export const currentSurvey = $state<SurveyStoreState>({
 	isDirty: false,
 	survey: null,
 	isGenerating: false

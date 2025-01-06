@@ -28,9 +28,9 @@
 	import { AnswerTypes, type Question } from '@/types/entities';
 	import { Input } from '@/components/ui/input';
 	import cloneDeep from 'lodash.clonedeep';
-	import { currentSurveyStore } from '@/stores/questions.svelte';
 	import { toast } from 'svelte-sonner';
 	import { v4 as uuidv4 } from 'uuid';
+	import { currentSurvey } from '@/stores/survey-details.svelte';
 
 	const {
 		question
@@ -41,17 +41,18 @@
 	let isDialogOpen = $state(false);
 	let isActionMenuOpen = $state(false);
 
+
 	let updatedQuestion: Question = $state(cloneDeep(question));
 
 	$effect(() => {
-		if (!question || currentSurveyStore.isGenerating) return;
+		if (!question || currentSurvey.isGenerating) return;
 		updatedQuestion = cloneDeep(question);
 	});
 
 	function onDelete() {
-		if (!currentSurveyStore.survey || !currentSurveyStore.survey.questions) return;
+		if (!currentSurvey.survey || !currentSurvey.survey.questions) return;
 
-		const qs = currentSurveyStore.survey.questions;
+		const qs = currentSurvey.survey.questions;
 		const questionIndex = qs.findIndex((q) => q.id === question.id);
 
 		if (questionIndex !== -1) {
@@ -60,8 +61,8 @@
 				action: {
 					label: 'Undo',
 					onClick: () => {
-						const currentQs = currentSurveyStore.survey!.questions;
-						currentSurveyStore.survey!.questions = [
+						const currentQs = currentSurvey.survey!.questions;
+						currentSurvey.survey!.questions = [
 							...(currentQs ?? []).slice(0, questionIndex),
 							question,
 							...(currentQs ?? []).slice(questionIndex + 1)
@@ -69,16 +70,16 @@
 					}
 				}
 			});
-			currentSurveyStore.survey.questions = qs.filter((q) => q.id !== question.id);
-			currentSurveyStore.isDirty = true;
+			currentSurvey.survey.questions = qs.filter((q) => q.id !== question.id);
+			currentSurvey.isDirty = true;
 		} else {
 			toast.warning('Internal error');
 		}
 	}
 
 	function handleSave() {
-		if (!currentSurveyStore.survey) return;
-		currentSurveyStore.survey.questions = currentSurveyStore.survey.questions?.map((q) =>
+		if (!currentSurvey.survey) return;
+		currentSurvey.survey.questions = currentSurvey.survey.questions?.map((q) =>
 			q.id === question.id
 				? {
 						...updatedQuestion,
@@ -88,7 +89,7 @@
 				: q
 		);
 		isDialogOpen = false; // Close the dialog after saving
-		currentSurveyStore.isDirty = true;
+		currentSurvey.isDirty = true;
 	}
 
 	function deleteOption(index: number) {
@@ -145,9 +146,9 @@
 						isDialogOpen = !isDialogOpen;
 					}}
 				>
-					<DialogTrigger disabled={currentSurveyStore.isGenerating}>
+					<DialogTrigger disabled={currentSurvey.isGenerating}>
 						<button
-							disabled={currentSurveyStore.isGenerating}
+							disabled={currentSurvey.isGenerating}
 							class="opacity-25 transition-opacity hover:opacity-75 group-hover:opacity-25 group-hover:hover:opacity-100 lg:opacity-0"
 							onclick={() => (isDialogOpen = true)}
 						>

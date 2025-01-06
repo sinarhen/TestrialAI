@@ -1,10 +1,24 @@
 import { db } from '@/server/db';
-import { type Question, type Survey, surveySchema, type SurveySchemaType } from '@/types/entities';
+import {
+	type Difficulty,
+	type Question,
+	type Survey,
+	surveySchema,
+	type SurveyCompletion
+} from '@/types/entities';
 import type { RequestHandler } from '@sveltejs/kit';
 import * as table from '@/server/db/schema';
 import { getMessages } from '@/server/openai/completions/generateSurvey';
 import { openai } from '@/server/openai';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
+import type { SupportedModel } from '@/types/openai';
+
+export type GenerateSurveyDto = {
+	topic: string;
+	difficulty: Difficulty;
+	numberOfQuestions: number;
+	model: SupportedModel;
+};
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.session || !locals.user) {

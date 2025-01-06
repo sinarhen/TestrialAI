@@ -58,5 +58,13 @@ export const surveySchema = z.object({
 	questions: z.array(questionSchema)
 });
 
-export type QuestionSchemaType = z.infer<typeof questionSchema>;
-export type SurveySchemaType = z.infer<typeof surveySchema>;
+export type QuestionCompletion = z.infer<typeof questionSchema>;
+export type SurveyCompletion = z.infer<typeof surveySchema>;
+
+type DeepPartial<T> = T extends object
+	? {
+			[K in keyof T]?: DeepPartial<T[K]>;
+		}
+	: T;
+
+export type GeneratingSurveyCompletion = DeepPartial<SurveyCompletion>;

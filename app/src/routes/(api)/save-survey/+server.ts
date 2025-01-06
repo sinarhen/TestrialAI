@@ -1,4 +1,4 @@
-import { type Question, type Survey, surveySchema, type SurveySchemaType } from '@/types/entities';
+import { type Question, type Survey, surveySchema, type SurveyCompletion } from '@/types/entities';
 import type { RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	return new Response(JSON.stringify(finalSurvey), { status: 200 });
 };
 
-async function saveSurveyToDatabase(parsedSurvey: SurveySchemaType, createdBy: string) {
+async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: string) {
 	const finalSurvey: Survey = {
 		...parsedSurvey,
 		questions: [] as Question[],
