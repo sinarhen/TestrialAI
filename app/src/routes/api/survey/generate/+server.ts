@@ -8,7 +8,7 @@ import {
 } from '@/types/entities';
 import type { RequestHandler } from '@sveltejs/kit';
 import * as table from '@/server/db/schema';
-import { getMessages } from '@/server/openai/completions/generateSurvey';
+import { generateSurvey, getMessages } from '@/server/openai/completions/survey/generateSurvey';
 import { openai } from '@/server/openai';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
 import type { SupportedModel } from '@/types/openai';
@@ -29,11 +29,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return new Response('Topic is required', { status: 400 });
 	}
 
-	const openAIStream = openai.beta.chat.completions.stream({
-		model: 'gpt-4o',
-		messages: getMessages({ topic, difficulty, numberOfQuestions }),
-		response_format: zodResponseFormat(surveySchema, 'generateSurvey')
-	});
+	const openAIStream = generateSurvey({ topic, difficulty, numberOfQuestions });
 	return new Response(openAIStream.toReadableStream());
 };
 

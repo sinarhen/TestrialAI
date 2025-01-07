@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { generateQuestion } from '@/server/openai/completions/generateQuestion';
+import { generateQuestion } from '@/server/openai/completions/question';
 import type { Difficulty } from '@/types/entities';
 import type { SupportedModel } from '@/types/openai';
 

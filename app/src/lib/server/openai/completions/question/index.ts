@@ -1,7 +1,7 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { questionSchema, type Difficulty, type Survey } from '@/types/entities';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
-import { openai } from '..';
+import { openai } from '../..';
 import type { CustomChatCompletionStreamParams } from '@/types/openai';
 
 const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
