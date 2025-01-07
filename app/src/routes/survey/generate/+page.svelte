@@ -14,72 +14,62 @@
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
 
+	type SurveyGenerationState =
+		| { status: 'idle' }
+		| { status: 'generating'; data: GeneratingSurveyCompletion }
+		| { status: 'finished'; data: SurveyCompletion };
+
 	let abortController = $state<AbortController | null>(null);
-	let generatingSurvey = $state<
-		| null
-		| {
-				isFinishedGenerating: false;
-				survey: GeneratingSurveyCompletion;
-		  }
-		| {
-				isFinishedGenerating: true;
-				survey: SurveyCompletion;
-		  }
-	>(null);
+
+	let generatingSurvey = $state<SurveyGenerationState>({ status: 'idle' });
 
 	const generate = async () => {
-		abortController = await streamOpenAiResponse<GeneratingSurveyCompletion, SurveyCompletion>({
-			endpoint: '/api/survey/generate',
-			body: {
-				topic,
-				difficulty,
-				numberOfQuestions,
-				model
-			} as GenerateSurveyDto,
-			onPartial: (partialData) => {
-				generatingSurvey = {
-					isFinishedGenerating: false,
-					survey: partialData
-				};
-			},
-			onComplete: async (finalData) => {
-				generatingSurvey = {
-					isFinishedGenerating: true,
-					survey: finalData
-				};
-			},
-			onError: (err) => {
-				// console.error(err);
-				goto('/');
-				toast.error('Failed to generate a survey');
-			}
-		});
+		abortController = new AbortController();
+		try {
+			await streamOpenAiResponse<GeneratingSurveyCompletion, SurveyCompletion>({
+				endpoint: '/api/survey/generate',
+				body: {
+					topic,
+					difficulty,
+					numberOfQuestions,
+					model
+				} as GenerateSurveyDto,
+				signal: abortController.signal,
+				onPartial: (partialData: GeneratingSurveyCompletion) => {
+					generatingSurvey = {
+						status: 'generating',
+						data: partialData
+					};
+				},
+				onComplete: async (finalData) => {
+					generatingSurvey = {
+						status: 'finished',
+						data: finalData
+					};
+				}
+			});
+		} catch (e) {
+			console.error(e);
+			goto('/');
+			toast.error('Failed to generate a survey');
+		}
 	};
-	onMount(async () => {
-		await generate();
-		// 	generatingSurvey = {
-		// if (data.history) {
-		// 		isFinishedGenerating: false,
-		// 		survey: data.history[data.history.length - 1]
-		// 	};
-		// }
-	});
+	onMount(generate);
 
 	const onAbort = async () => {
 		abortController?.abort();
+		abortController = null;
 		toast.success('Survey generation is stopped');
 
-		generatingSurvey = null;
+		generatingSurvey = {
+			status: 'idle'
+		};
 		goto('/');
 	};
 
-	$effect(() => {
-		console.log(abortController);
-	});
-
 	const onConfirm = () => {
-		if (!generatingSurvey || !generatingSurvey.isFinishedGenerating) return;
-		toast.promise(saveSurvey(generatingSurvey.survey), {
+		if (!generatingSurvey || generatingSurvey.status !== 'finished') return;
+		toast.promise(saveSurvey(generatingSurvey.data), {
 			loading: 'Saving survey...',
 			success: ({ data }) => {
 				goto(`/survey/${data.id}`);
@@ -94,9 +84,9 @@
 	};
 </script>
 
-{#if generatingSurvey}
+{#if generatingSurvey.status !== 'idle'}
 	<div>
-		{#if !generatingSurvey.isFinishedGenerating}
+		{#if generatingSurvey.status !== 'finished'}
 			<Button onclick={onAbort} size="sm"><X size="16" />Stop generation</Button>
 		{/if}
 
@@ -105,15 +95,15 @@
 		</h2>
 		<div class="mt-3 flex gap-x-4 text-sm">
 			<span class="flex items-center gap-x-1"
-				><CircleHelp size="12" /> {generatingSurvey.survey.questions?.length} Questions</span
+				><CircleHelp size="12" /> {generatingSurvey.data?.questions?.length} Questions</span
 			>
 			<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->
 			<span class="flex items-center gap-x-1"
-				><Gauge size="12" /> {generatingSurvey.survey.difficulty}</span
+				><Gauge size="12" /> {generatingSurvey.data.difficulty}</span
 			>
 		</div>
-		<SurveyGenerationDetails generatingSurvey={generatingSurvey.survey} />
-		{#if generatingSurvey.isFinishedGenerating}
+		<SurveyGenerationDetails generatingSurvey={generatingSurvey.data} />
+		{#if generatingSurvey.status === 'finished'}
 			<div class="mt-4 flex gap-x-1">
 				<Button variant="outline" size="sm" onclick={onConfirm}>Confirm</Button>
 				<Button variant="outline" size="sm" onclick={onAbort}>Abort</Button>

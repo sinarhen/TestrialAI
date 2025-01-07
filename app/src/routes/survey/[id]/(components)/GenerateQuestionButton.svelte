@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Sparkles } from 'lucide-svelte';
+	import { Sparkles, Square } from 'lucide-svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Popover from '@/components/ui/popover';
 	import { Input } from '@/components/ui/input';
@@ -14,99 +14,150 @@
 	let isPopoverOpen = $state(false);
 	let questionTopic = $state('');
 
-	const onGenerate = async () => {
+	let abortController: AbortController | null = null;
+
+	function resetPopover() {
+		isPopoverOpen = false;
+		questionTopic = '';
+	}
+
+	async function onGenerate() {
+		// prevent overlapping generation
 		if (currentSurvey.isGenerating) {
 			toast.error('Already generating a question');
 			return;
 		}
-
+		if (!currentSurvey.survey) {
+			toast.error('Internal error: no current survey');
+			return;
+		}
 		const existingQuestions = currentSurvey.survey?.questions?.map((q) => q.question);
-		if (!existingQuestions || !currentSurvey.survey?.id) {
+		const surveyId = currentSurvey.survey?.id;
+
+		if (!existingQuestions || !surveyId) {
 			toast.error('Internal error: no existing survey');
 			return;
 		}
 
+		// Prepare request body
 		const body: GenerateQuestionDto = {
 			topic: questionTopic,
 			existingQuestions,
-			surveyId: currentSurvey.survey.id,
+			surveyId,
 			surveyDifficulty: currentSurvey.survey.difficulty,
 			surveyTitle: currentSurvey.survey.title
 		};
 
-		let optionsIds: string[] = [];
+		// Create a fresh AbortController for this generation
+		abortController = new AbortController();
 
-		let newQuestion = {
+		// Prepare a placeholder question
+		const newQuestion: Question = {
 			id: v4(),
 			question: '',
 			answerType: '',
 			correctAnswer: '',
 			options: []
-		} as Question;
+		};
 
-		currentSurvey.survey.questions?.push(newQuestion);
-		const generatedQuestionIndex = (currentSurvey.survey?.questions.length ?? 1) - 1;
+		// Push placeholder question so we can visually see partial data
+		currentSurvey.survey?.questions?.push(newQuestion);
+		const generatedQuestionIndex = currentSurvey.survey?.questions.length - 1;
 
 		currentSurvey.isGenerating = true;
-		await streamOpenAiResponse<Partial<QuestionCompletion>, QuestionCompletion>({
-			endpoint: '/api/survey/generate-question',
-			body,
-			onPartial: (partialData) => {
-				if (partialData.options?.length && partialData.options?.length > optionsIds.length) {
-					optionsIds.push(v4());
-				}
-				if (currentSurvey.survey?.questions[generatedQuestionIndex]) {
+		let optionsIds: string[] = [];
+
+		try {
+			await streamOpenAiResponse<Partial<QuestionCompletion>, QuestionCompletion>({
+				endpoint: '/api/survey/generate-question',
+				body,
+				signal: abortController.signal,
+
+				onPartial: (partialData) => {
+					if (!currentSurvey.survey) return;
+					// If new options arrived, generate new IDs for them
+					if (partialData.options?.length && partialData.options.length > optionsIds.length) {
+						optionsIds.push(v4());
+					}
+					// Update the question in place with partial data
+					const existingQuestion = currentSurvey.survey.questions[generatedQuestionIndex];
+					if (existingQuestion) {
+						currentSurvey.survey.questions[generatedQuestionIndex] = {
+							...existingQuestion,
+							...partialData,
+							options:
+								partialData.options?.map((opt, idx) => ({
+									...opt,
+									id: optionsIds[idx]
+								})) ?? []
+						};
+						currentSurvey.isDirty = true;
+					}
+				},
+
+				onComplete: (finalData) => {
+					// Update question with final data
+					if (!currentSurvey.survey) return;
+					const existingQuestion = currentSurvey.survey.questions[generatedQuestionIndex];
+					if (!existingQuestion) return;
+
 					currentSurvey.survey.questions[generatedQuestionIndex] = {
-						...newQuestion,
-						...partialData,
+						...existingQuestion,
+						...finalData,
 						options:
-							partialData.options?.map((option, index) => ({
-								...option,
-								id: optionsIds[index]
+							finalData.options?.map((opt, idx) => ({
+								...opt,
+								id: optionsIds[idx]
 							})) ?? []
 					};
+
 					currentSurvey.isDirty = true;
-				}
-			},
-			onComplete: (finalData) => {
-				const questionIndex = (currentSurvey.survey?.questions.length ?? 0) - 1;
-				if (questionIndex < 0) {
-					return;
-				}
-				const question = finalData;
+					currentSurvey.isGenerating = false;
 
-				if (currentSurvey.survey?.questions[questionIndex]) {
-					currentSurvey.survey.questions[questionIndex] = {
-						...newQuestion,
-						...question,
-						options:
-							question.options?.map((option, index) => ({
-								...option,
-								id: optionsIds[index]
-							})) ?? []
-					};
+					resetPopover();
 				}
+			});
+		} catch (error) {
+			console.error('Question generation failed:', error);
 
-				isPopoverOpen = false;
-				questionTopic = '';
-				currentSurvey.isDirty = true;
-				currentSurvey.isGenerating = false;
-			},
-			onError: (error) => {
-				const isQuestionCreated = currentSurvey.survey?.questions.at(generatedQuestionIndex);
-				if (isQuestionCreated) {
-					currentSurvey.survey?.questions?.splice(generatedQuestionIndex - 1, 1);
-					currentSurvey.isDirty = false;
-				}
-				// rethrow error to handle it in toast.promise
-				throw error;
+			// If a placeholder question was indeed added, remove it
+			if (currentSurvey.survey?.questions[generatedQuestionIndex]) {
+				currentSurvey.survey.questions.splice(generatedQuestionIndex, 1);
 			}
-		});
-	};
+			// Mark as not generating so user can retry
+			currentSurvey.isGenerating = false;
+			currentSurvey.isDirty = false;
+
+			// If not aborted programmatically, show an error
+			if (!abortController?.signal.aborted) {
+				toast.error('Failed to generate a question');
+			}
+		} finally {
+			// Always clean up the abort controller
+			abortController = null;
+		}
+	}
+
+	function onCancelGenerate() {
+		// If we’re in the midst of generating, abort the request
+		if (abortController) {
+			abortController.abort();
+		}
+
+		// If the question was already appended, remove it
+		if (currentSurvey.isGenerating) {
+			const lastIndex = (currentSurvey.survey?.questions.length ?? 0) - 1;
+			currentSurvey.survey?.questions.splice(lastIndex, 1);
+			currentSurvey.isGenerating = false;
+			currentSurvey.isDirty = false;
+		}
+
+		toast.success('Generating question canceled');
+	}
 </script>
 
 <div class="relative w-full">
-	<Popover.Root open={isPopoverOpen} onOpenChange={(val) => (isPopoverOpen = val)}>
+	<Popover.Root bind:open={isPopoverOpen}>
 		<Popover.Trigger disabled={currentSurvey.isGenerating} class="w-full">
 			<Button
 				disabled={currentSurvey.isGenerating}
@@ -118,19 +169,32 @@
 				Generate question
 			</Button>
 		</Popover.Trigger>
+
 		<Popover.Content side="top">
 			<Label>About...</Label>
 			<p class="text-xs opacity-50">Enter a topic to generate a question about</p>
-			<Input disabled={currentSurvey.isGenerating} bind:value={questionTopic} class="mt-1.5" />
+
+			<Input bind:value={questionTopic} disabled={currentSurvey.isGenerating} class="mt-1.5" />
+
 			<Button
 				onclick={onGenerate}
 				disabled={currentSurvey.isGenerating}
-				variant="ghost"
+				variant="default"
 				size="sm"
 				class="mt-2 gap-x-1"
 			>
 				<Sparkles size="16" />
 				Generate
+			</Button>
+
+			<Button
+				onclick={onCancelGenerate}
+				disabled={!currentSurvey.isGenerating}
+				variant="ghost"
+				size="icon"
+				class="mt-2"
+			>
+				<Square size="16" />
 			</Button>
 		</Popover.Content>
 	</Popover.Root>
