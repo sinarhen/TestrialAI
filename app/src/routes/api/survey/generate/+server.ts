@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const openAIStream = openai.beta.chat.completions.stream({
 		model: 'gpt-4o',
-		messages: getMessages({ topic, difficulty, numberOfQuestions: 2 }),
+		messages: getMessages({ topic, difficulty, numberOfQuestions }),
 		response_format: zodResponseFormat(surveySchema, 'generateSurvey')
 	});
 	return new Response(openAIStream.toReadableStream());
