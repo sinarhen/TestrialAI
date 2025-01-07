@@ -51,7 +51,7 @@
 		await streamOpenAiResponse<Partial<QuestionCompletion>, QuestionCompletion>({
 			endpoint: '/api/survey/generate-question',
 			body,
-			onPartial: ({ partialData }) => {
+			onPartial: (partialData) => {
 				if (partialData.options?.length && partialData.options?.length > optionsIds.length) {
 					optionsIds.push(v4());
 				}
@@ -68,7 +68,7 @@
 					currentSurvey.isDirty = true;
 				}
 			},
-			onComplete: ({ finalData }) => {
+			onComplete: (finalData) => {
 				const questionIndex = (currentSurvey.survey?.questions.length ?? 0) - 1;
 				if (questionIndex < 0) {
 					return;
@@ -92,15 +92,11 @@
 				currentSurvey.isDirty = true;
 				currentSurvey.isGenerating = false;
 			},
-			onError: ({ error, runner }) => {
+			onError: (error) => {
 				const isQuestionCreated = currentSurvey.survey?.questions.at(generatedQuestionIndex);
 				if (isQuestionCreated) {
 					currentSurvey.survey?.questions?.splice(generatedQuestionIndex - 1, 1);
 					currentSurvey.isDirty = false;
-				}
-				if (!runner?.aborted) {
-					// Possible when error caused by something else rather than stream response
-					runner?.abort();
 				}
 				// rethrow error to handle it in toast.promise
 				throw error;

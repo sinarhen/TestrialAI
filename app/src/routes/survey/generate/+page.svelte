@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CircleHelp, Gauge } from 'lucide-svelte';
+	import { CircleHelp, Gauge, X } from 'lucide-svelte';
 	import SurveyGenerationDetails from './(components)/GeneratingSurveyDetails.svelte';
 	import type { PageData } from './$types';
 	import { goto, invalidateAll } from '$app/navigation';
@@ -14,6 +14,7 @@
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
 
+	let abortController = $state<AbortController | null>(null);
 	let generatingSurvey = $state<
 		| null
 		| {
@@ -26,8 +27,8 @@
 		  }
 	>(null);
 
-	onMount(async () => {
-		await streamOpenAiResponse<GeneratingSurveyCompletion, SurveyCompletion>({
+	const generate = async () => {
+		abortController = await streamOpenAiResponse<GeneratingSurveyCompletion, SurveyCompletion>({
 			endpoint: '/api/survey/generate',
 			body: {
 				topic,
@@ -35,30 +36,46 @@
 				numberOfQuestions,
 				model
 			} as GenerateSurveyDto,
-			onPartial: ({ partialData }) => {
+			onPartial: (partialData) => {
 				generatingSurvey = {
 					isFinishedGenerating: false,
 					survey: partialData
 				};
 			},
-			onComplete: async ({ finalData, runner }) => {
+			onComplete: async (finalData) => {
 				generatingSurvey = {
 					isFinishedGenerating: true,
 					survey: finalData
 				};
 			},
 			onError: (err) => {
-				console.error(err);
+				// console.error(err);
 				goto('/');
-				toast.error('Failed to generate-question survey');
+				toast.error('Failed to generate a survey');
 			}
 		});
+	};
+	onMount(async () => {
+		await generate();
+		// 	generatingSurvey = {
+		// if (data.history) {
+		// 		isFinishedGenerating: false,
+		// 		survey: data.history[data.history.length - 1]
+		// 	};
+		// }
 	});
 
-	const onAbort = () => {
+	const onAbort = async () => {
+		abortController?.abort();
+		toast.success('Survey generation is stopped');
+
 		generatingSurvey = null;
 		goto('/');
 	};
+
+	$effect(() => {
+		console.log(abortController);
+	});
 
 	const onConfirm = () => {
 		if (!generatingSurvey || !generatingSurvey.isFinishedGenerating) return;
@@ -79,7 +96,11 @@
 
 {#if generatingSurvey}
 	<div>
-		<h2 class="motion-preset-typewriter animate-pulse text-2xl font-bold text-opacity-50">
+		{#if !generatingSurvey.isFinishedGenerating}
+			<Button onclick={onAbort} size="sm"><X size="16" />Stop generation</Button>
+		{/if}
+
+		<h2 class="mt-3 animate-pulse text-2xl font-bold text-opacity-50">
 			{topic}
 		</h2>
 		<div class="mt-3 flex gap-x-4 text-sm">

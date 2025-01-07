@@ -1,28 +1,17 @@
-// stream-openai.ts
-
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';
 import { toast } from 'svelte-sonner';
-
-type FuncWithRunner<
-	T extends {
-		[key: string]: any;
-	} = {}
-> = (
-	args: T & {
-		runner: ChatCompletionStream<null> | null;
-	}
-) => void;
 
 interface StreamOpenAiOptions<TPartial, TFinal> {
 	endpoint: string;
 	method?: string;
 	body?: unknown;
-	onPartial?: FuncWithRunner<{ partialData: TPartial }>;
-	onComplete?: FuncWithRunner<{ finalData: TFinal }>;
-	onError?: FuncWithRunner<{ error: unknown }>;
-	onFinish?: FuncWithRunner;
+	onPartial?: (partialData: TPartial) => void;
+	onComplete?: (finalData: TFinal) => void;
+	onError?: (error: unknown) => void;
+	onFinish?: () => void;
 }
+
 export async function streamOpenAiResponse<TPartial, TFinal>({
 	endpoint,
 	method = 'POST',
@@ -31,22 +20,24 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 	onComplete,
 	onError,
 	onFinish
-}: StreamOpenAiOptions<TPartial, TFinal>): Promise<void> {
+}: StreamOpenAiOptions<TPartial, TFinal>) {
 	let runner: ChatCompletionStream<null> | null = null;
+	let controller: AbortController | null = null;
 
 	try {
+		controller = new AbortController();
 		const res = await fetch(endpoint, {
 			method,
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: body ? JSON.stringify(body) : undefined
+			body: body ? JSON.stringify(body) : undefined,
+			signal: controller.signal
 		});
 
 		if (!res.ok) {
 			throw new Error(`Network error: ${res.status} ${res.statusText}`);
 		}
-
 		if (!res.body) {
 			throw new Error('Response body is empty');
 		}
@@ -57,7 +48,7 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 			if (onPartial) {
 				try {
 					const partialData = parse(snapshot) as TPartial;
-					onPartial({ partialData, runner });
+					onPartial(partialData);
 				} catch (err) {
 					console.error('Partial parse error:', err);
 				}
@@ -68,21 +59,28 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 			if (onComplete) {
 				try {
 					const finalData = parse(content) as TFinal;
-					onComplete({ finalData, runner });
+					onComplete(finalData);
 				} catch (err) {
 					console.error('Final parse error:', err);
 				}
 			}
 		});
+
+		runner.on('abort', () => {
+			console.log('Stream aborted');
+			console.log(controller);
+		});
 	} catch (err) {
 		if (onError) {
-			onError({ error: err, runner });
+			onError(err);
 		} else {
 			toast.error('Failed to stream from OpenAI');
 		}
 	} finally {
 		if (onFinish) {
-			onFinish({ runner });
+			onFinish();
 		}
 	}
+
+	return controller;
 }
