@@ -47,18 +47,18 @@
 				>
 					<div class="flex items-center">
 						<span
-							class="bg-accent-fegr rounded-[2px] p-0.5 text-xs font-medium uppercase leading-none"
+							class="rounded-[2px] p-1 text-xs font-medium uppercase leading-none"
 							>basic</span
 						>
 						<span><ChevronRight size="16" /></span>
 						<span
-							class="rounded-[2px] bg-purple-400 p-0.5 text-xs font-medium uppercase leading-none"
+							class="rounded-[2px] bg-purple-400 p-1 text-xs font-medium uppercase leading-none text-white"
 							>pro</span
 						>
 					</div>
 
-					<p class="text-lg font-medium">Upgrade your plan</p>
-					<Separator class="mb-4 mt-2" />
+					<p class="motion-opacity-in-0 text-lg font-medium">Upgrade your plan</p>
+					<Separator class="mb-5 mt-2" />
 					<p class="">Here are some features you can unlock:</p>
 					<ul class="ml-4 mt-2 list-disc text-xs">
 						<li>Unlimited survey generation</li>
