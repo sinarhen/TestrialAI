@@ -5,14 +5,14 @@
 	import { Button } from '@/components/ui/button';
 	import axios from 'axios';
 	import { toast } from 'svelte-sonner';
-	import {deleteSurvey, updateSurvey} from '@/actions';
+	import { deleteSurvey, updateSurvey } from '@/actions';
 	import AddQuestionButton from './(components)/AddQuestionButton.svelte';
 	import GenerateQuestionButton from './(components)/GenerateQuestionButton.svelte';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import { currentSurvey } from '@/stores/survey-details.svelte';
 	import * as Dialog from '@/components/ui/dialog';
 	import Separator from '@/components/ui/separator/separator.svelte';
-	import * as AlertDialog from '@/components/ui/alert-dialog'
+	import * as AlertDialog from '@/components/ui/alert-dialog';
 
 	const {
 		data
@@ -113,7 +113,9 @@
 					class="-motion-translate-y-in-50 motion-delay-[150ms] motion-opacity-in-0 motion-duration-500 gap-x-1"
 					size="sm"
 					onclick={() => {}}
-					builders={[builder]} variant="outline">
+					builders={[builder]}
+					variant="outline"
+				>
 					Delete <Trash2 size="12" />
 				</Button>
 			</AlertDialog.Trigger>
@@ -121,34 +123,37 @@
 				<AlertDialog.Header>
 					<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
 					<AlertDialog.Description>
-						This action cannot be undone. This will permanently delete this survey
-						and remove data from our servers.
+						This action cannot be undone. This will permanently delete this survey and remove data
+						from our servers.
 					</AlertDialog.Description>
 				</AlertDialog.Header>
 				<AlertDialog.Footer>
 					<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-					<AlertDialog.Action onclick={() => {
-						if (currentSurvey.survey?.id){
-							deleteSurvey(currentSurvey.survey.id).then(res => {
-								if (res.status < 300 && res.status >= 200){
-									toast.success("Survey is deleted successfully")
-									currentSurvey.survey = null;
-									currentSurvey.isDirty = false;
-									currentSurvey.isGenerating = false;
+					<AlertDialog.Action
+						onclick={() => {
+							if (currentSurvey.survey?.id) {
+								deleteSurvey(currentSurvey.survey.id)
+									.then((res) => {
+										if (res.status < 300 && res.status >= 200) {
+											toast.success('Survey is deleted successfully');
+											currentSurvey.survey = null;
+											currentSurvey.isDirty = false;
+											currentSurvey.isGenerating = false;
 
-									goto("/")
-								}
-							}).catch(err => {
-								console.error(err)
-								toast.error("Something went wrong. Please try again later")
-							})
-
-						} else {
-							console.error("Survey has no ID")
-							toast.error("Internal error. Please try again later.")
-						}
-
-					}}>Continue</AlertDialog.Action>
+											goto('/');
+											invalidate('/');
+										}
+									})
+									.catch((err) => {
+										console.error(err);
+										toast.error('Something went wrong. Please try again later');
+									});
+							} else {
+								console.error('Survey has no ID');
+								toast.error('Internal error. Please try again later.');
+							}
+						}}>Continue</AlertDialog.Action
+					>
 				</AlertDialog.Footer>
 			</AlertDialog.Content>
 		</AlertDialog.Root>

@@ -2,14 +2,14 @@
 	import { CircleHelp, Gauge } from 'lucide-svelte';
 	import SurveyGenerationDetails from './(components)/GeneratingSurveyDetails.svelte';
 	import type { PageData } from './$types';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import type { GeneratingSurveyCompletion, SurveyCompletion } from '@/types/entities';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { saveSurvey } from '@/actions';
 	import { Button } from '@/components/ui/button';
-	import type {GenerateSurveyDto} from "../../api/survey/generate/+server";
+	import type { GenerateSurveyDto } from '../../api/survey/generate/+server';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
@@ -66,6 +66,7 @@
 			loading: 'Saving survey...',
 			success: ({ data }) => {
 				goto(`/survey/${data.id}`);
+				invalidateAll();
 				return 'Survey is generated and saved successfully';
 			},
 			error: (err) => {
