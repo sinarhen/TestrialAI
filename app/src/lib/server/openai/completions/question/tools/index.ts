@@ -61,7 +61,7 @@ function getUserContent(
     Regenerate a question about "${topic}" for the existing survey titled "${surveyTitle}", 
     with a difficulty of "${surveyDifficulty}".  
     Don't repeat the following questions: ${existingQuestions.join(', ')}.
-    Please
+    Please ${toolVerb} the question.
     Please ${toolVerb} the question accordingly.
   `;
 }

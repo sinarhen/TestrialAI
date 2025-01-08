@@ -181,7 +181,7 @@
 
 	<div class="mt-8 flex w-full justify-center xl:justify-start">
 		<div class="flex w-full gap-x-2">
-			<Button
+			<!-- <Button
 				onclick={saveCurrentSurvey}
 				type="submit"
 				disabled={!currentSurvey.isDirty}
@@ -189,7 +189,7 @@
 			>
 				<Save size="16" />
 				Save
-			</Button>
+			</Button> -->
 			<Button variant="outline" class="col-span-4 inline-flex gap-x-1 xl:hidden">
 				<Share2 size="16" />
 				Share
