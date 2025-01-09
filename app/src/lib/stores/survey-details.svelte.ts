@@ -1,4 +1,4 @@
-import type { Survey } from '@/types/entities';
+import type { GeneratingQuestionCompletion, Question, Survey } from '@/types/entities';
 
 export type DeepPartial<T> = T extends object
 	? {
@@ -6,14 +6,24 @@ export type DeepPartial<T> = T extends object
 		}
 	: T;
 
+type ReadyQuestion = Question;
+
+type GeneratingQuestion = GeneratingQuestionCompletion & {
+	isGenerating: true;
+};
+
+type QuestionState = ReadyQuestion | GeneratingQuestion;
+
+type SurveyState = Survey & {
+	questions: QuestionState[];
+};
+
 type SurveyStoreState = {
-	isDirty: boolean;
-	survey: Survey | null;
+	survey: SurveyState | null;
 	isGenerating: boolean;
 };
 
 export const currentSurvey = $state<SurveyStoreState>({
-	isDirty: false,
 	survey: null,
 	isGenerating: false
 });

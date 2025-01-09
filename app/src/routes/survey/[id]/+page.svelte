@@ -5,7 +5,7 @@
 	import { Button } from '@/components/ui/button';
 	import axios from 'axios';
 	import { toast } from 'svelte-sonner';
-	import { deleteSurvey, updateSurvey } from '@/actions';
+	import { deleteSurvey } from '@/actions';
 	import AddQuestionButton from './(components)/AddQuestionButton.svelte';
 	import GenerateQuestionButton from './(components)/GenerateQuestionButton.svelte';
 	import { goto, invalidate } from '$app/navigation';
@@ -23,26 +23,7 @@
 	$effect(() => {
 		if (!data.survey) return;
 		currentSurvey.survey = data.survey;
-		currentSurvey.isDirty = false;
 	});
-
-	const saveCurrentSurvey = async () => {
-		if (!currentSurvey.survey) return;
-
-		try {
-			const res = await updateSurvey(currentSurvey.survey);
-			if (res.status !== 200) {
-				throw new Error('Failed to save survey');
-			}
-			currentSurvey.isDirty = false;
-			toast.success('Survey saved');
-		} catch (e: unknown) {
-			console.error(e);
-			if (axios.isAxiosError(e)) {
-				toast.error('Failed to save survey');
-			}
-		}
-	};
 </script>
 
 {#if currentSurvey.survey}
@@ -137,7 +118,6 @@
 										if (res.status < 300 && res.status >= 200) {
 											toast.success('Survey is deleted successfully');
 											currentSurvey.survey = null;
-											currentSurvey.isDirty = false;
 											currentSurvey.isGenerating = false;
 
 											goto('/');

@@ -1,18 +1,16 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { generateQuestion } from '@/server/openai/completions/question';
-import type { Difficulty } from '@/types/entities';
 import type { SupportedModel } from '@/types/openai';
+import { db } from '@/server/db';
+import { eq } from 'drizzle-orm';
+import { surveys } from '@/server/db/schema';
 
 export interface GenerateQuestionDto {
 	topic: string;
-	surveyId: string;
-	surveyTitle: string;
-	surveyDifficulty: Difficulty;
-	existingQuestions: string[];
 	model?: SupportedModel;
 }
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals, params }) => {
 	if (!locals.session || !locals.user) {
 		return new Response('Unauthorized', { status: 401 });
 	}
@@ -25,35 +23,37 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (!topic) {
 			return new Response('Topic is required', { status: 400 });
 		}
-		const surveyId = data.surveyId;
+		const surveyId = params.surveyId;
 
 		if (!surveyId) {
 			console.error('Survey ID is required');
 			return new Response('Survey id is required', { status: 400 });
 		}
 
-		if (!data.surveyTitle) {
-			console.error('Survey title is required');
-			return new Response('Survey title is required', { status: 400 });
+		const survey = await db.query.surveys.findFirst({
+			where: eq(surveys.id, surveyId),
+			with: {
+				questions: {
+					columns: {
+						question: true
+					}
+				}
+			}
+		});
+
+		if (!survey || survey.userId !== locals.user.id) {
+			console.error('Survey not found');
+			return new Response('Survey not found', { status: 404 });
 		}
 
-		if (!data.surveyDifficulty) {
-			console.error('Survey difficulty is required');
-			return new Response('Survey difficulty is required', { status: 400 });
-		}
-
-		const existingQuestions = data.existingQuestions;
-		if (!data.existingQuestions) {
-			console.error('Existing questions is required to generate-question single questions');
-			return new Response('existingQuestions is required', { status: 400 });
-		}
+		const existingQuestions = survey.questions?.map((q) => q.question);
 
 		const openAIStream = generateQuestion(
 			{
 				topic,
 				existingQuestions,
-				surveyDifficulty: data.surveyDifficulty,
-				surveyTitle: data.surveyTitle
+				surveyDifficulty: survey.difficulty,
+				surveyTitle: survey.title
 			},
 			{
 				model: data.model ?? 'gpt-4o-mini'

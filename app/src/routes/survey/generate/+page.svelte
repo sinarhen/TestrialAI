@@ -7,9 +7,9 @@
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { saveSurvey } from '@/actions';
+	import { createSurvey } from '@/actions';
 	import { Button } from '@/components/ui/button';
-	import type { GenerateSurveyDto } from '../../api/survey/generate/+server';
+	import type { GenerateSurveyDto } from '../../api/surveys/generate/+server';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
@@ -27,7 +27,7 @@
 		abortController = new AbortController();
 		try {
 			await streamOpenAiResponse<GeneratingSurveyCompletion, SurveyCompletion>({
-				endpoint: '/api/survey/generate',
+				endpoint: '/api/surveys/generate',
 				body: {
 					topic,
 					difficulty,
@@ -69,7 +69,7 @@
 
 	const onConfirm = () => {
 		if (!generatingSurvey || generatingSurvey.status !== 'finished') return;
-		toast.promise(saveSurvey(generatingSurvey.data), {
+		toast.promise(createSurvey(generatingSurvey.data), {
 			loading: 'Saving survey...',
 			success: ({ data }) => {
 				goto(`/survey/${data.id}`);

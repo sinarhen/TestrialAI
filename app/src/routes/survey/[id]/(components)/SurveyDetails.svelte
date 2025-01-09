@@ -39,8 +39,7 @@
 	} = $props();
 
 	// That means the question is new because its index is greater than the length of the server side state
-	const isQuestionNewlyAdded = (index: number): boolean =>
-		currentSurvey.isDirty || index >= generatedSurveyQuestionsCount;
+	const isQuestionNewlyAdded = (index: number): boolean => index >= generatedSurveyQuestionsCount;
 </script>
 
 <section class="relative mt-8 flex h-full w-full flex-col">

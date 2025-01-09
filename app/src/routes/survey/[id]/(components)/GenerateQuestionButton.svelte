@@ -5,11 +5,18 @@
 	import { Input } from '@/components/ui/input';
 	import { Label } from '@/components/ui/label';
 	import { toast } from 'svelte-sonner';
-	import type { GenerateQuestionDto } from '../../../api/survey/generate-question/+server';
 	import { v4 } from 'uuid';
-	import type { Question, QuestionCompletion, Survey } from '@/types/entities';
+	import type {
+		GeneratingQuestionCompletion,
+		Question,
+		QuestionCompletion,
+		Survey
+	} from '@/types/entities';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { currentSurvey } from '@/stores/survey-details.svelte';
+	import type { GenerateQuestionDto } from '../../../api/surveys/[surveyId]/questions/generate/+server';
+	import { createQuestion, updateQuestion } from '@/actions';
+	import { invalidate } from '$app/navigation';
 
 	let isPopoverOpen = $state(false);
 	let questionTopic = $state('');
@@ -22,7 +29,6 @@
 	}
 
 	async function onGenerate() {
-		// prevent overlapping generation
 		if (currentSurvey.isGenerating) {
 			toast.error('Already generating a question');
 			return;
@@ -41,80 +47,52 @@
 
 		// Prepare request body
 		const body: GenerateQuestionDto = {
-			topic: questionTopic,
-			existingQuestions,
-			surveyId,
-			surveyDifficulty: currentSurvey.survey.difficulty,
-			surveyTitle: currentSurvey.survey.title
+			topic: questionTopic
 		};
 
 		// Create a fresh AbortController for this generation
 		abortController = new AbortController();
 
-		// Prepare a placeholder question
-		const newQuestion: Question = {
-			id: v4(),
-			question: '',
-			answerType: '',
-			correctAnswer: '',
-			options: []
-		};
-
-		// Push placeholder question so we can visually see partial data
-		currentSurvey.survey?.questions?.push(newQuestion);
+		currentSurvey.survey?.questions?.push({
+			isGenerating: true
+		});
 		const generatedQuestionIndex = currentSurvey.survey?.questions.length - 1;
 
 		currentSurvey.isGenerating = true;
-		let optionsIds: string[] = [];
+		resetPopover();
 
 		try {
 			await streamOpenAiResponse<Partial<QuestionCompletion>, QuestionCompletion>({
-				endpoint: '/api/survey/generate-question',
+				endpoint: `/api/surveys/${currentSurvey.survey.id}/questions/generate`,
 				body,
 				signal: abortController.signal,
 
 				onPartial: (partialData) => {
-					if (!currentSurvey.survey) return;
-					// If new options arrived, generate new IDs for them
-					if (partialData.options?.length && partialData.options.length > optionsIds.length) {
-						optionsIds.push(v4());
-					}
-					// Update the question in place with partial data
-					const existingQuestion = currentSurvey.survey.questions[generatedQuestionIndex];
-					if (existingQuestion) {
-						currentSurvey.survey.questions[generatedQuestionIndex] = {
-							...existingQuestion,
-							...partialData,
-							options:
-								partialData.options?.map((opt, idx) => ({
-									...opt,
-									id: optionsIds[idx]
-								})) ?? []
-						};
-						currentSurvey.isDirty = true;
-					}
+					currentSurvey.survey?.questions.splice(generatedQuestionIndex, 1, {
+						...partialData,
+						isGenerating: true
+					});
 				},
 
 				onComplete: (finalData) => {
-					// Update question with final data
-					if (!currentSurvey.survey) return;
-					const existingQuestion = currentSurvey.survey.questions[generatedQuestionIndex];
-					if (!existingQuestion) return;
-
-					currentSurvey.survey.questions[generatedQuestionIndex] = {
-						...existingQuestion,
-						...finalData,
-						options:
-							finalData.options?.map((opt, idx) => ({
-								...opt,
-								id: optionsIds[idx]
-							})) ?? []
-					};
-
-					currentSurvey.isDirty = true;
-					currentSurvey.isGenerating = false;
-
-					resetPopover();
+					if (!currentSurvey.survey?.id) return;
+					toast.promise(createQuestion(currentSurvey.survey?.id, finalData), {
+						loading: 'Saving question...',
+						success: ({ data }) => {
+							currentSurvey.survey?.questions.splice(generatedQuestionIndex, 1, {
+								...data
+							});
+							currentSurvey.isGenerating = false;
+							invalidate(`/survey/${currentSurvey.survey?.id}`);
+							return 'Question saved successfully';
+						},
+						error: (error) => {
+							console.error('Failed to save generated question:', error);
+							currentSurvey.survey?.questions.splice(generatedQuestionIndex, 1);
+							currentSurvey.isGenerating = false;
+							return 'Failed to save generated question';
+						}
+					});
 				}
 			});
 		} catch (error) {
@@ -126,7 +104,6 @@
 			}
 			// Mark as not generating so user can retry
 			currentSurvey.isGenerating = false;
-			currentSurvey.isDirty = false;
 
 			// If not aborted programmatically, show an error
 			if (!abortController?.signal.aborted) {
@@ -149,7 +126,6 @@
 			const lastIndex = (currentSurvey.survey?.questions.length ?? 0) - 1;
 			currentSurvey.survey?.questions.splice(lastIndex, 1);
 			currentSurvey.isGenerating = false;
-			currentSurvey.isDirty = false;
 		}
 
 		toast.success('Generating question canceled');

@@ -30,7 +30,7 @@ export const AnswerTypes = {
 	SINGLE: 'single',
 	MULTIPLE: 'multiple',
 	TEXT: 'text'
-};
+} as const;
 export type AnswerType = (typeof AnswerTypes)[keyof typeof AnswerTypes];
 
 export interface Option {
@@ -67,4 +67,5 @@ type DeepPartial<T> = T extends object
 		}
 	: T;
 
+export type GeneratingQuestionCompletion = DeepPartial<QuestionCompletion>;
 export type GeneratingSurveyCompletion = DeepPartial<SurveyCompletion>;
