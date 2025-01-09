@@ -52,7 +52,7 @@
 
 <section class="relative mt-8 flex h-full w-full flex-col">
 	<div class="flex w-full flex-col gap-y-12">
-		{#each survey.questions ?? [] as question, index (index)}
+		{#each survey.questions ?? [] as question, index (question.status === 'ready' || question.status === 'modified' ? question.id : index)}
 			<div
 				class={`motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[--delay] group relative`}
 				style={`--delay: ${!isQuestionNewlyAdded(index) ? 200 + 150 * (index + 1) : 0}ms`}

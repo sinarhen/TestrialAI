@@ -53,10 +53,11 @@
 		if (
 			question.status === 'new' ||
 			question.status === 'generated' ||
-			question.status === 'generating'
-		)
+			question.status === 'generating' ||
+			lodash.isEqual(question, updatedQuestion)
+		) {
 			return;
-
+		}
 		updatedQuestion = {
 			...lodash.cloneDeep(question),
 			status: 'modified'
