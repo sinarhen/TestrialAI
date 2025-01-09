@@ -47,10 +47,10 @@
 
 <div class="flex h-[65vh] w-full flex-grow flex-col items-center justify-center">
 	<div class="flex flex-col items-center justify-end">
-		<h1 class="animate-fadeInSlide text-3xl">
+		<h1 class="text-3xl">
 			Hello, <span class="font-semibold">{userName}</span>👋
 		</h1>
-		<p class="animate-fadeInSlide mt-0.5 opacity-0 [animation-delay:0.3s]">
+		<p class="mt-0.5">
 			Give us a topic you want to create a survey on
 		</p>
 		<div class="mt-5 flex w-full items-center justify-center gap-x-1">

@@ -1,7 +1,7 @@
 import { type Question, type Option, type QuestionCompletion, type Survey } from '@/types/entities';
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
-import { and, eq, inArray, notInArray, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import * as table from '@/server/db/schema';
 
 export type CreateQuestionDto = QuestionCompletion;
@@ -41,6 +41,12 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 
 			if (!insertedQuestion) {
 				throw new Error('Failed to insert question');
+			}
+
+			createdQuestion = insertedQuestion;
+
+			if (!body.options) {
+				return;
 			}
 			const insertedOptions = await tx
 				.insert(table.options)

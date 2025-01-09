@@ -3,9 +3,7 @@
 	import { History, CircleHelp, Timer, Gauge } from 'lucide-svelte';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 	import type { Survey } from '@/types/entities';
-	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-	import { currentSurvey } from '@/stores/survey-details.svelte';
 
 	const { history }: { history: Survey[] | null } = $props();
 
@@ -29,13 +27,7 @@
 		<div class="mt-6 flex flex-col gap-y-4">
 			{#if history}
 				{#each history as survey}
-					<Card
-						onclick={() =>
-							currentSurvey.isGenerating
-								? toast.warning('Generation in progress!')
-								: onClick(survey.id)}
-						class="cursor-pointer"
-					>
+					<Card onclick={() => onClick(survey.id)} class="cursor-pointer">
 						<CardHeader>
 							<CardTitle tag="h6">{survey.title}</CardTitle>
 							<CardDescription class="flex w-full gap-x-2">

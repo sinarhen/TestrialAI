@@ -3,6 +3,8 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
 
+export type CreateSurveyDto = SurveyCompletion;
+
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
 		return new Response('Unauthorized', { status: 401 });

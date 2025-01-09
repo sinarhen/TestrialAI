@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { DeepPartial } from './utils';
 
 export interface Survey {
 	id: string;
@@ -48,7 +49,7 @@ export const questionSchema = z.object({
 	answerType: z.enum(['single', 'multiple', 'text']),
 	correctAnswer: z.string().nullable(),
 	question: z.string(),
-	options: z.array(optionSchema)
+	options: z.array(optionSchema).nullable()
 });
 
 export const surveySchema = z.object({
@@ -60,12 +61,6 @@ export const surveySchema = z.object({
 
 export type QuestionCompletion = z.infer<typeof questionSchema>;
 export type SurveyCompletion = z.infer<typeof surveySchema>;
-
-type DeepPartial<T> = T extends object
-	? {
-			[K in keyof T]?: DeepPartial<T[K]>;
-		}
-	: T;
 
 export type GeneratingQuestionCompletion = DeepPartial<QuestionCompletion>;
 export type GeneratingSurveyCompletion = DeepPartial<SurveyCompletion>;

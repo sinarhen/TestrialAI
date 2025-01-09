@@ -58,15 +58,6 @@ const config = {
 			fontFamily: {
 				sans: [...fontFamily.sans]
 			},
-			keyframes: {
-				fadeInSlide: {
-					'0%': { opacity: 0, transform: 'translateY(-20px)' },
-					'100%': { opacity: 1, transform: 'translateY(0)' }
-				}
-			},
-			animation: {
-				fadeInSlide: 'fadeInSlide 1s forwards'
-			}
 		}
 	},
 	plugins: [tailwindcssMotion]

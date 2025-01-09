@@ -1,9 +1,19 @@
 <script lang="ts">
+	import { is } from 'drizzle-orm';
 	import { Grip } from 'lucide-svelte';
 	import SurveyDetailsQuestion from './SurveyDetailsQuestion.svelte';
-	import { currentSurvey } from '@/stores/survey-details.svelte';
+	import type { SurveyState } from '../types';
+	import type { Question } from '@/types/entities';
 
 	let draggedIndex: number | null = $state<number | null>(null);
+
+	const {
+		initialQuestionsCount,
+		survey = $bindable()
+	}: {
+		survey: SurveyState;
+		initialQuestionsCount: number;
+	} = $props();
 
 	function onDragStart(event: DragEvent, index: number) {
 		draggedIndex = index;
@@ -15,55 +25,56 @@
 		event.dataTransfer?.setDragImage(dragImageElement, offsetX, offsetY);
 	}
 
+	$inspect({ survey });
 	function onDragOver(event: DragEvent) {
 		event.preventDefault();
 	}
 
 	function onDrop(event: DragEvent, targetIndex: number) {
-		if (!currentSurvey.survey) return;
 		event.preventDefault();
 		if (draggedIndex !== null && draggedIndex !== targetIndex) {
-			const qs = currentSurvey.survey.questions;
+			const qs = survey.questions;
 			const newQs = [...(qs ?? [])];
 			const [draggedItem] = newQs.splice(draggedIndex, 1);
 			newQs.splice(targetIndex, 0, draggedItem);
-			currentSurvey.survey.questions = newQs;
+			survey.questions = newQs;
 		}
 		draggedIndex = null;
 	}
+	const deleteQuestionInStore = (index: number) => survey.questions.splice(index, 1);
 
-	const {
-		generatedSurveyQuestionsCount
-	}: {
-		generatedSurveyQuestionsCount: number;
-	} = $props();
+	const updateQuestionInStore = (index: number, newQuestion: Question) =>
+		survey.questions.splice(index, 1, { ...newQuestion, status: 'ready' });
 
 	// That means the question is new because its index is greater than the length of the server side state
-	const isQuestionNewlyAdded = (index: number): boolean => index >= generatedSurveyQuestionsCount;
+	const isQuestionNewlyAdded = (index: number): boolean => index >= initialQuestionsCount;
 </script>
 
 <section class="relative mt-8 flex h-full w-full flex-col">
 	<div class="flex w-full flex-col gap-y-12">
-		{#if currentSurvey.survey}
-			{#each currentSurvey.survey.questions ?? [] as question, index (index)}
+		{#each survey.questions ?? [] as question, index (index)}
+			<div
+				class={`motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[--delay] group relative`}
+				style={`--delay: ${!isQuestionNewlyAdded(index) ? 200 + 150 * (index + 1) : 0}ms`}
+				ondragover={onDragOver}
+				ondrop={(event) => onDrop(event, index)}
+				role="list"
+			>
 				<div
-					class={`motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[--delay] group relative`}
-					style={`--delay: ${!isQuestionNewlyAdded(index) ? 200 + 150 * (index + 1) : 0}ms`}
-					ondragover={onDragOver}
-					ondrop={(event) => onDrop(event, index)}
-					role="list"
+					role="listitem"
+					class="absolute -left-14 flex h-full cursor-grab items-center opacity-10 transition-opacity active:cursor-grabbing active:hover:opacity-50 group-hover:opacity-25 xl:-left-20"
+					draggable="true"
+					ondragstart={(event) => onDragStart(event, index)}
 				>
-					<div
-						role="listitem"
-						class="absolute -left-14 flex h-full cursor-grab items-center opacity-10 transition-opacity active:cursor-grabbing active:hover:opacity-50 group-hover:opacity-25 xl:-left-20"
-						draggable="true"
-						ondragstart={(event) => onDragStart(event, index)}
-					>
-						<Grip size="32" />
-					</div>
-					<SurveyDetailsQuestion {question} />
+					<Grip size="32" />
 				</div>
-			{/each}
-		{/if}
+				<SurveyDetailsQuestion
+					{question}
+					updateQuestionInStore={(newQuestion) => updateQuestionInStore(index, newQuestion)}
+					surveyId={survey.id}
+					deleteQuestionInStore={() => deleteQuestionInStore(index)}
+				/>
+			</div>
+		{/each}
 	</div>
 </section>

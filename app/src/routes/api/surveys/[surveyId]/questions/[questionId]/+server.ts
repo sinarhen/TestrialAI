@@ -3,8 +3,12 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
 import { and, eq, inArray, notInArray, sql } from 'drizzle-orm';
 import * as table from '@/server/db/schema';
+import type { PartialBy } from '@/types/utils';
+import type { Option } from '@/types/entities';
 
-export type UpdateQuestionDto = Question;
+export type UpdateQuestionDto = Omit<Question, 'options'> & {
+	options: PartialBy<Option, 'id'>[];
+};
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (!locals.user) {
@@ -48,29 +52,32 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 	if (!updatedQuestion || !updatedQuestion.id || !id) {
 		return new Response('Invalid data', { status: 400 });
 	}
-
-	const existingQuestion = await db.query.questions.findFirst({
-		where: eq(table.questions.id, id),
-		with: {
-			survey: {
-				columns: {
-					userId: true
+	try {
+		const existingQuestion = await db.query.questions.findFirst({
+			where: eq(table.questions.id, id),
+			with: {
+				survey: {
+					columns: {
+						userId: true
+					}
 				}
 			}
+		});
+
+		if (!existingQuestion || existingQuestion.survey.userId !== locals.user.id) {
+			return new Response('Survey not found', { status: 404 });
 		}
-	});
 
-	if (!existingQuestion || existingQuestion.survey.userId !== locals.user.id) {
-		return new Response('Survey not found', { status: 404 });
+		await updateQuestion(existingQuestion.surveyId, updatedQuestion);
+
+		return new Response('Success', { status: 200 });
+	} catch (e) {
+		return new Response('Failed to update question', { status: 500 });
 	}
-
-	await updateQuestion(existingQuestion.surveyId, updatedQuestion);
-
-	return new Response('Success', { status: 200 });
 };
 
-const updateQuestion = (surveyId: string, question: Question) =>
-	db.transaction(async (tx) => {
+const updateQuestion = async (surveyId: string, question: UpdateQuestionDto) => {
+	await db.transaction(async (tx) => {
 		await tx.update(table.questions).set(question).where(eq(table.questions.id, question.id));
 
 		await tx
@@ -92,7 +99,7 @@ const updateQuestion = (surveyId: string, question: Question) =>
 				}
 			});
 
-		const optionIds = question.options.map((o) => o.id);
+		const optionIds = question.options.map((o) => o.id).filter((id) => id !== undefined);
 
 		// Delete old options
 		await tx
@@ -107,3 +114,4 @@ const updateQuestion = (surveyId: string, question: Question) =>
 				)
 			);
 	});
+};
