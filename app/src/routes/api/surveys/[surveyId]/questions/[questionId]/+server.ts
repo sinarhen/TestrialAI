@@ -15,14 +15,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		return new Response('Unauthorized', { status: 401 });
 	}
 
-	const id = params.questionId;
-
-	if (!id) {
+	const questionId = params.questionId;
+	const surveyId = params.surveyId;
+	if (!questionId) {
 		return new Response('Invalid data', { status: 400 });
 	}
 
 	const existingQuestion = await db.query.questions.findFirst({
-		where: eq(table.questions.id, id),
+		where: eq(table.questions.id, questionId),
 		with: {
 			survey: {
 				columns: {
@@ -32,11 +32,17 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		}
 	});
 
-	if (!existingQuestion || existingQuestion.survey.userId !== locals.user.id) {
+	if (
+		existingQuestion?.surveyId !== surveyId ||
+		existingQuestion?.survey.userId !== locals.user.id
+	) {
 		return new Response('Survey not found', { status: 404 });
 	}
+	if (!existingQuestion) {
+		return new Response('Question not found', { status: 404 });
+	}
 
-	await db.delete(table.questions).where(eq(table.questions.id, id));
+	await db.delete(table.questions).where(eq(table.questions.id, questionId));
 
 	return new Response('Success', { status: 200 });
 };
@@ -45,16 +51,17 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 	if (!locals.user) {
 		return new Response('Unauthorized', { status: 401 });
 	}
-
-	const id = params.surveyId;
-
 	const updatedQuestion = (await request.json()) as UpdateQuestionDto;
-	if (!updatedQuestion || !updatedQuestion.id || !id) {
+	if (!updatedQuestion || !updatedQuestion.id) {
 		return new Response('Invalid data', { status: 400 });
 	}
+
 	try {
+		const questionId = params.questionId;
+		const surveyId = params.surveyId;
+
 		const existingQuestion = await db.query.questions.findFirst({
-			where: eq(table.questions.id, id),
+			where: eq(table.questions.id, questionId!),
 			with: {
 				survey: {
 					columns: {
@@ -64,8 +71,14 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 			}
 		});
 
-		if (!existingQuestion || existingQuestion.survey.userId !== locals.user.id) {
+		if (
+			existingQuestion?.surveyId !== surveyId ||
+			existingQuestion?.survey.userId !== locals.user.id
+		) {
 			return new Response('Survey not found', { status: 404 });
+		}
+		if (!existingQuestion) {
+			return new Response('Question not found', { status: 404 });
 		}
 
 		await updateQuestion(existingQuestion.surveyId, updatedQuestion);
@@ -80,7 +93,7 @@ const updateQuestion = async (surveyId: string, question: UpdateQuestionDto) => 
 	await db.transaction(async (tx) => {
 		await tx.update(table.questions).set(question).where(eq(table.questions.id, question.id));
 
-		await tx
+		const insertedOptions = await tx
 			.insert(table.options)
 			.values(
 				question.options.map((o) => ({
@@ -97,20 +110,17 @@ const updateQuestion = async (surveyId: string, question: UpdateQuestionDto) => 
 					value: sql`excluded.value`,
 					isCorrect: sql`excluded.is_correct`
 				}
-			});
+			})
+			.returning({ id: table.options.id });
 
-		const optionIds = question.options.map((o) => o.id).filter((id) => id !== undefined);
+		const insertedOptionsIds = insertedOptions.map((o) => o.id);
 
-		// Delete old options
 		await tx
 			.delete(table.options)
 			.where(
 				and(
-					inArray(
-						table.options.questionId,
-						sql`(SELECT id FROM ${table.questions} WHERE ${eq(table.questions.surveyId, surveyId)})`
-					),
-					notInArray(table.options.id, optionIds)
+					eq(table.options.questionId, question.id),
+					notInArray(table.options.id, insertedOptionsIds)
 				)
 			);
 	});

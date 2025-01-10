@@ -41,6 +41,7 @@
 			],
 			status: 'new'
 		});
+
 </script>
 
 <div class="flex gap-x-2">

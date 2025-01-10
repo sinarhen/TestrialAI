@@ -1,5 +1,5 @@
-import { type Question, type Survey, surveySchema, type SurveyCompletion } from '@/types/entities';
-import { json, type RequestHandler } from '@sveltejs/kit';
+import { surveySchema, type SurveyCompletion } from '@/types/entities';
+import { type RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
 
@@ -22,20 +22,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return new Response('Invalid data', { status: 400 });
 	}
 
-	const finalSurvey = await saveSurveyToDatabase(parsed.data, locals.user.id);
+	const surveyId = await saveSurveyToDatabase(parsed.data, locals.user.id);
 
-	return json(finalSurvey);
+	return new Response(JSON.stringify(surveyId), {
+		status: 201
+	});
 };
 
 async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: string) {
-	const finalSurvey: Survey = {
-		...parsedSurvey,
-		questions: [] as Question[],
-		id: '',
-		createdAt: new Date(),
-		updatedAt: new Date()
-	};
-	await db.transaction(async (tx) => {
+	const id = await db.transaction(async (tx) => {
 		// Insert SURVEY
 		const [insertedSurvey] = await tx
 			.insert(table.surveys)
@@ -49,12 +44,9 @@ async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: s
 				updatedAt: table.surveys.updatedAt
 			});
 
-		if (!insertedSurvey) {
+		if (!insertedSurvey.id) {
 			throw new Error('Failed to insert survey');
 		}
-		finalSurvey.id = insertedSurvey.id;
-		finalSurvey.createdAt = insertedSurvey.createdAt;
-		finalSurvey.updatedAt = insertedSurvey.updatedAt;
 
 		// Insert QUESTIONS and OPTIONS
 		for (const question of parsedSurvey.questions ?? []) {
@@ -72,7 +64,9 @@ async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: s
 				throw new Error('Failed to insert question');
 			}
 
-			const finalOptions = [];
+			if (!question.options) {
+				return;
+			}
 			for (const option of question.options) {
 				const [insertedOption] = await tx
 					.insert(table.options)
@@ -86,19 +80,10 @@ async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: s
 				if (!insertedOption) {
 					throw new Error('Failed to insert option');
 				}
-
-				finalOptions.push({
-					...option,
-					id: insertedOption.id
-				});
 			}
-
-			finalSurvey.questions?.push({
-				...question,
-				id: insertedQuestion.id,
-				options: finalOptions
-			});
 		}
+		return insertedSurvey.id;
 	});
-	return finalSurvey;
+
+	return id;
 }

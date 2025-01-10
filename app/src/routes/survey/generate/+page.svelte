@@ -71,9 +71,8 @@
 		if (!generatingSurvey || generatingSurvey.status !== 'finished') return;
 		toast.promise(createSurvey(generatingSurvey.data), {
 			loading: 'Saving survey...',
-			success: ({ data }) => {
-				goto(`/survey/${data.id}`);
-				invalidateAll();
+			success: ({ data: id }) => {
+				goto(`/survey/${id}`);
 				return 'Survey is generated and saved successfully';
 			},
 			error: (err) => {
@@ -85,12 +84,12 @@
 </script>
 
 {#if generatingSurvey.status !== 'idle'}
-	<div>
+	<div class="animate-pulse">
 		{#if generatingSurvey.status !== 'finished'}
 			<Button onclick={onAbort} size="sm"><X size="16" />Stop generation</Button>
 		{/if}
 
-		<h2 class="mt-3 animate-pulse text-2xl font-bold text-opacity-50">
+		<h2 class="mt-3 text-2xl font-bold text-opacity-50">
 			{topic}
 		</h2>
 		<div class="mt-3 flex gap-x-4 text-sm">

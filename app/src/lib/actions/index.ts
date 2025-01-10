@@ -4,8 +4,9 @@ import type { UpdateQuestionDto } from '../../routes/api/surveys/[surveyId]/ques
 import type { CreateQuestionDto } from '../../routes/api/surveys/[surveyId]/questions/+server';
 import type { CreateSurveyDto } from '../../routes/api/surveys/+server';
 
+// returns id
 export const createSurvey = (parsedSurvey: CreateSurveyDto) =>
-	axios.post<Survey>('/api/surveys', parsedSurvey);
+	axios.post<string>('/api/surveys', parsedSurvey);
 
 export const updateQuestion = (surveyId: string, question: UpdateQuestionDto) =>
 	axios.put<Question>(`/api/surveys/${surveyId}/questions/${question.id}`, question);

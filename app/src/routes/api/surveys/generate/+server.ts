@@ -1,16 +1,6 @@
-import { db } from '@/server/db';
-import {
-	type Difficulty,
-	type Question,
-	type Survey,
-	surveySchema,
-	type SurveyCompletion
-} from '@/types/entities';
+import { type Difficulty } from '@/types/entities';
 import type { RequestHandler } from '@sveltejs/kit';
-import * as table from '@/server/db/schema';
-import { generateSurvey, getMessages } from '@/server/openai/completions/survey/generateSurvey';
-import { openai } from '@/server/openai';
-import { zodResponseFormat } from 'openai/helpers/zod.mjs';
+import { generateSurvey } from '@/server/openai/completions/survey/generateSurvey';
 import type { SupportedModel } from '@/types/openai';
 
 export type GenerateSurveyDto = {
@@ -20,16 +10,24 @@ export type GenerateSurveyDto = {
 	model: SupportedModel;
 };
 
+const economyMode = true; // Sh is expensive :)
+
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.session || !locals.user) {
 		return new Response('Unauthorized', { status: 401 });
 	}
-	const { topic, difficulty, numberOfQuestions } = await request.json();
+	const { topic, difficulty, numberOfQuestions, model } = await request.json();
 	if (!topic || typeof topic !== 'string') {
 		return new Response('Topic is required', { status: 400 });
 	}
 
-	const openAIStream = generateSurvey({ topic, difficulty, numberOfQuestions });
+	const openAIStream = generateSurvey(
+		{ topic, difficulty, numberOfQuestions: economyMode ? 2 : numberOfQuestions },
+		{
+			model,
+			max_tokens: economyMode ? 300 : undefined
+		}
+	);
 	return new Response(openAIStream.toReadableStream());
 };
 

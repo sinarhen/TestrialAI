@@ -31,7 +31,6 @@
 	import { questionState, type QuestionState } from '../types';
 	import { toast } from 'svelte-sonner';
 	import { createQuestion, deleteQuestion, updateQuestion } from '@/actions';
-	import { invalidate } from '$app/navigation';
 
 	const {
 		surveyId,
@@ -45,21 +44,17 @@
 		deleteQuestionInStore: () => void;
 	} = $props();
 
+	$effect(() => {
+		if (lodash.isEqual(question, updatedQuestion)) return;
+		updatedQuestion.status = 'modified';
+	});
+
 	let isDialogOpen = $state(false);
 	let isActionMenuOpen = $state(false);
 	let updatedQuestion = $state(lodash.cloneDeep(question));
 
-	$effect(() => {
-		if (!questionState.isGenerating(question) || lodash.isEqual(question, updatedQuestion)) {
-			return;
-		}
-		updatedQuestion = lodash.cloneDeep(question);
-	});
-
 	function deleteOption(index: number) {
-		if (updatedQuestion.status !== 'generating') {
-			updatedQuestion.options?.splice(index, 1);
-		}
+		updatedQuestion.options?.splice(index, 1);
 	}
 
 	function createOption() {
@@ -130,7 +125,7 @@
 	const onEditApply = async () => {
 		// Didn't change anything
 		if (questionState.isReady(updatedQuestion)) {
-			toast.success('Question saved successfully');
+			toast.success('Question had no changes to save');
 			isDialogOpen = false;
 			return;
 		} else if (!questionState.isEditable(updatedQuestion)) {
