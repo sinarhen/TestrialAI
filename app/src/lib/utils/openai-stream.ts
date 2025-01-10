@@ -1,8 +1,7 @@
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';
-import { toast } from 'svelte-sonner';
 
-interface StreamOpenAiOptions<TPartial, TFinal> {
+export interface OpenAiStreamingOptions<TPartial, TFinal> {
 	endpoint: string;
 	method?: string;
 	body?: unknown;
@@ -20,7 +19,7 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 	signal,
 	onPartial,
 	onComplete
-}: StreamOpenAiOptions<TPartial, TFinal>) {
+}: OpenAiStreamingOptions<TPartial, TFinal>) {
 	const res = await fetch(endpoint, {
 		method,
 		headers: {

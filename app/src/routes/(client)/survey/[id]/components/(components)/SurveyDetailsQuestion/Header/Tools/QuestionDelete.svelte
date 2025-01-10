@@ -2,7 +2,7 @@
 	import { Trash2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { type QuestionState, questionState } from '../../../../../types';
-	import { deleteQuestion } from '@/actions';
+	import { deleteQuestion } from '@/services/handlers';
 
 	const {
 		question,

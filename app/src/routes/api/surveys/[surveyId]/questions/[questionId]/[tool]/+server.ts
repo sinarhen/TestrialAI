@@ -1,4 +1,3 @@
-import { modifyQuestion } from '@/actions';
 import { db } from '@/server/db';
 import { questions, surveys } from '@/server/db/schema';
 import { regenerateQuestionWithTool } from '@/server/openai/completions/question/tools';
@@ -25,11 +24,13 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 				survey: {
 					columns: {
 						userId: true,
-						title: true
+						title: true,
+						difficulty: true
 					}
 				}
 			}
 		});
+
 		if (
 			!existingQuestion ||
 			existingQuestion.survey.userId !== locals.user.id ||
@@ -42,7 +43,7 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 			questionTopic: existingQuestion.question,
 			existingQuestions: [existingQuestion.question],
 			tool,
-			surveyDifficulty: 'Easy', // Anyways will be moved to the scope of the question
+			surveyDifficulty: existingQuestion.survey.difficulty, // Anyways will be moved to the scope of the question
 			surveyTitle: existingQuestion.survey.title
 		});
 

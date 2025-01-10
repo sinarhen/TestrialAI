@@ -1,8 +1,16 @@
-import type { Question, Survey, SurveyCompletion } from '@/types/entities';
+import type {
+	GeneratingQuestionCompletion,
+	GeneratingSurveyCompletion,
+	Question,
+	QuestionCompletion,
+	Survey,
+	SurveyCompletion
+} from '@/types/entities';
 import axios from 'axios';
 import type { UpdateQuestionDto } from '../../routes/api/surveys/[surveyId]/questions/[questionId]/+server';
 import type { CreateQuestionDto } from '../../routes/api/surveys/[surveyId]/questions/+server';
 import type { CreateSurveyDto } from '../../routes/api/surveys/+server';
+import { streamOpenAiResponse, type OpenAiStreamingOptions } from '@/utils/openai-stream';
 
 // returns id
 export const createSurvey = (parsedSurvey: CreateSurveyDto) =>
@@ -18,3 +26,31 @@ export const deleteQuestion = (surveyId: string, questionId: string) =>
 
 export const createQuestion = (surveyId: string, question: CreateQuestionDto) =>
 	axios.post<Question>(`/api/surveys/${surveyId}/questions`, question);
+
+export const streamSurveyGeneration = <
+	TPartial = GeneratingSurveyCompletion,
+	TFinal = SurveyCompletion
+>(
+	options: OpenAiStreamHandlerOptions<TPartial, TFinal>
+) =>
+	streamOpenAiResponse<TPartial, TFinal>({
+		endpoint: '/api/surveys/generate',
+		...options
+	});
+
+export const streamQuestionGeneration = <
+	TPartial = GeneratingQuestionCompletion,
+	TFinal = QuestionCompletion
+>(
+	surveyId: string,
+	options: OpenAiStreamHandlerOptions<TPartial, TFinal>
+) =>
+	streamOpenAiResponse<TPartial, TFinal>({
+		endpoint: `/api/surveys/${surveyId}/questions/generate`,
+		...options
+	});
+
+type OpenAiStreamHandlerOptions<TPartial, TFinal> = Omit<
+	OpenAiStreamingOptions<TPartial, TFinal>,
+	'endpoint'
+>;

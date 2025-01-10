@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { createQuestion } from '@/actions/index.js';
+	import { createQuestion } from '@/services/handlers.js';
 	import { Button } from '@/components/ui/button/index.js';
 	import { Sparkles, Trash2 } from 'lucide-svelte';
 	import type { Question } from '@/types/entities';

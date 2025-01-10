@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { CircleHelp, Gauge, PlusCircle, Save, Share, Share2, Trash2 } from 'lucide-svelte';
-	import QuestionList from './(components)/SurveyDetails.svelte';
+	import { CircleHelp, Gauge, PlusCircle, Share, Trash2 } from 'lucide-svelte';
 	import type { PageServerData } from './$types';
 	import { Button } from '@/components/ui/button';
-	import axios from 'axios';
 	import { toast } from 'svelte-sonner';
-	import { deleteSurvey } from '@/actions';
-	import AddQuestionButton from './(components)/AddQuestionButton.svelte';
-	import GenerateQuestionButton from './(components)/GenerateQuestionButton.svelte';
+	import { deleteSurvey } from '@/services/handlers';
 	import { goto, invalidate } from '$app/navigation';
 	import * as Dialog from '@/components/ui/dialog';
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import * as AlertDialog from '@/components/ui/alert-dialog';
-	import type { QuestionState, SurveyState } from './types';
+	import type { SurveyState } from './types';
+	import AddQuestionButton from './components/AddQuestionButton.svelte';
+	import GenerateQuestionButton from './components/GenerateQuestionButton.svelte';
+	import SurveyDetails from './components/SurveyDetails.svelte';
 
 	const {
 		data: serverData
@@ -166,7 +165,7 @@
 		><Gauge size="12" /> {survey?.difficulty}</span
 	>
 </div>
-<QuestionList {survey} initialQuestionsCount={serverData.survey.questions.length} />
+<SurveyDetails {survey} initialQuestionsCount={serverData.survey.questions.length} />
 
 <div class="mt-16 flex">
 	<AddQuestionButton {onCreateQuestion} />

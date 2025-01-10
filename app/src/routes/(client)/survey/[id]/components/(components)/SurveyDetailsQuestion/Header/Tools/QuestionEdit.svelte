@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type QuestionState, questionState } from '../../../../../types';
 	import { toast } from 'svelte-sonner';
-	import { createQuestion, updateQuestion } from '@/actions';
+	import { createQuestion, updateQuestion } from '@/services/handlers';
 	import {
 		Dialog,
 		DialogContent,

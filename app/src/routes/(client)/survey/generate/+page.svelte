@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { CircleHelp, Gauge, X } from 'lucide-svelte';
-	import SurveyGenerationDetails from './(components)/GeneratingSurveyDetails.svelte';
+	import SurveyGenerationDetails from './components/GeneratingSurveyDetails.svelte';
 	import type { PageData } from './$types';
 	import { goto, invalidate } from '$app/navigation';
 	import type { GeneratingSurveyCompletion, SurveyCompletion } from '@/types/entities';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { createSurvey } from '@/actions';
+	import { createSurvey, streamSurveyGeneration } from '@/services/handlers';
 	import { Button } from '@/components/ui/button';
 	import type { GenerateSurveyDto } from '../../api/surveys/generate/+server';
 
@@ -26,8 +26,7 @@
 	const generate = async () => {
 		abortController = new AbortController();
 		try {
-			await streamOpenAiResponse<GeneratingSurveyCompletion, SurveyCompletion>({
-				endpoint: '/api/surveys/generate',
+			await streamSurveyGeneration({
 				body: {
 					topic,
 					difficulty,

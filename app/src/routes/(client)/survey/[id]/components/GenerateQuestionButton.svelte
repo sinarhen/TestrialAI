@@ -5,10 +5,9 @@
 	import { Input } from '@/components/ui/input';
 	import { Label } from '@/components/ui/label';
 	import { toast } from 'svelte-sonner';
-	import type { GeneratingQuestionCompletion, QuestionCompletion } from '@/types/entities';
-	import { streamOpenAiResponse } from '@/utils/openai-stream';
-	import type { GenerateQuestionDto } from '../../../api/surveys/[surveyId]/questions/generate/+server';
 	import type { SurveyState } from '../types';
+	import { streamQuestionGeneration } from '@/services/handlers';
+	import type { GenerateQuestionDto } from '../../../../api/surveys/[surveyId]/questions/generate/+server';
 
 	let isPopoverOpen = $state(false);
 	let questionTopic = $state('');
@@ -29,7 +28,6 @@
 	let generatingQuestionIndex: number | null = $state(null);
 
 	async function onGenerate() {
-		// Prepare request body
 		const body: GenerateQuestionDto = {
 			topic: questionTopic
 		};
@@ -45,11 +43,9 @@
 		resetPopover();
 
 		try {
-			await streamOpenAiResponse<GeneratingQuestionCompletion, QuestionCompletion>({
-				endpoint: `/api/surveys/${survey.id}/questions/generate`,
+			await streamQuestionGeneration(survey.id, {
 				body,
 				signal: abortController.signal,
-
 				onPartial: (partialData) => {
 					if (!generatingQuestionIndex) return;
 					survey?.questions.splice(generatingQuestionIndex, 1, {
@@ -57,15 +53,12 @@
 						status: 'generating'
 					});
 				},
-
 				onComplete: (finalData) => {
 					if (!generatingQuestionIndex) return;
-
 					survey?.questions.splice(generatingQuestionIndex, 1, {
 						...finalData,
 						status: 'generated'
 					});
-
 					toast.success('Question is generated, does it look good for you?');
 				}
 			});
