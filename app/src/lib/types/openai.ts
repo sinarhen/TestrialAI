@@ -9,3 +9,5 @@ export interface CustomChatCompletionStreamParams
 	extends Omit<ChatCompletionStreamParams, 'messages' | 'response_format'> {
 	model: SupportedModel;
 }
+
+export type QuestionModificationTool = 'simplify' | 'rephrase' | 'complicate';

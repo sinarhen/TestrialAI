@@ -3,6 +3,10 @@
 	import { Brain, CaseLower, Globe, RotateCw, Sparkles, ChevronDown } from 'lucide-svelte';
 
 	let isActionMenuOpen = $state(false);
+
+	const onToolChoose = <T>(tool: T) => {
+		
+	}; 
 </script>
 
 <DropdownMenu.Root

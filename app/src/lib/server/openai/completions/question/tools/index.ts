@@ -1,10 +1,10 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { questionSchema, type Difficulty } from '@/types/entities';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
-import type { CustomChatCompletionStreamParams } from '@/types/openai';
+import type { CustomChatCompletionStreamParams, QuestionModificationTool } from '@/types/openai';
 import { openai } from '@/server/openai';
 
-function getSystemContent(tool: Tool): string {
+function getSystemContent(tool: QuestionModificationTool): string {
 	switch (tool) {
 		case 'simplify':
 			return `
@@ -41,13 +41,8 @@ function getSystemContent(tool: Tool): string {
 	}
 }
 
-function getUserContent(
-	tool: Tool,
-	topic: string,
-	existingQuestions: string[],
-	surveyTitle: string,
-	surveyDifficulty: Difficulty
-): string {
+function getUserContent(params: Parameters): string {
+	const { tool, questionTopic: topic, existingQuestions, surveyTitle, surveyDifficulty } = params;
 	const toolVerb =
 		tool === 'simplify'
 			? 'simplify'
@@ -67,26 +62,20 @@ function getUserContent(
 }
 
 // 2) Consolidate both system and user messages
-const getMessages = ({
-	tool,
-	topic,
-	existingQuestions,
-	surveyTitle,
-	surveyDifficulty
-}: Parameters): ChatCompletionMessageParam[] => {
+const getMessages = (params: Parameters): ChatCompletionMessageParam[] => {
 	return [
 		{
 			role: 'system',
-			content: getSystemContent(tool)
+			content: getSystemContent(params.tool)
 		},
 		{
 			role: 'user',
-			content: getUserContent(tool, topic, existingQuestions, surveyTitle, surveyDifficulty)
+			content: getUserContent(params)
 		}
 	];
 };
 
-export const modifyQuestion = (
+export const regenerateQuestionWithTool = (
 	parameters: Parameters,
 	customCreateCompletionParams: CustomChatCompletionStreamParams = {
 		model: 'gpt-4o'
@@ -98,11 +87,9 @@ export const modifyQuestion = (
 		...customCreateCompletionParams
 	});
 
-type Tool = 'simplify' | 'rephrase' | 'complicate';
-
 interface Parameters {
-	tool: Tool;
-	topic: string;
+	tool: QuestionModificationTool;
+	questionTopic: string;
 	existingQuestions: string[];
 	surveyTitle: string;
 	surveyDifficulty: Difficulty;

@@ -1,9 +1,9 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { generateQuestion } from '@/server/openai/completions/question';
 import type { SupportedModel } from '@/types/openai';
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
 import { surveys } from '@/server/db/schema';
+import { generateQuestion } from '@/server/openai/completions/question';
 
 export interface GenerateQuestionDto {
 	topic: string;
