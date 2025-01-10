@@ -28,7 +28,7 @@
 	import { Button } from '@/components/ui/button';
 	import { AnswerTypes, type Question } from '@/types/entities';
 	import { Input } from '@/components/ui/input';
-	import type { QuestionState } from '../types';
+	import { questionState, type QuestionState } from '../types';
 	import { toast } from 'svelte-sonner';
 	import { createQuestion, deleteQuestion, updateQuestion } from '@/actions';
 	import { invalidate } from '$app/navigation';
@@ -41,7 +41,7 @@
 	}: {
 		surveyId: string;
 		question: QuestionState;
-		updateQuestionInStore: (updatedQuestion: Question) => void;
+		updateQuestionInStore: (updatedQuestion: Question, isJustGenerated?: boolean) => void;
 		deleteQuestionInStore: () => void;
 	} = $props();
 
@@ -50,18 +50,10 @@
 	let updatedQuestion = $state(lodash.cloneDeep(question));
 
 	$effect(() => {
-		if (
-			question.status === 'new' ||
-			question.status === 'generated' ||
-			question.status === 'generating' ||
-			lodash.isEqual(question, updatedQuestion)
-		) {
+		if (!questionState.isGenerating(question) || lodash.isEqual(question, updatedQuestion)) {
 			return;
 		}
-		updatedQuestion = {
-			...lodash.cloneDeep(question),
-			status: 'modified'
-		};
+		updatedQuestion = lodash.cloneDeep(question);
 	});
 
 	function deleteOption(index: number) {
@@ -71,8 +63,7 @@
 	}
 
 	function createOption() {
-		if (updatedQuestion.status === 'generating' || updatedQuestion.status === 'generated') return;
-
+		if (!questionState.isEditable(updatedQuestion)) return;
 		const newOptions = [
 			...(updatedQuestion.options ?? []),
 			{
@@ -107,14 +98,9 @@
 		toast.success('Question will be deleted in 5 seconds', {
 			duration: 5000,
 			onAutoClose: () => {
-				console.log(updatedQuestion);
 				if (isCanceled) return;
 
-				if (
-					updatedQuestion.status === 'generated' ||
-					updatedQuestion.status === 'generating' ||
-					updatedQuestion.status === 'new'
-				) {
+				if (!questionState.isExisting(updatedQuestion)) {
 					toast.warning('Unable to delete question');
 					return;
 				}
@@ -141,27 +127,28 @@
 		});
 	};
 
-	const onQuestionSave = async () => {
-		console.log(updatedQuestion);
-
-		if (updatedQuestion.status === 'ready') {
+	const onEditApply = async () => {
+		// Didn't change anything
+		if (questionState.isReady(updatedQuestion)) {
 			toast.success('Question saved successfully');
 			isDialogOpen = false;
 			return;
-		} else if (updatedQuestion.status === 'generating' || updatedQuestion.status === 'generated') {
+		} else if (!questionState.isEditable(updatedQuestion)) {
 			console.error('Invalid question status');
 			toast.error('You cannot save this question');
 			return;
+		} else if (questionState.isGenerating(updatedQuestion)) {
+			return;
 		}
-		const resp =
-			updatedQuestion.status === 'new'
-				? createQuestion(surveyId, updatedQuestion)
-				: updateQuestion(surveyId, updatedQuestion);
+
+		const resp = questionState.isNew(updatedQuestion)
+			? createQuestion(surveyId, updatedQuestion)
+			: updateQuestion(surveyId, updatedQuestion);
 
 		toast.promise(resp, {
 			loading: 'Saving question...',
 			success: ({ data }) => {
-				updateQuestionInStore(data);
+				updateQuestionInStore(data, questionState.isNew(updatedQuestion));
 				isDialogOpen = false;
 				return 'Question saved successfully';
 			},
@@ -179,7 +166,7 @@
 		toast.promise(createQuestion(surveyId, question), {
 			loading: 'Saving question...',
 			success: ({ data }) => {
-				updateQuestionInStore(data);
+				updateQuestionInStore(data, true);
 				return 'Question saved successfully';
 			},
 			error: (error) => {
@@ -198,30 +185,29 @@
 		toast.success('Question is rejected. Try generating a new one 😊');
 	};
 
-	const isGenerating = $derived(
-		updatedQuestion.status === 'generating' || updatedQuestion.status === 'generated'
-	);
+	const isGenerating = $derived(questionState.isGenerating(updatedQuestion));
+	const isGenerated = $derived(questionState.isGenerated(updatedQuestion));
 </script>
 
 <div class="group">
+	{#if isGenerated}
+		<span
+			class="motion-opacity-in-0 motion-delay-150 motion-preset-shrink inline-flex items-center gap-x-0.5 rounded-md border bg-black p-1 text-xs text-white"
+		>
+			<Sparkles size="12" /> Finished
+		</span>
+	{/if}
+	{#if isGenerating}
+		<span
+			class="motion-opacity-in-0 motion-delay-150 motion-preset-shrink inline-flex items-center gap-x-0.5 rounded-md border bg-black p-1 text-xs text-white"
+		>
+			<Sparkles size="12" /> Generating
+		</span>
+	{/if}
 	<div class:animate-pulse={isGenerating} class="w-full">
-		{#if question.status === 'generated'}
-			<span
-				class="motion-opacity-in-0 motion-delay-150 motion-preset-shrink inline-flex items-center gap-x-0.5 rounded-md border bg-black p-1 text-xs text-white"
-			>
-				<Sparkles size="12" /> Finished
-			</span>
-		{/if}
-		{#if question.status === 'generating'}
-			<span
-				class="motion-opacity-in-0 motion-delay-150 motion-preset-shrink inline-flex items-center gap-x-0.5 rounded-md border bg-black p-1 text-xs text-white"
-			>
-				<Sparkles size="12" /> Generating
-			</span>
-		{/if}
 		<h3 class="mb-5 inline-flex w-full justify-between gap-x-2 text-xl font-medium">
 			{question.question}
-			{#if updatedQuestion.status !== 'generating'}
+			{#if questionState.isEditable(updatedQuestion)}
 				<span class="flex h-full items-center gap-x-2">
 					<DropdownMenu.Root
 						closeOnItemClick={true}
@@ -279,7 +265,7 @@
 										<Info size="10" />
 									</Label>
 									<RadioGroup.Root
-										disabled={question.status === 'generating'}
+										disabled={isGenerating}
 										bind:value={updatedQuestion.answerType}
 										class="mt-2 gap-x-2"
 										id={`answer-type`}
@@ -335,7 +321,7 @@
 								{/if}
 							</div>
 							<DialogFooter class="gap-y-2">
-								<Button onclick={onQuestionSave}>Save</Button>
+								<Button onclick={onEditApply}>Save</Button>
 								<Button variant="outline" on:click={() => (isDialogOpen = false)}>Cancel</Button>
 							</DialogFooter>
 						</DialogContent>
@@ -385,7 +371,7 @@
 		{/if}
 	</div>
 	{#if question.status === 'generated'}
-		<div class="motion-opacity-in-0 mt-3 flex gap-x-2 duration-200">
+		<div class="motion-opacity-in-0 mt-5 flex gap-x-2 duration-200">
 			<Button onclick={onQuestionApprove} variant="default" size="sm" class="gap-x-1 text-xs">
 				<Sparkles size="12" />
 				Approve

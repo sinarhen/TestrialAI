@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { is } from 'drizzle-orm';
 	import { Grip } from 'lucide-svelte';
 	import SurveyDetailsQuestion from './SurveyDetailsQuestion.svelte';
 	import type { SurveyState } from '../types';
@@ -25,7 +24,6 @@
 		event.dataTransfer?.setDragImage(dragImageElement, offsetX, offsetY);
 	}
 
-	$inspect({ survey });
 	function onDragOver(event: DragEvent) {
 		event.preventDefault();
 	}
@@ -43,8 +41,8 @@
 	}
 	const deleteQuestionInStore = (index: number) => survey.questions.splice(index, 1);
 
-	const updateQuestionInStore = (index: number, newQuestion: Question) =>
-		survey.questions.splice(index, 1, { ...newQuestion, status: 'ready' });
+	const updateQuestionInStore = (index: number, newQuestion: Question, isJustGenerated?: boolean) =>
+		survey.questions.splice(index, 1, { ...newQuestion, status: 'ready', isJustGenerated });
 
 	// That means the question is new because its index is greater than the length of the server side state
 	const isQuestionNewlyAdded = (index: number): boolean => index >= initialQuestionsCount;
@@ -60,17 +58,20 @@
 				ondrop={(event) => onDrop(event, index)}
 				role="list"
 			>
-				<div
-					role="listitem"
-					class="absolute -left-14 flex h-full cursor-grab items-center opacity-10 transition-opacity active:cursor-grabbing active:hover:opacity-50 group-hover:opacity-25 xl:-left-20"
-					draggable="true"
-					ondragstart={(event) => onDragStart(event, index)}
-				>
-					<Grip size="32" />
-				</div>
+				{#if question.status !== 'generated' && question.status !== 'generating'}
+					<div
+						role="listitem"
+						class="absolute -left-14 flex h-full cursor-grab items-center opacity-10 transition-opacity active:cursor-grabbing active:hover:opacity-50 group-hover:opacity-25 xl:-left-20"
+						draggable="true"
+						ondragstart={(event) => onDragStart(event, index)}
+					>
+						<Grip size="32" />
+					</div>
+				{/if}
 				<SurveyDetailsQuestion
 					{question}
-					updateQuestionInStore={(newQuestion) => updateQuestionInStore(index, newQuestion)}
+					updateQuestionInStore={(newQuestion, isJustGenerated) =>
+						updateQuestionInStore(index, newQuestion, isJustGenerated)}
 					surveyId={survey.id}
 					deleteQuestionInStore={() => deleteQuestionInStore(index)}
 				/>

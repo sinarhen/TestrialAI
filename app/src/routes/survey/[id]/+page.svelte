@@ -28,17 +28,6 @@
 		}))
 	});
 
-	// $effect(() => {
-	// 	if (!serverData.survey || !survey) return;
-	// 	survey = {
-	// 		...serverData.survey,
-	// 		questions: serverData.survey.questions.map((q) => ({
-	// 			...q,
-	// 			status: 'ready'
-	// 		}))
-	// 	};
-	// });
-
 	const onCreateQuestion = () =>
 		survey.questions.push({
 			question: 'New question',
