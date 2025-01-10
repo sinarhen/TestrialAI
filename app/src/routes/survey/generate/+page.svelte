@@ -2,7 +2,7 @@
 	import { CircleHelp, Gauge, X } from 'lucide-svelte';
 	import SurveyGenerationDetails from './(components)/GeneratingSurveyDetails.svelte';
 	import type { PageData } from './$types';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import type { GeneratingSurveyCompletion, SurveyCompletion } from '@/types/entities';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { onMount } from 'svelte';
@@ -68,11 +68,14 @@
 		goto('/');
 	};
 
-	const onConfirm = () => {
+	const onConfirm = async () => {
 		if (!generatingSurvey || generatingSurvey.status !== 'finished') return;
+
 		toast.promise(createSurvey(generatingSurvey.data), {
 			loading: 'Saving survey...',
-			success: ({ data: id }) => {
+			success: (resp) => {
+				console.log(resp);
+				const id = resp.data;
 				goto(`/survey/${id}`);
 				return 'Survey is generated and saved successfully';
 			},

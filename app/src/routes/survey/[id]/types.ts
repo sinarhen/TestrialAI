@@ -20,7 +20,7 @@ type Status =
 	| 'regenerating'
 	| 'regenerated';
 
-interface ReadyQuestion extends Question, BaseQuestionState {
+export interface ReadyQuestion extends Question, BaseQuestionState {
 	status: 'ready';
 	isJustGenerated?: boolean;
 }
@@ -61,9 +61,8 @@ export type QuestionState =
 	| RegeneratingQuestion
 	| RegeneratedQuestion;
 
-const isEditable = (
-	question: QuestionState
-): question is ReadyQuestion | ModifiedQuestion | NewQuestion => {
+export type EditableQuestion = ReadyQuestion | ModifiedQuestion | NewQuestion;
+const isEditable = (question: QuestionState): question is EditableQuestion => {
 	return question.status === 'ready' || question.status === 'modified' || question.status === 'new';
 };
 

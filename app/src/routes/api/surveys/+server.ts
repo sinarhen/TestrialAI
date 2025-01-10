@@ -34,8 +34,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 };
 
-async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: string) {
-	const id = await db.transaction(async (tx) => {
+const saveSurveyToDatabase = async (parsedSurvey: SurveyCompletion, createdBy: string) =>
+	await db.transaction(async (tx) => {
 		// Insert SURVEY
 		const [insertedSurvey] = await tx
 			.insert(table.surveys)
@@ -70,7 +70,7 @@ async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: s
 			}
 
 			if (!question.options) {
-				return;
+				continue;
 			}
 			for (const option of question.options) {
 				const [insertedOption] = await tx
@@ -89,6 +89,3 @@ async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: s
 		}
 		return insertedSurvey.id;
 	});
-
-	return id;
-}
