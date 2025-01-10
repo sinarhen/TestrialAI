@@ -42,7 +42,7 @@
 	const deleteQuestionInStore = (index: number) => survey.questions.splice(index, 1);
 
 	const updateQuestionInStore = (index: number, newQuestion: Question, isJustGenerated?: boolean) =>
-		survey.questions.splice(index, 1, { ...newQuestion, status: 'ready', isJustGenerated });
+		survey.questions.splice(index, 1, { ...newQuestion, status: 'saved', isJustGenerated });
 
 	// That means the question is new because its index is greater than the length of the server side state
 	const isQuestionNewlyAdded = (index: number): boolean => index >= initialQuestionsCount;
@@ -50,7 +50,7 @@
 
 <section class="relative mt-8 flex h-full w-full flex-col">
 	<div class="flex w-full flex-col gap-y-12">
-		{#each survey.questions ?? [] as question, index (question.status === 'ready' || question.status === 'modified' ? question.id : index)}
+		{#each survey.questions ?? [] as question, index (index)}
 			<div
 				class={`motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[--delay] group relative`}
 				style={`--delay: ${!isQuestionNewlyAdded(index) ? 200 + 150 * (index + 1) : 0}ms`}

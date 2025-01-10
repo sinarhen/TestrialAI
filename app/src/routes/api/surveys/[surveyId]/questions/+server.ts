@@ -10,7 +10,6 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 	if (!locals.user) {
 		return new Response('Unauthorized', { status: 401 });
 	}
-
 	try {
 		const id = params.surveyId;
 
@@ -28,9 +27,7 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 			return new Response('Survey not found', { status: 404 });
 		}
 
-		let createdQuestion = {};
-
-		await db.transaction(async (tx) => {
+		const createdQuestion = await db.transaction(async (tx) => {
 			const [insertedQuestion] = await tx
 				.insert(table.questions)
 				.values({
@@ -43,10 +40,8 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 				throw new Error('Failed to insert question');
 			}
 
-			createdQuestion = insertedQuestion;
-
 			if (!body.options) {
-				return;
+				return insertedQuestion;
 			}
 			const insertedOptions = await tx
 				.insert(table.options)
@@ -62,7 +57,7 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 				throw new Error('Failed to insert options');
 			}
 
-			createdQuestion = {
+			return {
 				...insertedQuestion,
 				options: insertedOptions
 			} as Question;

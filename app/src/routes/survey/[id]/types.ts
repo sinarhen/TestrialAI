@@ -12,7 +12,7 @@ interface BaseQuestionState {
 }
 
 type Status =
-	| 'ready'
+	| 'saved'
 	| 'generating'
 	| 'generated'
 	| 'new'
@@ -20,8 +20,8 @@ type Status =
 	| 'regenerating'
 	| 'regenerated';
 
-export interface ReadyQuestion extends Question, BaseQuestionState {
-	status: 'ready';
+export interface SavedQuestion extends Question, BaseQuestionState {
+	status: 'saved';
 	isJustGenerated?: boolean;
 }
 
@@ -53,7 +53,7 @@ interface RegeneratedQuestion extends QuestionCompletion, BaseQuestionState {
 }
 
 export type QuestionState =
-	| ReadyQuestion
+	| SavedQuestion
 	| GeneratingQuestion
 	| NewQuestion
 	| ModifiedQuestion
@@ -61,12 +61,12 @@ export type QuestionState =
 	| RegeneratingQuestion
 	| RegeneratedQuestion;
 
-export type EditableQuestion = ReadyQuestion | ModifiedQuestion | NewQuestion;
+export type EditableQuestion = SavedQuestion | ModifiedQuestion | NewQuestion;
 const isEditable = (question: QuestionState): question is EditableQuestion => {
-	return question.status === 'ready' || question.status === 'modified' || question.status === 'new';
+	return question.status === 'saved' || question.status === 'modified' || question.status === 'new';
 };
 
-const isReady = (question: QuestionState): question is ReadyQuestion => question.status === 'ready';
+const isSaved = (question: QuestionState): question is SavedQuestion => question.status === 'saved';
 
 const isNew = (question: QuestionState): question is NewQuestion => question.status === 'new';
 
@@ -75,9 +75,9 @@ const isModified = (question: QuestionState): question is ModifiedQuestion =>
 
 const isExisting = (
 	question: QuestionState
-): question is ReadyQuestion | RegeneratedQuestion | RegeneratingQuestion | ModifiedQuestion => {
+): question is SavedQuestion | RegeneratedQuestion | RegeneratingQuestion | ModifiedQuestion => {
 	return (
-		question.status === 'ready' ||
+		question.status === 'saved' ||
 		question.status === 'regenerated' ||
 		question.status === 'regenerating' ||
 		question.status === 'modified'
@@ -96,7 +96,7 @@ const isGenerated = (
 };
 
 export const questionState = {
-	isReady,
+	isSaved,
 	isNew,
 	isModified,
 	isExisting,

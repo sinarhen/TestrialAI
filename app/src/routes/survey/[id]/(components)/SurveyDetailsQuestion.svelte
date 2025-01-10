@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Sparkles } from 'lucide-svelte';
+	import { Check, Sparkles, PlusCircle, Loader } from 'lucide-svelte';
 	import { type Question } from '@/types/entities';
 	import { questionState, type QuestionState } from '../types';
 	import GeneratedQuestionActions from './(components)/SurveyDetailsQuestion/GeneratedQuestionActions.svelte';
@@ -22,27 +22,42 @@
 	} = $props();
 
 	const isGenerating = $derived(questionState.isGenerating(question));
-	const isGenerated = $derived(questionState.isGenerated(question));
+
+	let iconComponent = questionState.isGenerating(question)
+		? Loader
+		: questionState.isGenerated(question)
+			? Sparkles
+			: questionState.isNew(question)
+				? PlusCircle
+				: questionState.isSaved(question)
+					? Check
+					: Check;
 </script>
 
 <div class="group">
-	{#if isGenerated}
-		<span
-			class="motion-preset-shrink motion-opacity-in-0 motion-delay-150 inline-flex items-center gap-x-0.5 rounded-md border bg-black p-1 text-xs text-white"
-		>
-			<Sparkles size="12" /> Finished
+	{#key question.status}
+		<span class="motion-preset-focus inline-flex items-center gap-x-1 text-xs opacity-50">
+			<div>
+				{#if questionState.isGenerating(question)}
+					<Loader class="motion-preset-spin" size="12" />
+				{:else if questionState.isGenerated(question)}
+					<Sparkles size="12" />
+				{:else if questionState.isNew(question)}
+					<PlusCircle size="12" />
+				{:else if questionState.isSaved(question)}
+					<Check size="12" />
+				{:else}
+					<Check size="12" />
+				{/if}
+			</div>
+
+			{question.status.charAt(0).toUpperCase() + question.status.slice(1)}
 		</span>
-	{/if}
-	{#if isGenerating}
-		<span
-			class="motion-preset-shrink motion-opacity-in-0 motion-delay-150 inline-flex items-center gap-x-0.5 rounded-md border bg-black p-1 text-xs text-white"
-		>
-			<Sparkles size="12" /> Generating
-		</span>
-	{/if}
+	{/key}
+
 	<header
 		class:animate-pulse={isGenerating}
-		class="mb-5 inline-flex w-full justify-between gap-x-4"
+		class="mb-5 mt-0.5 inline-flex w-full justify-between gap-x-7"
 	>
 		<QuestionTitle questionTitle={question.question} />
 

@@ -18,7 +18,7 @@
 		try {
 			if (questionState.isNew(question)) {
 				// If the question is new, we can just remove it from the store without making any changes to the server
-				// Question that has some changes applied is saved to the server immediately and becomes 'ready'
+				// Question that has some changes applied is saved to the server immediately and becomes 'saved'
 				deleteQuestionInStore();
 				return;
 			}
@@ -27,6 +27,7 @@
 			}
 
 			await deleteQuestion(surveyId, question.id);
+			deleteQuestionInStore();
 			toast.success('Question deleted successfully');
 		} catch (error) {
 			console.error('Failed to delete question:', error);

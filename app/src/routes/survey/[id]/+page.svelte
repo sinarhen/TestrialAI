@@ -24,7 +24,7 @@
 		...serverData.survey,
 		questions: serverData.survey.questions.map((q) => ({
 			...q,
-			status: 'ready'
+			status: 'saved'
 		}))
 	});
 
@@ -41,7 +41,6 @@
 			],
 			status: 'new'
 		});
-
 </script>
 
 <div class="flex gap-x-2">

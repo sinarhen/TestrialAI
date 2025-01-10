@@ -36,7 +36,7 @@
 	let isDialogOpen = $state(false);
 
 	$effect(() => {
-		if (lodash.isEqual(question, updatedQuestion)) return;
+		if (lodash.isEqual(question, updatedQuestion) || questionState.isNew(question)) return;
 		updatedQuestion.status = 'modified';
 	});
 
@@ -46,29 +46,17 @@
 
 	function createOption() {
 		if (!questionState.isEditable(updatedQuestion)) return;
-		const newOptions = [
+		updatedQuestion.options = [
 			...(updatedQuestion.options ?? []),
 			{
 				value: '',
 				isCorrect: false
 			}
 		];
-		if (updatedQuestion.status === 'new') {
-			updatedQuestion = {
-				...updatedQuestion,
-				options: newOptions
-			};
-		} else {
-			updatedQuestion = {
-				...updatedQuestion,
-				status: 'modified',
-				options: newOptions
-			};
-		}
 	}
 	const onEditApply = async () => {
 		// Didn't change anything
-		if (questionState.isReady(updatedQuestion)) {
+		if (questionState.isSaved(updatedQuestion)) {
 			toast.success('Question had no changes to save');
 			isDialogOpen = false;
 			return;
