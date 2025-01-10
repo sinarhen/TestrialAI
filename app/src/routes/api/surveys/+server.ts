@@ -6,27 +6,32 @@ import * as table from '@/server/db/schema';
 export type CreateSurveyDto = SurveyCompletion;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) {
+	if (!locals.user || !locals.session) {
 		return new Response('Unauthorized', { status: 401 });
 	}
 
-	const survey = await request.json();
-	if (!survey) {
-		return new Response('Invalid data', { status: 400 });
+	try {
+		const survey = await request.json();
+		if (!survey) {
+			return new Response('Invalid data', { status: 400 });
+		}
+
+		const parsed = await surveySchema.safeParseAsync(survey);
+
+		if (!parsed.success) {
+			console.log(parsed.error);
+			return new Response('Invalid data', { status: 400 });
+		}
+
+		const surveyId = await saveSurveyToDatabase(parsed.data, locals.user.id);
+
+		return new Response(JSON.stringify(surveyId), {
+			status: 200
+		});
+	} catch (e) {
+		console.error(e);
+		return new Response('Failed to save survey', { status: 500 });
 	}
-
-	const parsed = await surveySchema.safeParseAsync(survey);
-
-	if (!parsed.success) {
-		console.log(parsed.error);
-		return new Response('Invalid data', { status: 400 });
-	}
-
-	const surveyId = await saveSurveyToDatabase(parsed.data, locals.user.id);
-
-	return new Response(JSON.stringify(surveyId), {
-		status: 201
-	});
 };
 
 async function saveSurveyToDatabase(parsedSurvey: SurveyCompletion, createdBy: string) {

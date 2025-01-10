@@ -81,17 +81,22 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 			return new Response('Question not found', { status: 404 });
 		}
 
-		await updateQuestion(existingQuestion.surveyId, updatedQuestion);
+		const questionUpdateResult = await updateQuestion(updatedQuestion);
 
-		return new Response('Success', { status: 200 });
+		return new Response(JSON.stringify(questionUpdateResult));
 	} catch (e) {
+		console.error(e);
 		return new Response('Failed to update question', { status: 500 });
 	}
 };
 
-const updateQuestion = async (surveyId: string, question: UpdateQuestionDto) => {
-	await db.transaction(async (tx) => {
-		await tx.update(table.questions).set(question).where(eq(table.questions.id, question.id));
+const updateQuestion = async (question: UpdateQuestionDto): Promise<Question> => {
+	return await db.transaction(async (tx) => {
+		const [updatedQuestion] = await tx
+			.update(table.questions)
+			.set(question)
+			.where(eq(table.questions.id, question.id))
+			.returning();
 
 		const insertedOptions = await tx
 			.insert(table.options)
@@ -111,7 +116,7 @@ const updateQuestion = async (surveyId: string, question: UpdateQuestionDto) => 
 					isCorrect: sql`excluded.is_correct`
 				}
 			})
-			.returning({ id: table.options.id });
+			.returning();
 
 		const insertedOptionsIds = insertedOptions.map((o) => o.id);
 
@@ -123,5 +128,10 @@ const updateQuestion = async (surveyId: string, question: UpdateQuestionDto) => 
 					notInArray(table.options.id, insertedOptionsIds)
 				)
 			);
+
+		return {
+			...updatedQuestion,
+			options: insertedOptions
+		};
 	});
 };

@@ -46,6 +46,7 @@
 						status: 'finished',
 						data: finalData
 					};
+					toast.success('Generation is completed. Are you satisfied with the result?');
 				}
 			});
 		} catch (e) {
