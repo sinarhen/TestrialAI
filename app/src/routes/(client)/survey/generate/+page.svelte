@@ -34,7 +34,7 @@
 					model
 				} as GenerateSurveyDto,
 				signal: abortController.signal,
-				onPartial: (partialData: GeneratingSurveyCompletion) => {
+				onPartial: (partialData) => {
 					generatingSurvey = {
 						status: 'generating',
 						data: partialData
@@ -91,7 +91,9 @@
 		<Button onclick={onAbort} size="sm"><X size="16" />Stop generation</Button>
 	{/if}
 
-	<SurveyGenerationDetails generatingSurvey={generatingSurvey.data} />
+	<section class="animate-pulse">
+		<SurveyGenerationDetails hideAnswers={false} generatingSurvey={generatingSurvey.data} />
+	</section>
 	{#if generatingSurvey.status === 'finished'}
 		<div class="mt-5 flex gap-x-1">
 			<Button class="gap-x-1" size="sm" onclick={onConfirm}><Check size="12" />Approve</Button>
