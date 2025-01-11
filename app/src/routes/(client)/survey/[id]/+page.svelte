@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CircleHelp, Gauge, PlusCircle, Share, Trash2 } from 'lucide-svelte';
+	import { CircleHelp, Gauge, Link, PlusCircle, Share, Trash2 } from 'lucide-svelte';
 	import type { PageServerData } from './$types';
 	import { Button } from '@/components/ui/button';
 	import { toast } from 'svelte-sonner';
@@ -12,6 +12,7 @@
 	import AddQuestionButton from './components/AddQuestionButton.svelte';
 	import GenerateQuestionButton from './components/GenerateQuestionButton.svelte';
 	import SurveyDetails from './components/SurveyDetails.svelte';
+	import { browser } from '$app/environment';
 
 	const {
 		data: serverData
@@ -41,7 +42,19 @@
 			status: 'new'
 		});
 
-	const shareLink = 'survey.co/share/9JDO34SZ320S34';
+	const onPdfExport = () => {
+		window.location.href = `/api/surveys/${survey.id}/pdf`;
+		toast.success('Downloaded started');
+	};
+
+	const onCopyLink = () => {
+		navigator.clipboard.writeText(shareLink);
+		toast.success('Link copied to clipboard');
+	};
+
+	const shareLink = browser
+		? `${window.location.origin}/survey/${serverData.survey.id}/share`
+		: 'Unable to copy link';
 </script>
 
 <div class="flex gap-x-2">
@@ -70,33 +83,27 @@
 			<Dialog.Description>Share this survey with your friends</Dialog.Description>
 			<div>
 				<Button
-					onclick={() => {
-						navigator.clipboard.writeText(shareLink);
-						toast.success('Link copied to clipboard');
-					}}
+					onclick={onCopyLink}
 					variant="outline"
-					class="block h-auto w-full cursor-pointer outline-2 hover:outline"
+					class=" flex h-auto w-full cursor-pointer gap-x-1 text-sm outline-2 hover:outline"
 				>
-					{shareLink}<br />
+					Link <Link size="12" /> <br />
 				</Button>
-				<p class="mt-1 text-center text-sm opacity-50">click to copy</p>
+				<p class="mt-1 text-center text-xs opacity-50">Click to copy</p>
 			</div>
 			<Separator class="mb-4 mt-3" />
 			<!-- <Dialog.Footer>
 					<Button>Copy link</Button>
 				</Dialog.Footer> -->
 			<div>
-				<p class="text-center text-sm opacity-50">Or export as:</p>
+				<p class="text-center text-xs opacity-50">Or export as:</p>
 				<!-- <Button
 						class="mt-2 flex h-12 w-full items-center justify-center rounded-md border text-xs"
 					>
 						Google forms
 					</Button> -->
 				<Button
-					onclick={() => {
-						window.location.href = `/api/surveys/${survey.id}/pdf`;
-						toast.success('Downloaded started');
-					}}
+					onclick={onPdfExport}
 					variant="outline"
 					class="mt-2 flex h-12 w-full items-center justify-center rounded-md border text-xs"
 				>
@@ -166,7 +173,6 @@
 >
 	{survey.title}
 </h2>
-
 <div class="mt-3 flex gap-x-4 text-sm">
 	<span class="motion-opacity-in-0 motion-delay-300 flex items-center gap-x-1"
 		><CircleHelp size="12" /> {survey?.questions?.length} Questions</span
