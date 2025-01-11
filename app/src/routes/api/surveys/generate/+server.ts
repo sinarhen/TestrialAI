@@ -10,8 +10,6 @@ export type GenerateSurveyDto = {
 	model: SupportedModel;
 };
 
-const economyMode = true; // Sh is expensive :)
-
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.session || !locals.user) {
 		return new Response('Unauthorized', { status: 401 });
@@ -22,10 +20,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const openAIStream = generateSurvey(
-		{ topic, difficulty, numberOfQuestions: economyMode ? 2 : numberOfQuestions },
+		{ topic, difficulty, numberOfQuestions },
 		{
-			model,
-			max_tokens: economyMode ? 300 : undefined
+			model
 		}
 	);
 	return new Response(openAIStream.toReadableStream());

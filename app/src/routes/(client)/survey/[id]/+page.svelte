@@ -93,6 +93,10 @@
 						Google forms
 					</Button> -->
 				<Button
+					onclick={() => {
+						window.location.href = `/api/surveys/${survey.id}/pdf`;
+						toast.success('Downloaded started');
+					}}
 					variant="outline"
 					class="mt-2 flex h-12 w-full items-center justify-center rounded-md border text-xs"
 				>

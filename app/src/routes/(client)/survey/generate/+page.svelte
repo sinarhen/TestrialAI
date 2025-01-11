@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Check, CircleHelp, Gauge, Trash, X } from 'lucide-svelte';
-	import SurveyGenerationDetails from './components/StaticSurveyDetails.svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import type { GeneratingSurveyCompletion, SurveyCompletion } from '@/types/entities';
@@ -9,6 +8,7 @@
 	import { createSurvey, streamSurveyGeneration } from '@/services/handlers';
 	import { Button } from '@/components/ui/button';
 	import type { GenerateSurveyDto } from '../../../api/surveys/generate/+server';
+	import GeneratingSurveyDetails from './components/GeneratingSurveyDetails.svelte';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
@@ -90,9 +90,7 @@
 		<Button onclick={onAbort} size="sm"><X size="16" />Stop generation</Button>
 	{/if}
 
-	<section class="animate-pulse">
-		<SurveyGenerationDetails hideAnswers={false} generatingSurvey={generatingSurvey.data} />
-	</section>
+	<GeneratingSurveyDetails generatingSurvey={generatingSurvey.data} />
 	{#if generatingSurvey.status === 'finished'}
 		<div class="mt-5 flex gap-x-1">
 			<Button class="gap-x-1" size="sm" onclick={onConfirm}><Check size="12" />Approve</Button>

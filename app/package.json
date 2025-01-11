@@ -57,6 +57,7 @@
 		"openai": "^4.77.0",
 		"partial-json": "^0.1.7",
 		"pdfmake": "^0.2.18",
+		"puppeteer": "^24.0.0",
 		"tailwindcss-animate": "^1.0.7",
 		"uuid": "^11.0.3",
 		"zod": "^3.24.1"
