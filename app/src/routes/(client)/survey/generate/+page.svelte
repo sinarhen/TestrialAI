@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { Check, CircleHelp, Gauge, Trash, X } from 'lucide-svelte';
-	import SurveyGenerationDetails from './components/GeneratingSurveyDetails.svelte';
+	import SurveyGenerationDetails from './components/StaticSurveyDetails.svelte';
 	import type { PageData } from './$types';
-	import { goto, invalidate } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import type { GeneratingSurveyCompletion, SurveyCompletion } from '@/types/entities';
-	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { createSurvey, streamSurveyGeneration } from '@/services/handlers';

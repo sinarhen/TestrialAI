@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GeneratingSurveyDetails from '../../generate/components/GeneratingSurveyDetails.svelte';
+	import GeneratingSurveyDetails from '../../generate/components/StaticSurveyDetails.svelte';
 	import type { PageServerData } from './$types';
 
 	const {

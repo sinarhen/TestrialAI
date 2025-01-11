@@ -46,10 +46,7 @@
 					}}
 				>
 					<div class="flex items-center">
-						<span
-							class="rounded-[2px] p-1 text-xs font-medium uppercase leading-none"
-							>basic</span
-						>
+						<span class="rounded-[2px] p-1 text-xs font-medium uppercase leading-none">basic</span>
 						<span><ChevronRight size="16" /></span>
 						<span
 							class="rounded-[2px] bg-purple-400 p-1 text-xs font-medium uppercase leading-none text-white"
