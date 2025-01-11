@@ -8,7 +8,7 @@ function getSystemContent(tool: QuestionModificationTool): string {
 	switch (tool) {
 		case 'simplify':
 			return `
-        You are a helpful assistant. Use the supplied tools to simplify a question in an existing survey.
+        You are a helpful assistant. Use the supplied tools to simplify a question in an existing test.
         The question must follow these rules:
         - Must match the user's specified topic exactly, but with simplified language.
         - Use "single", "multiple", or "text" for the question's answer type. If "text", should include a "correctAnswer" with the correct answer.
@@ -17,7 +17,7 @@ function getSystemContent(tool: QuestionModificationTool): string {
       `;
 		case 'rephrase':
 			return `
-        You are a helpful assistant. Use the supplied tools to rephrase a question in an existing survey.
+        You are a helpful assistant. Use the supplied tools to rephrase a question in an existing test.
         The question must follow these rules:
         - Must match the user's specified topic exactly, but expressed in a different way.
         - Use "single", "multiple", or "text" for the question's answer type. If "text", should include a "correctAnswer" with the correct answer.
@@ -26,7 +26,7 @@ function getSystemContent(tool: QuestionModificationTool): string {
       `;
 		case 'complicate':
 			return `
-        You are a helpful assistant. Use the supplied tools to complicate a question in an existing survey.
+        You are a helpful assistant. Use the supplied tools to complicate a question in an existing test.
         The question must follow these rules:
         - Must match the user's specified topic exactly, but with a more challenging or complex phrasing.
         - Use "single", "multiple", or "text" for the question's answer type. If "text", should include a "correctAnswer" with the correct answer.
@@ -36,13 +36,13 @@ function getSystemContent(tool: QuestionModificationTool): string {
 		default:
 			return `
         You are a helpful assistant. Use the supplied tools to assist the user with modifying a question 
-        in an existing survey. Format the question as valid JSON.
+        in an existing test. Format the question as valid JSON.
       `;
 	}
 }
 
 function getUserContent(params: Parameters): string {
-	const { tool, questionTopic: topic, existingQuestions, surveyTitle, surveyDifficulty } = params;
+	const { tool, questionTopic: topic, existingQuestions, testTitle, testDifficulty } = params;
 	const toolVerb =
 		tool === 'simplify'
 			? 'simplify'
@@ -53,8 +53,8 @@ function getUserContent(params: Parameters): string {
 					: 'modify';
 
 	return `
-    Regenerate a question about "${topic}" for the existing survey titled "${surveyTitle}", 
-    with a difficulty of "${surveyDifficulty}".  
+    Regenerate a question about "${topic}" for the existing test titled "${testTitle}", 
+    with a difficulty of "${testDifficulty}".  
     Don't repeat the following questions: ${existingQuestions.join(', ')}.
     Please ${toolVerb} the question accordingly.
   `;
@@ -90,6 +90,6 @@ interface Parameters {
 	tool: QuestionModificationTool;
 	questionTopic: string;
 	existingQuestions: string[];
-	surveyTitle: string;
-	surveyDifficulty: Difficulty;
+	testTitle: string;
+	testDifficulty: Difficulty;
 }

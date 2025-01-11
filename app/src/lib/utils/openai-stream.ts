@@ -41,7 +41,7 @@ export async function streamOpenAiResponse<TFinal>({
 
 	runner.on('content.delta', ({ snapshot }) => {
 		if (onPartial) {
-			try {
+		try {
 				const partialData = parse(snapshot) as DeepPartial<TFinal>;
 				onPartial(partialData);
 			} catch (err) {

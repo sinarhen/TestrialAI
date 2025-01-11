@@ -2,10 +2,10 @@ import { db } from '@/server/db';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals, params }) => {
-	// select all surveys from the database related to the user with questions
+	// select all tests from the database related to the user with questions
 	const history = locals.user
-		? await db.query.surveys.findMany({
-				where: (surveys, { eq }) => eq(surveys.userId, locals.user!.id),
+		? await db.query.tests.findMany({
+				where: (tests, { eq }) => eq(tests.userId, locals.user!.id),
 				with: {
 					questions: {
 						with: {
@@ -13,7 +13,7 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
 						}
 					}
 				},
-				orderBy: (surveys, { desc }) => desc(surveys.updatedAt)
+				orderBy: (tests, { desc }) => desc(tests.updatedAt)
 			})
 		: null;
 

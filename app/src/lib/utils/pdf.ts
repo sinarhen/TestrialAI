@@ -3,9 +3,9 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.vfs;
 
 import type { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
-import type { SurveyState } from '../../routes/(client)/survey/[id]/types';
+import type { TestState } from '../../routes/(client)/test/[id]/types';
 
-export function exportSurveyToPdf(survey: SurveyState): void {
+export function exportTestToPdf(test: TestState): void {
 	//
 	// 1. Build a flat array of Content items
 	//
@@ -13,24 +13,24 @@ export function exportSurveyToPdf(survey: SurveyState): void {
 
 	// -- Title
 	pdfContent.push({
-		text: survey.title,
+		text: test.title,
 		style: 'h1'
 	});
 
 	// -- Difficulty
 	pdfContent.push({
-		text: `Difficulty: ${survey.difficulty}`,
+		text: `Difficulty: ${test.difficulty}`,
 		style: 'subheader',
 		margin: [0, 0, 0, 10] // 4-tuple for top/right/bottom/left
 	});
 
 	// -- Total Questions
 	pdfContent.push({
-		text: `Total Questions: ${survey.questions.length}`
+		text: `Total Questions: ${test.questions.length}`
 	});
 
 	// For each question, push one or more Content items
-	survey.questions.forEach((q, i) => {
+	test.questions.forEach((q, i) => {
 		// The question heading
 		pdfContent.push({
 			text: `${i + 1}. ${q.question}`,
@@ -87,5 +87,5 @@ export function exportSurveyToPdf(survey: SurveyState): void {
 	//
 	// 3. Generate & download the PDF
 	//
-	pdfMake.createPdf(docDefinition).download(survey.title ?? 'survey.pdf');
+	pdfMake.createPdf(docDefinition).download(test.title ?? 'test.pdf');
 }

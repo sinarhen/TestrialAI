@@ -2,7 +2,7 @@
 	import { ChevronRight, Home, Sparkles } from 'lucide-svelte';
 	import type { PageServerData, ActionData } from '../../(root)/$types';
 	import AuthDialog from './AuthDialog.svelte';
-	import SurveyHistorySheet from './SurveyHistorySheet.svelte';
+	import TestHistorySheet from './TestHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';
 	import PlanButton from './PlanButton.svelte';
 	import LogoutButton from './LogoutButton.svelte';
@@ -24,7 +24,7 @@
 
 <header class="flex h-12 w-full items-center justify-between pt-4">
 	<div class="flex w-full items-center gap-x-2 text-sm">
-		<SurveyHistorySheet history={data.history} />
+		<TestHistorySheet history={data.history} />
 		<NotificationsSheet />
 		<div class="relative cursor-pointer">
 			<Popover.Root
@@ -58,11 +58,11 @@
 					<Separator class="mb-5 mt-2" />
 					<p class="">Here are some features you can unlock:</p>
 					<ul class="ml-4 mt-2 list-disc text-xs">
-						<li>Unlimited survey generation</li>
-						<li>Survey generation based on documents</li>
+						<li>Unlimited test generation</li>
+						<li>Test generation based on documents</li>
 						<li>Export to PDF</li>
 						<li>Google forms integration</li>
-						<li>Custom survey design</li>
+						<li>Custom test design</li>
 						<li>
 							<a class="underline" href="/plans"> Read more</a>
 						</li>

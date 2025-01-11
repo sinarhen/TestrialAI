@@ -1,5 +1,5 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
-import { questionSchema, type Difficulty, type Survey } from '@/types/entities';
+import { questionSchema, type Difficulty, type Test } from '@/types/entities';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
 import type { CustomChatCompletionStreamParams } from '@/types/openai';
 import { openai } from '../..';
@@ -7,24 +7,24 @@ import { openai } from '../..';
 const getMessages: (parameters: Parameters) => ChatCompletionMessageParam[] = ({
 	topic,
 	existingQuestions,
-	surveyTitle,
-	surveyDifficulty
+	testTitle,
+	testDifficulty
 }) => [
 	{
 		role: 'system',
 		content: `
-            You are a helpful assistant. Use the supplied tools to assist the user in generating a question to existing survey.
-            The survey must follow these rules:
+            You are a helpful assistant. Use the supplied tools to assist the user in generating a question to existing test.
+            The test must follow these rules:
             - Question must match the user's specified topic, and difficulty.
             - Use "single" answer type for question with single correct answer, "multiple" for question with multiple 
                 correct answers and "text" for questions with text-based answers. for question with text-based answers there is a field correctAnswer
             - Difficulty levels must match the user's specified difficulty: Easy, Medium, Hard.
-            Format the survey as valid JSON.
+            Format the test as valid JSON.
             `
 	},
 	{
 		role: 'user',
-		content: `Generate a question about ${topic} to the existing survey with the title: ${surveyTitle}, with a difficulty of ${surveyDifficulty}. You can choose answer type from "single", "multiple" or "text". Don't repeat the following questions:
+		content: `Generate a question about ${topic} to the existing test with the title: ${testTitle}, with a difficulty of ${testDifficulty}. You can choose answer type from "single", "multiple" or "text". Don't repeat the following questions:
             ${existingQuestions.join(', ')}
             
         `
@@ -46,6 +46,6 @@ export const generateQuestion = (
 interface Parameters {
 	topic: string;
 	existingQuestions: string[];
-	surveyTitle: string;
-	surveyDifficulty: Difficulty;
+	testTitle: string;
+	testDifficulty: Difficulty;
 }

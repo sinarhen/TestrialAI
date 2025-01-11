@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { DeepPartial } from './utils';
 
-export interface Survey {
+export interface Test {
 	id: string;
 	title: string;
 	description?: string;
@@ -65,7 +65,7 @@ export const questionSchema = z
 		}
 	);
 
-export const surveySchema = z.object({
+export const testSchema = z.object({
 	title: z.string(),
 	description: z.string(),
 	difficulty: z.enum(['Easy', 'Medium', 'Hard']),
@@ -73,7 +73,7 @@ export const surveySchema = z.object({
 });
 
 export type QuestionCompletion = z.infer<typeof questionSchema>;
-export type SurveyCompletion = z.infer<typeof surveySchema>;
+export type TestCompletion = z.infer<typeof testSchema>;
 
 export type GeneratingQuestionCompletion = DeepPartial<QuestionCompletion>;
-export type GeneratingSurveyCompletion = DeepPartial<SurveyCompletion>;
+export type GeneratingTestCompletion = DeepPartial<TestCompletion>;

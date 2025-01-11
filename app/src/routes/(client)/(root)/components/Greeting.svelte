@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Difficulties, type Difficulty, type SurveyCompletion } from '@/types/entities';
+	import { Difficulties, type Difficulty, type TestCompletion } from '@/types/entities';
 	import { Input } from '@/components/ui/input';
 	import { Button } from '@/components/ui/button';
 	import { toast } from 'svelte-sonner';
@@ -28,7 +28,7 @@
 	let difficulty = $state<Difficulty>(Difficulties.HARD);
 	let numberOfQuestions = $state<number>(10);
 
-	const onGenerateSurvey = async () => {
+	const onGenerateTest = async () => {
 		if (!topic) {
 			toast.error('Please provide a topic');
 			return;
@@ -39,7 +39,7 @@
 		params.append('difficulty', difficulty);
 		params.append('numberOfQuestions', numberOfQuestions.toString());
 
-		goto('/survey/generate?' + params.toString());
+		goto('/test/generate?' + params.toString());
 
 		return;
 	};
@@ -50,9 +50,7 @@
 		<h1 class="text-3xl">
 			Hello, <span class="font-semibold">{userName}</span>👋
 		</h1>
-		<p class="mt-0.5">
-			Give us a topic you want to create a survey on
-		</p>
+		<p class="mt-0.5">Give us a topic you want to create a test on</p>
 		<div class="mt-5 flex w-full items-center justify-center gap-x-1">
 			<Input name="topic" bind:value={topic} placeholder="Napoleonic wars" class="w-[350px]" />
 			<Select.Root
@@ -95,6 +93,6 @@
 			</div>
 		</div>
 
-		<Button onclick={onGenerateSurvey} type="submit" class="mt-5">Create survey</Button>
+		<Button onclick={onGenerateTest} type="submit" class="mt-5">Create test</Button>
 	</div>
 </div>

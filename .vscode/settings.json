@@ -4,7 +4,7 @@
     {
       "previewLimit": 50,
       "driver": "SQLite",
-      "name": "SurveyCO",
+      "name": "TestCO",
       "group": "DevEnv",
       "database": "./local.db"
     }

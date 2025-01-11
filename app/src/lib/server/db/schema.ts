@@ -21,7 +21,7 @@ export const sessions = sqliteTable('sessions', {
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
 
-export const surveys = sqliteTable('surveys', {
+export const tests = sqliteTable('tests', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
@@ -51,9 +51,9 @@ export const questions = sqliteTable('questions', {
 	question: text('question').notNull(),
 	answerType: text('answer_type').notNull().$type<AnswerType>(),
 	correctAnswer: text('correct_answer'),
-	surveyId: text('survey_id')
+	testId: text('test_id')
 		.notNull()
-		.references(() => surveys.id, { onDelete: 'cascade' })
+		.references(() => tests.id, { onDelete: 'cascade' })
 });
 
 export const options = sqliteTable('options', {
@@ -68,7 +68,7 @@ export const options = sqliteTable('options', {
 });
 
 export const userRelations = relations(users, ({ many }) => ({
-	surveys: many(surveys),
+	tests: many(tests),
 	sessions: many(sessions)
 }));
 
@@ -79,18 +79,18 @@ export const sessionRelations = relations(sessions, ({ one }) => ({
 	})
 }));
 
-export const surveyRelations = relations(surveys, ({ one, many }) => ({
+export const testRelations = relations(tests, ({ one, many }) => ({
 	user: one(users, {
-		fields: [surveys.userId],
+		fields: [tests.userId],
 		references: [users.id]
 	}),
 	questions: many(questions)
 }));
 
 export const questionRelations = relations(questions, ({ one, many }) => ({
-	survey: one(surveys, {
-		fields: [questions.surveyId],
-		references: [surveys.id]
+	test: one(tests, {
+		fields: [questions.testId],
+		references: [tests.id]
 	}),
 	options: many(options)
 }));
