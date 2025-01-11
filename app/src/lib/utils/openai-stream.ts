@@ -1,25 +1,26 @@
+import type { DeepPartial } from '@/types/utils';
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';
 
-export interface OpenAiStreamingOptions<TPartial, TFinal> {
+export interface OpenAiStreamingOptions<TFinal> {
 	endpoint: string;
 	method?: string;
 	body?: unknown;
 	signal?: AbortSignal;
-	onPartial?: (partialData: TPartial) => void;
+	onPartial?: (partialData: DeepPartial<TFinal>) => void;
 	onComplete?: (finalData: TFinal) => void;
 	onError?: (error: unknown) => void;
 	onFinish?: () => void;
 }
 
-export async function streamOpenAiResponse<TPartial, TFinal>({
+export async function streamOpenAiResponse<TFinal>({
 	endpoint,
 	method = 'POST',
 	body,
 	signal,
 	onPartial,
 	onComplete
-}: OpenAiStreamingOptions<TPartial, TFinal>) {
+}: OpenAiStreamingOptions<TFinal>) {
 	const res = await fetch(endpoint, {
 		method,
 		headers: {
@@ -41,7 +42,7 @@ export async function streamOpenAiResponse<TPartial, TFinal>({
 	runner.on('content.delta', ({ snapshot }) => {
 		if (onPartial) {
 			try {
-				const partialData = parse(snapshot) as TPartial;
+				const partialData = parse(snapshot) as DeepPartial<TFinal>;
 				onPartial(partialData);
 			} catch (err) {
 				console.error('Partial parse error:', err);

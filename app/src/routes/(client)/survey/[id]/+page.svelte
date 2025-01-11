@@ -40,6 +40,8 @@
 			],
 			status: 'new'
 		});
+
+	const shareLink = 'survey.co/share/9JDO34SZ320S34';
 </script>
 
 <div class="flex gap-x-2">
@@ -68,10 +70,14 @@
 			<Dialog.Description>Share this survey with your friends</Dialog.Description>
 			<div>
 				<Button
+					onclick={() => {
+						navigator.clipboard.writeText(shareLink);
+						toast.success('Link copied to clipboard');
+					}}
 					variant="outline"
 					class="block h-auto w-full cursor-pointer outline-2 hover:outline"
 				>
-					survey.co/public/9JDO34SZ320S34<br />
+					{shareLink}<br />
 				</Button>
 				<p class="mt-1 text-center text-sm opacity-50">click to copy</p>
 			</div>

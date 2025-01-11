@@ -28,31 +28,24 @@ export const deleteQuestion = (surveyId: string, questionId: string) =>
 export const createQuestion = (surveyId: string, question: CreateQuestionDto) =>
 	axios.post<Question>(`/api/surveys/${surveyId}/questions`, question);
 
-export const streamSurveyGeneration = <
-	TPartial = GeneratingSurveyCompletion,
-	TFinal = SurveyCompletion
->(
-	options: OpenAiStreamHandlerOptions<TPartial, TFinal>
+export const streamSurveyGeneration = <TFinal = SurveyCompletion>(
+	options: OpenAiStreamHandlerOptions<TFinal>
 ) =>
-	streamOpenAiResponse<TPartial, TFinal>({
+	streamOpenAiResponse<TFinal>({
 		endpoint: '/api/surveys/generate',
 		...options
 	});
 
-export const streamQuestionGeneration = <
-	TPartial = GeneratingQuestionCompletion,
-	TFinal = QuestionCompletion
->(
+export const streamQuestionGeneration = (
 	surveyId: string,
-	options: OpenAiStreamHandlerOptions<TPartial, TFinal>
+	options: OpenAiStreamHandlerOptions<QuestionCompletion>
 ) =>
-	streamOpenAiResponse<TPartial, TFinal>({
+	streamOpenAiResponse<QuestionCompletion>({
 		endpoint: `/api/surveys/${surveyId}/questions/generate`,
 		...options
 	});
 
 export const streamQuestionModification = <
-	TPartial = GeneratingQuestionCompletion,
 	TFinal = QuestionCompletion
 >(
 	{
@@ -64,14 +57,11 @@ export const streamQuestionModification = <
 		questionId: string;
 		tool: QuestionModificationTool;
 	},
-	options: OpenAiStreamHandlerOptions<TPartial, TFinal>
+	options: OpenAiStreamHandlerOptions<TFinal>
 ) =>
-	streamOpenAiResponse<TPartial, TFinal>({
+	streamOpenAiResponse<TFinal>({
 		endpoint: `/api/surveys/${surveyId}/questions/${questionId}/${tool}`,
 		...options
 	});
 
-type OpenAiStreamHandlerOptions<TPartial, TFinal> = Omit<
-	OpenAiStreamingOptions<TPartial, TFinal>,
-	'endpoint'
->;
+type OpenAiStreamHandlerOptions<TFinal> = Omit<OpenAiStreamingOptions<TFinal>, 'endpoint'>;
