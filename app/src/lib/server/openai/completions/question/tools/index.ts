@@ -11,7 +11,7 @@ function getSystemContent(tool: QuestionModificationTool): string {
         You are a helpful assistant. Use the supplied tools to simplify a question in an existing survey.
         The question must follow these rules:
         - Must match the user's specified topic exactly, but with simplified language.
-        - Use "single", "multiple", or "text" for the question's answer type.
+        - Use "single", "multiple", or "text" for the question's answer type. If "text", should include a "correctAnswer" with the correct answer.
         - Difficulty must match exactly: Easy, Medium, Hard.
         - Format the question as valid JSON.
       `;
@@ -20,7 +20,7 @@ function getSystemContent(tool: QuestionModificationTool): string {
         You are a helpful assistant. Use the supplied tools to rephrase a question in an existing survey.
         The question must follow these rules:
         - Must match the user's specified topic exactly, but expressed in a different way.
-        - Use "single", "multiple", or "text" for the question's answer type.
+        - Use "single", "multiple", or "text" for the question's answer type. If "text", should include a "correctAnswer" with the correct answer.
         - Difficulty must remain the same: Easy, Medium, Hard.
         - Format the question as valid JSON.
       `;
@@ -29,7 +29,7 @@ function getSystemContent(tool: QuestionModificationTool): string {
         You are a helpful assistant. Use the supplied tools to complicate a question in an existing survey.
         The question must follow these rules:
         - Must match the user's specified topic exactly, but with a more challenging or complex phrasing.
-        - Use "single", "multiple", or "text" for the question's answer type.
+        - Use "single", "multiple", or "text" for the question's answer type. If "text", should include a "correctAnswer" with the correct answer.
         - Difficulty must match exactly: Easy, Medium, Hard.
         - Format the question as valid JSON.
       `;
@@ -56,7 +56,6 @@ function getUserContent(params: Parameters): string {
     Regenerate a question about "${topic}" for the existing survey titled "${surveyTitle}", 
     with a difficulty of "${surveyDifficulty}".  
     Don't repeat the following questions: ${existingQuestions.join(', ')}.
-    Please ${toolVerb} the question.
     Please ${toolVerb} the question accordingly.
   `;
 }

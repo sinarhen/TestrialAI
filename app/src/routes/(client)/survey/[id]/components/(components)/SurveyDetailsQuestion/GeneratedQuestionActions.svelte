@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { createQuestion } from '@/services/handlers.js';
+	import { createQuestion, updateQuestion } from '@/services/handlers';
 	import { Button } from '@/components/ui/button/index.js';
 	import { Sparkles, Trash2 } from 'lucide-svelte';
 	import type { Question } from '@/types/entities';
-	import type { QuestionState } from '../../../types';
+	import { questionState, type QuestionState } from '../../../types';
 
 	const {
 		surveyId,
@@ -14,22 +14,27 @@
 	}: {
 		surveyId: string;
 		question: QuestionState;
-		updateQuestionInStore: (updatedQuestion: Question, isJustGenerated?: boolean) => void;
+		updateQuestionInStore: (updatedQuestion: QuestionState) => void;
 		deleteQuestionInStore: () => void;
 	} = $props();
 
 	const onQuestionApprove = async () => {
-		if (question.status !== 'generated') {
+		if (!questionState.isGenerated(question)) {
 			throw new Error('Invalid question status');
 		}
-		toast.promise(createQuestion(surveyId, question), {
+		const action =
+			question.status === 'generated'
+				? createQuestion(surveyId, question)
+				: updateQuestion(surveyId, question);
+		toast.promise(action, {
 			loading: 'Saving question...',
 			success: ({ data }) => {
-				updateQuestionInStore(data, true);
+				updateQuestionInStore({ ...data, status: 'saved', isJustGenerated: true });
 				return 'Question saved successfully';
 			},
 			error: (error) => {
 				console.error('Failed to save generated question:', error);
+				toast.error('Failed to save generated question');
 				deleteQuestionInStore();
 				return 'Failed to save generated question';
 			}
@@ -37,15 +42,21 @@
 	};
 
 	const onQuestionReject = async () => {
-		if (question.status !== 'generated') {
+		if (!questionState.isGenerated(question)) {
 			throw new Error('Invalid question status');
 		}
-		deleteQuestionInStore();
-		toast.success('Question is rejected. Try generating a new one 😊');
+		if (question.status === 'generated') {
+			deleteQuestionInStore();
+			return;
+		} else if (question.status === 'regenerated') {
+			// return initial state
+			updateQuestionInStore(question.initialState);
+			toast.success('Question is rejected. Try generating a new one 😊');
+		}
 	};
 </script>
 
-<div class="mt-5 flex gap-x-2 duration-200 motion-opacity-in-0">
+<div class="motion-opacity-in-0 mt-5 flex gap-x-2 duration-200">
 	<Button onclick={onQuestionApprove} variant="default" size="sm" class="gap-x-1 text-xs">
 		<Sparkles size="12" />
 		Approve

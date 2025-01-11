@@ -50,6 +50,7 @@ interface RegeneratingQuestion extends GeneratingQuestionCompletion, BaseQuestio
 interface RegeneratedQuestion extends QuestionCompletion, BaseQuestionState {
 	status: 'regenerated';
 	id: string;
+	initialState: SavedQuestion;
 }
 
 export type QuestionState =

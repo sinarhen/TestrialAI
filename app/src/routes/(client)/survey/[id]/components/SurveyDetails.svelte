@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Grip } from 'lucide-svelte';
 	import SurveyDetailsQuestion from './SurveyDetailsQuestion.svelte';
-	import type { SurveyState } from '../types';
+	import type { QuestionState, SurveyState } from '../types';
 	import type { Question } from '@/types/entities';
 
 	let draggedIndex: number | null = $state<number | null>(null);
@@ -41,8 +41,8 @@
 	}
 	const deleteQuestionInStore = (index: number) => survey.questions.splice(index, 1);
 
-	const updateQuestionInStore = (index: number, newQuestion: Question, isJustGenerated?: boolean) =>
-		survey.questions.splice(index, 1, { ...newQuestion, status: 'saved', isJustGenerated });
+	const updateQuestionInStore = (index: number, newQuestion: QuestionState) =>
+		survey.questions.splice(index, 1, newQuestion);
 
 	// That means the question is new because its index is greater than the length of the server side state
 	const isQuestionNewlyAdded = (index: number): boolean => index >= initialQuestionsCount;
@@ -70,8 +70,7 @@
 				{/if}
 				<SurveyDetailsQuestion
 					{question}
-					updateQuestionInStore={(newQuestion, isJustGenerated) =>
-						updateQuestionInStore(index, newQuestion, isJustGenerated)}
+					updateQuestionInStore={(newQuestion) => updateQuestionInStore(index, newQuestion)}
 					surveyId={survey.id}
 					deleteQuestionInStore={() => deleteQuestionInStore(index)}
 				/>

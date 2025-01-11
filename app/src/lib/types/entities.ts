@@ -45,12 +45,25 @@ export const optionSchema = z.object({
 	isCorrect: z.boolean()
 });
 
-export const questionSchema = z.object({
-	answerType: z.enum(['single', 'multiple', 'text']),
-	correctAnswer: z.string().nullable(),
-	question: z.string(),
-	options: z.array(optionSchema).nullable()
-});
+export const questionSchema = z
+	.object({
+		answerType: z.enum(['single', 'multiple', 'text']),
+		correctAnswer: z.string().nullable(),
+		question: z.string(),
+		options: z.array(optionSchema).nullable()
+	})
+	.refine(
+		(data) => {
+			if (data.answerType === 'text') {
+				return data.correctAnswer !== null;
+			}
+			return true;
+		},
+		{
+			message: 'correctAnswer must be null for text questions, and non-empty for other types',
+			path: ['correctAnswer'] // Point the error to the `correctAnswer` field
+		}
+	);
 
 export const surveySchema = z.object({
 	title: z.string(),

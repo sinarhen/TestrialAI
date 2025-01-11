@@ -7,7 +7,7 @@ import type { PartialBy } from '@/types/utils';
 import type { Option } from '@/types/entities';
 
 export type UpdateQuestionDto = Omit<Question, 'options'> & {
-	options: PartialBy<Option, 'id'>[];
+	options: PartialBy<Option, 'id'>[] | null;
 };
 
 export const DELETE: RequestHandler = async ({ locals, params }) => {
@@ -98,36 +98,42 @@ const updateQuestion = async (question: UpdateQuestionDto): Promise<Question> =>
 			.where(eq(table.questions.id, question.id))
 			.returning();
 
-		const insertedOptions = await tx
-			.insert(table.options)
-			.values(
-				question.options.map((o) => ({
-					id: o.id,
-					questionId: question.id,
-					value: o.value,
-					isCorrect: o.isCorrect
-				}))
-			)
-			.onConflictDoUpdate({
-				target: table.options.id,
-				set: {
-					questionId: sql`excluded.question_id`,
-					value: sql`excluded.value`,
-					isCorrect: sql`excluded.is_correct`
-				}
-			})
-			.returning();
-
-		const insertedOptionsIds = insertedOptions.map((o) => o.id);
-
-		await tx
-			.delete(table.options)
-			.where(
-				and(
-					eq(table.options.questionId, question.id),
-					notInArray(table.options.id, insertedOptionsIds)
+		let insertedOptions: Option[] = [];
+		if (question.options) {
+			insertedOptions = await tx
+				.insert(table.options)
+				.values(
+					question.options.map((o) => ({
+						id: o.id,
+						questionId: question.id,
+						value: o.value,
+						isCorrect: o.isCorrect
+					}))
 				)
-			);
+				.onConflictDoUpdate({
+					target: table.options.id,
+					set: {
+						questionId: sql`excluded.question_id`,
+						value: sql`excluded.value`,
+						isCorrect: sql`excluded.is_correct`
+					}
+				})
+				.returning();
+		}
+		if (insertedOptions?.length) {
+			const insertedOptionsIds = insertedOptions.map((o) => o.id);
+
+			await tx
+				.delete(table.options)
+				.where(
+					and(
+						eq(table.options.questionId, question.id),
+						notInArray(table.options.id, insertedOptionsIds)
+					)
+				);
+		} else {
+			await tx.delete(table.options).where(eq(table.options.questionId, question.id));
+		}
 
 		return {
 			...updatedQuestion,

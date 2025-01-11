@@ -28,7 +28,7 @@
 	}: {
 		surveyId: string;
 		question: QuestionState;
-		updateQuestionInStore: (updatedQuestion: Question, isJustGenerated?: boolean) => void;
+		updateQuestionInStore: (updatedQuestion: QuestionState) => void;
 	} = $props();
 
 	let updatedQuestion = $state(lodash.cloneDeep(question));
@@ -75,7 +75,7 @@
 		toast.promise(resp, {
 			loading: 'Saving question...',
 			success: ({ data }) => {
-				updateQuestionInStore(data, questionState.isNew(updatedQuestion));
+				updateQuestionInStore({ ...data, status: 'saved' });
 				isDialogOpen = false;
 				return 'Question saved successfully';
 			},

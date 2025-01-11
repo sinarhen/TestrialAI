@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CircleHelp, Gauge, X } from 'lucide-svelte';
+	import { Check, CircleHelp, Gauge, Trash, X } from 'lucide-svelte';
 	import SurveyGenerationDetails from './components/GeneratingSurveyDetails.svelte';
 	import type { PageData } from './$types';
 	import { goto, invalidate } from '$app/navigation';
@@ -9,7 +9,7 @@
 	import { toast } from 'svelte-sonner';
 	import { createSurvey, streamSurveyGeneration } from '@/services/handlers';
 	import { Button } from '@/components/ui/button';
-	import type { GenerateSurveyDto } from '../../api/surveys/generate/+server';
+	import type { GenerateSurveyDto } from '../../../api/surveys/generate/+server';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
@@ -87,31 +87,19 @@
 </script>
 
 {#if generatingSurvey.status !== 'idle'}
-	<div class="animate-pulse">
-		{#if generatingSurvey.status !== 'finished'}
-			<Button onclick={onAbort} size="sm"><X size="16" />Stop generation</Button>
-		{/if}
+	{#if generatingSurvey.status !== 'finished'}
+		<Button onclick={onAbort} size="sm"><X size="16" />Stop generation</Button>
+	{/if}
 
-		<h2 class="mt-3 text-2xl font-bold text-opacity-50">
-			{topic}
-		</h2>
-		<div class="mt-3 flex gap-x-4 text-sm">
-			<span class="flex items-center gap-x-1"
-				><CircleHelp size="12" /> {generatingSurvey.data?.questions?.length} Questions</span
-			>
-			<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->
-			<span class="flex items-center gap-x-1"
-				><Gauge size="12" /> {generatingSurvey.data.difficulty}</span
+	<SurveyGenerationDetails generatingSurvey={generatingSurvey.data} />
+	{#if generatingSurvey.status === 'finished'}
+		<div class="mt-5 flex gap-x-1">
+			<Button class="gap-x-1" size="sm" onclick={onConfirm}><Check size="12" />Approve</Button>
+			<Button class="gap-x-1" variant="outline" size="sm" onclick={onAbort}
+				><Trash size="12" /> Reject</Button
 			>
 		</div>
-		<SurveyGenerationDetails generatingSurvey={generatingSurvey.data} />
-		{#if generatingSurvey.status === 'finished'}
-			<div class="mt-4 flex gap-x-1">
-				<Button variant="outline" size="sm" onclick={onConfirm}>Confirm</Button>
-				<Button variant="outline" size="sm" onclick={onAbort}>Abort</Button>
-			</div>
-		{/if}
-	</div>
+	{/if}
 {:else}
 	<div class="flex h-full w-full flex-col items-center justify-center">
 		<p class=" text-base opacity-50">Loading...</p>

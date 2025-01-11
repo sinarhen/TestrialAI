@@ -11,6 +11,7 @@ import type { UpdateQuestionDto } from '../../routes/api/surveys/[surveyId]/ques
 import type { CreateQuestionDto } from '../../routes/api/surveys/[surveyId]/questions/+server';
 import type { CreateSurveyDto } from '../../routes/api/surveys/+server';
 import { streamOpenAiResponse, type OpenAiStreamingOptions } from '@/utils/openai-stream';
+import type { QuestionModificationTool } from '@/types/openai';
 
 // returns id
 export const createSurvey = (parsedSurvey: CreateSurveyDto) =>
@@ -47,6 +48,26 @@ export const streamQuestionGeneration = <
 ) =>
 	streamOpenAiResponse<TPartial, TFinal>({
 		endpoint: `/api/surveys/${surveyId}/questions/generate`,
+		...options
+	});
+
+export const streamQuestionModification = <
+	TPartial = GeneratingQuestionCompletion,
+	TFinal = QuestionCompletion
+>(
+	{
+		surveyId,
+		tool,
+		questionId
+	}: {
+		surveyId: string;
+		questionId: string;
+		tool: QuestionModificationTool;
+	},
+	options: OpenAiStreamHandlerOptions<TPartial, TFinal>
+) =>
+	streamOpenAiResponse<TPartial, TFinal>({
+		endpoint: `/api/surveys/${surveyId}/questions/${questionId}/${tool}`,
 		...options
 	});
 
