@@ -7,6 +7,9 @@
 	import QuestionAIEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionAIEdit.svelte';
 	import QuestionDelete from './(components)/TestDetailsQuestion/Header/Tools/QuestionDelete.svelte';
 	import QuestionEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionEdit.svelte';
+	import {highlightCode, removeCodeBlock} from "@/utils/code-parser";
+	import {parseCodeBlock} from "@/utils/code-parser.js";
+	import 'highlight.js/styles/github-dark-dimmed.css';
 
 	const {
 		testId,
@@ -23,6 +26,12 @@
 	const isJustGenerated = $derived(
 		questionState.isSaved(question) ? question.isJustGenerated : false
 	);
+
+	console.log(question.question)
+	const parsedCode = question.question ? parseCodeBlock(question.question) : null;
+	const codeBlock = parsedCode ? highlightCode(parsedCode.code.trim(), parsedCode.lang) : null;
+	const questionTextWithoutCode = removeCodeBlock(question.question!);
+
 </script>
 
 <div class="group" class:motion-preset-confetti={isJustGenerated}>
@@ -47,7 +56,19 @@
 	{/key}
 
 	<header class="mb-5 mt-0.5 inline-flex w-full justify-between gap-x-7">
-		<QuestionTitle questionTitle={question.question} />
+		<div class="w-full">
+			<QuestionTitle questionTitle={questionTextWithoutCode} />
+				{#if codeBlock}
+					<pre class="hljs p-4 mt-2 mb-4 text-xs rounded-md">
+						<code>
+						{@html codeBlock}
+
+						</code>
+
+					</pre>
+
+				{/if}
+		</div>
 
 		{#if questionState.isEditable(question)}
 			<div class="flex h-full items-center gap-x-2">
