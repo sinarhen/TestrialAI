@@ -13,6 +13,8 @@ export interface Test {
 export interface Question {
 	id: string;
 	answerType: AnswerType;
+	codeBlock?: string | null;
+	codeLang?: SupportedLanguage | null;
 	correctAnswer: string | null;
 	question: string;
 	options: Option[];
@@ -28,10 +30,35 @@ export interface Option {
 	id: string;
 	value: string;
 	isCorrect: boolean;
+	isCodeSnippet?: boolean | null;
 }
+
+export const supportedLangs = [
+	'typescript',
+	'javascript',
+	'python',
+	'bash',
+	'yaml',
+	'json',
+	'xml',
+	'css',
+	'csharp',
+	'c',
+	'cpp',
+	'plaintext',
+	'java',
+	'go',
+	'rust',
+	'ruby',
+	'php',
+	'sql',
+	'perl'
+] as const;
+export type SupportedLanguage = (typeof supportedLangs)[number];
 
 export const optionSchema = z.object({
 	value: z.string(),
+	isCodeSnippet: z.boolean().optional(),
 	isCorrect: z.boolean()
 });
 
@@ -40,6 +67,8 @@ export const questionSchema = z
 		answerType: z.enum(['single', 'multiple', 'text']),
 		correctAnswer: z.string().nullable(),
 		question: z.string(),
+		codeBlock: z.string().optional(),
+		codeLang: z.enum(supportedLangs).optional(),
 		options: z.array(optionSchema).nullable()
 	})
 	.refine(
@@ -66,4 +95,3 @@ export type TestCompletion = z.infer<typeof testSchema>;
 
 export type GeneratingQuestionCompletion = DeepPartial<QuestionCompletion>;
 export type GeneratingTestCompletion = DeepPartial<TestCompletion>;
-

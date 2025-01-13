@@ -4,13 +4,6 @@
 	 * We only import parseCodeBlock and removeCodeBlock
 	 * from your refined code-parser that DOESN'T import highlight.js.
 	 */
-	import {
-		getHljsStyles,
-		getHljsWithLanguage,
-		parseCodeBlock,
-		removeCodeBlock
-	} from '@/utils/code-parser';
-
 	import { Check, Sparkles, PlusCircle, Loader } from 'lucide-svelte';
 	import { questionState, type QuestionState } from '../types';
 	import GeneratedQuestionActions from './(components)/TestDetailsQuestion/GeneratedQuestionActions.svelte';
@@ -19,6 +12,7 @@
 	import QuestionAIEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionAIEdit.svelte';
 	import QuestionDelete from './(components)/TestDetailsQuestion/Header/Tools/QuestionDelete.svelte';
 	import QuestionEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionEdit.svelte';
+	import QuestionCodeBlock from '@/components/QuestionCodeBlock.svelte';
 
 	const {
 		testId,
@@ -60,6 +54,7 @@
 	<header class="mb-5 mt-0.5 inline-flex w-full justify-between gap-x-7">
 		<div class="w-full">
 			<QuestionTitle questionTitle={question.question} />
+			<QuestionCodeBlock codeBlock={question.codeBlock} codeLanguage={question.codeLang} />
 		</div>
 
 		{#if questionState.isEditable(question)}

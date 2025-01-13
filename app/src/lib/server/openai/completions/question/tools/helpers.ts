@@ -39,9 +39,11 @@ function getSystemContent(tool: QuestionModificationTool): string {
            - "single" for one correct answer,
            - "multiple" for multiple correct answers,
            - "text" for a short text-based answer (include "correctAnswer").
-        4. **Code Blocks**: 
-           - If the question is about code (e.g., programming snippet), you are free to use property 'codeBlock' with a code snippet and 'lang' property with the language of the code.(e.g. {"codeBlock": "console.log('Hello, world!');", "lang": "javascript"}).
-        5. **Valid JSON**:
+       
+      3. **Code Blocks**:
+         - If a question is related to code (e.g., a programming snippet, etc.), you are free to add 'codeBlock' and 'language' fields.
+         - If the question does not require code, omit these fields.
+      5. **Valid JSON**:
            - The output must be valid JSON matching the "questionSchema".
 
         ### Final Output

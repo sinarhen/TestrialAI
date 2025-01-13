@@ -16,12 +16,10 @@ export const getMessages: (
 		   - "multiple" for a question with multiple correct answers.
 		   - "text" for a question that requires a text-based answer (with "correctAnswer" field included).
 		4. **Non-Repetition**: Do not repeat any of the existing questions provided by the user.
-		5. **Code Blocks**:
-		   - If the question pertains to code (e.g. a programming question), you are free to include one code block in the question text. 
-           - Format code blocks using triple backticks (e.g., \`\`\`ts ... \`\`\`).
-           - If you include a code block, ensure that it is relevant and helpful for the question.
-		   - If the question does not need code, omit the code block.
 
+		3. **Code Blocks**:
+		- If a question is related to code (e.g., a programming snippet, etc.), you are free to add 'codeBlock' and 'language' fields.
+		- If the question does not require code, omit these fields.
 		
 		Note that the question can include a code block inside the string, e.g.:
   

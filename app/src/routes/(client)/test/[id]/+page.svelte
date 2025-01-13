@@ -1,13 +1,5 @@
 <script lang="ts">
-	import {
-		CircleHelp,
-		Gauge,
-		Link,
-		Play,
-		Settings,
-		Share,
-		Trash2
-	} from 'lucide-svelte';
+	import { CircleHelp, Gauge, Link, Play, Settings, Share, Trash2 } from 'lucide-svelte';
 	import type { PageServerData } from './$types';
 	import { Button } from '@/components/ui/button';
 	import { toast } from 'svelte-sonner';
@@ -62,6 +54,8 @@
 	const shareLink = browser
 		? `${window.location.origin}/test/${serverData.test.id}/share`
 		: 'Unable to copy link';
+
+	$inspect(serverData.test);
 </script>
 
 <div class="flex gap-x-2">
@@ -189,7 +183,6 @@
 		><CircleHelp size="12" /> {test?.questions?.length} Questions</span
 	>
 	<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->
-	 
 </div>
 <TestDetails {test} initialQuestionsCount={serverData.test.questions.length} />
 

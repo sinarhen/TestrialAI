@@ -21,9 +21,11 @@ export const getMessages: (
          - "text" for questions that require a short text-based answer (in which case the field "correctAnswer" must be present).
 
       3. **Code Blocks**:
-         - If a question is related to code (e.g., a programming snippet, command-line instructions, etc.), you are free to include code blocks in the question.
-         - Code blocks must be properly fenced with triple backticks, e.g. \`\`\`ts ... \`\`\`.
-         - If the question does not require code, omit code blocks entirely.
+         - If a question requires a code block, the "codeBlock" field must be present.
+         - The "codeLang" field must be present if the "codeBlock" field is present. it should specify the language of the code block.
+         - The "isCodeSnippet" field must be set to "true" for code snippets.
+         - Important: Don't put code snippets in the title or question fields. Use the "codeBlock" field instead.
+
 
       ### Additional Notes:
       - The number of questions in the "questions" array must be exactly ${numberOfQuestions}.

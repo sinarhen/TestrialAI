@@ -4,8 +4,9 @@
 	import { Checkbox } from '@/components/ui/checkbox';
 	import { Input } from '@/components/ui/input';
 	import type { GeneratingTestCompletion } from '@/types/entities.js';
-	import { CircleHelp, Gauge } from 'lucide-svelte';
+	import { CircleHelp } from 'lucide-svelte';
 	import QuestionTitleWithCodeBlock from '../../[id]/components/(components)/TestDetailsQuestion/Header/QuestionTitleWithCodeBlock.svelte';
+	import QuestionCodeBlock from '@/components/QuestionCodeBlock.svelte';
 
 	const {
 		generatingTest
@@ -31,6 +32,10 @@
 					<div class="group flex gap-x-6">
 						<div class="w-full">
 							<QuestionTitleWithCodeBlock questionTitle={question?.question} />
+							<QuestionCodeBlock
+								codeBlock={question?.codeBlock}
+								codeLanguage={question?.codeLang}
+							/>
 							<div class="mt-4">
 								{#if question?.answerType === 'single'}
 									<RadioGroup.Root value="option-one">

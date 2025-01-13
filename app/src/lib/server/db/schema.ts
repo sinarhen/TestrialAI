@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
-import { type AnswerType } from '@/types/entities';
+import { type AnswerType, type SupportedLanguage } from '@/types/entities';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -37,7 +37,6 @@ export const tests = sqliteTable('tests', {
 
 	title: text('title').notNull(),
 	description: text('description').notNull(),
-
 	userId: text('user_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' })
@@ -48,6 +47,8 @@ export const questions = sqliteTable('questions', {
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
 	question: text('question').notNull(),
+	codeBlock: text('code_block'),
+	codeLang: text('code_lang').$type<SupportedLanguage>(),
 	answerType: text('answer_type').notNull().$type<AnswerType>(),
 	correctAnswer: text('correct_answer'),
 	testId: text('test_id')
