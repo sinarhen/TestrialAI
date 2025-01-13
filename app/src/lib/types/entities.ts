@@ -5,7 +5,6 @@ export interface Test {
 	id: string;
 	title: string;
 	description?: string;
-	difficulty: Difficulty;
 	createdAt?: Date;
 	updatedAt?: Date;
 	questions: Question[];
@@ -18,15 +17,6 @@ export interface Question {
 	question: string;
 	options: Option[];
 }
-
-export const Difficulties = {
-	EASY: 'Easy',
-	MEDIUM: 'Medium',
-	HARD: 'Hard'
-} as const;
-
-export type Difficulty = (typeof Difficulties)[keyof typeof Difficulties];
-
 export const AnswerTypes = {
 	SINGLE: 'single',
 	MULTIPLE: 'multiple',
@@ -68,7 +58,6 @@ export const questionSchema = z
 export const testSchema = z.object({
 	title: z.string(),
 	description: z.string(),
-	difficulty: z.enum(['Easy', 'Medium', 'Hard']),
 	questions: z.array(questionSchema)
 });
 
@@ -77,3 +66,4 @@ export type TestCompletion = z.infer<typeof testSchema>;
 
 export type GeneratingQuestionCompletion = DeepPartial<QuestionCompletion>;
 export type GeneratingTestCompletion = DeepPartial<TestCompletion>;
+

@@ -4,7 +4,6 @@
 		Gauge,
 		Link,
 		Play,
-		PlusCircle,
 		Settings,
 		Share,
 		Trash2
@@ -189,9 +188,8 @@
 	<span class="motion-opacity-in-0 motion-delay-300 flex items-center gap-x-1"
 		><CircleHelp size="12" /> {test?.questions?.length} Questions</span
 	>
-	<span class="motion-delay-300 motion-opacity-in-0 flex items-center gap-x-1"
-		><Gauge size="12" /> {test?.difficulty}</span
-	>
+	<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->
+	 
 </div>
 <TestDetails {test} initialQuestionsCount={serverData.test.questions.length} />
 

@@ -10,4 +10,4 @@ export interface CustomChatCompletionStreamParams
 	model: SupportedModel;
 }
 
-export type QuestionModificationTool = 'simplify' | 'rephrase' | 'complicate';
+export type QuestionModificationTool = 'simplify' | 'rephrase' | 'harder';

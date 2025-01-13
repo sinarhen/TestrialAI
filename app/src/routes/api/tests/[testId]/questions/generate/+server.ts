@@ -52,7 +52,6 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			{
 				topic,
 				existingQuestions,
-				testDifficulty: test.difficulty,
 				testTitle: test.title
 			},
 			{

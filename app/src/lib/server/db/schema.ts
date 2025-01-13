@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
-import { type AnswerType, type Difficulty } from '@/types/entities';
+import { type AnswerType } from '@/types/entities';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -35,7 +35,6 @@ export const tests = sqliteTable('tests', {
 		.$onUpdateFn(() => new Date())
 		.$type<Date>(),
 
-	difficulty: text('difficulty').notNull().$type<Difficulty>(),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
 

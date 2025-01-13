@@ -6,10 +6,9 @@ export const load: PageLoad = ({ url }) => {
 
 	const topic = params.get('topic');
 	const numberOfQuestions = parseInt(params.get('numberOfQuestions') || '0', 10);
-	const difficulty = params.get('difficulty');
 	const model = params.get('model');
 
-	if (!topic || !numberOfQuestions || !difficulty || !model) {
+	if (!topic || !numberOfQuestions || !model) {
 		error(400, 'Missing required parameters');
 	}
 
@@ -17,7 +16,6 @@ export const load: PageLoad = ({ url }) => {
 		generationParams: {
 			topic,
 			numberOfQuestions,
-			difficulty,
 			model
 		}
 	};

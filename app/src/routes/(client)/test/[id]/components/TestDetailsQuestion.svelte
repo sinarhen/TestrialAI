@@ -1,15 +1,24 @@
 <script lang="ts">
+	/*
+	 * We NO LONGER import highlight.js at the top-level.
+	 * We only import parseCodeBlock and removeCodeBlock
+	 * from your refined code-parser that DOESN'T import highlight.js.
+	 */
+	import {
+		getHljsStyles,
+		getHljsWithLanguage,
+		parseCodeBlock,
+		removeCodeBlock
+	} from '@/utils/code-parser';
+
 	import { Check, Sparkles, PlusCircle, Loader } from 'lucide-svelte';
 	import { questionState, type QuestionState } from '../types';
 	import GeneratedQuestionActions from './(components)/TestDetailsQuestion/GeneratedQuestionActions.svelte';
-	import QuestionTitle from './(components)/TestDetailsQuestion/Header/QuestionTitle.svelte';
+	import QuestionTitle from './(components)/TestDetailsQuestion/Header/QuestionTitleWithCodeBlock.svelte';
 	import QuestionAnswers from './(components)/TestDetailsQuestion/QuestionAnswers.svelte';
 	import QuestionAIEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionAIEdit.svelte';
 	import QuestionDelete from './(components)/TestDetailsQuestion/Header/Tools/QuestionDelete.svelte';
 	import QuestionEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionEdit.svelte';
-	import {highlightCode, removeCodeBlock} from "@/utils/code-parser";
-	import {parseCodeBlock} from "@/utils/code-parser.js";
-	import 'highlight.js/styles/github-dark-dimmed.css';
 
 	const {
 		testId,
@@ -22,19 +31,12 @@
 		updateQuestionInStore: (updatedQuestion: QuestionState) => void;
 		deleteQuestionInStore: () => void;
 	} = $props();
-
-	const isJustGenerated = $derived(
-		questionState.isSaved(question) ? question.isJustGenerated : false
-	);
-
-	console.log(question.question)
-	const parsedCode = question.question ? parseCodeBlock(question.question) : null;
-	const codeBlock = parsedCode ? highlightCode(parsedCode.code.trim(), parsedCode.lang) : null;
-	const questionTextWithoutCode = removeCodeBlock(question.question!);
-
 </script>
 
-<div class="group" class:motion-preset-confetti={isJustGenerated}>
+<div
+	class="group"
+	class:motion-preset-confetti={question.status === 'saved' ? question.isJustGenerated : false}
+>
 	{#key question.status}
 		<span class="motion-preset-focus inline-flex items-center gap-x-1 text-xs opacity-50">
 			<div>
@@ -57,17 +59,7 @@
 
 	<header class="mb-5 mt-0.5 inline-flex w-full justify-between gap-x-7">
 		<div class="w-full">
-			<QuestionTitle questionTitle={questionTextWithoutCode} />
-				{#if codeBlock}
-					<pre class="hljs p-4 mt-2 mb-4 text-xs rounded-md">
-						<code>
-						{@html codeBlock}
-
-						</code>
-
-					</pre>
-
-				{/if}
+			<QuestionTitle questionTitle={question.question} />
 		</div>
 
 		{#if questionState.isEditable(question)}

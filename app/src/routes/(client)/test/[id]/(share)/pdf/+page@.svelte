@@ -23,8 +23,6 @@
 		<span class="flex items-center gap-x-1"
 			><CircleHelp size="12" /> {data.test.questions?.length} Questions</span
 		>
-		<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->
-		<span class="flex items-center gap-x-1"><Gauge size="12" /> {data.test.difficulty}</span>
 	</div>
 	<div class="relative mt-8 flex h-full w-full flex-col">
 		<div class="flex w-full flex-col gap-y-12">

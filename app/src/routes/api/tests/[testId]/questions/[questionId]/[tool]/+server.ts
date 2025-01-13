@@ -24,8 +24,7 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 				test: {
 					columns: {
 						userId: true,
-						title: true,
-						difficulty: true
+						title: true
 					}
 				}
 			}
@@ -43,7 +42,6 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 			questionTopic: existingQuestion.question,
 			existingQuestions: [existingQuestion.question],
 			tool,
-			testDifficulty: existingQuestion.test.difficulty, // Anyways will be moved to the scope of the question
 			testTitle: existingQuestion.test.title
 		});
 

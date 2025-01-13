@@ -11,7 +11,7 @@
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
 
 	const { data }: { data: PageData } = $props();
-	const { topic, numberOfQuestions, difficulty, model } = data.generationParams;
+	const { topic, numberOfQuestions, model } = data.generationParams;
 
 	type TestGenerationState =
 		| { status: 'idle' }
@@ -28,7 +28,6 @@
 			await streamTestGeneration({
 				body: {
 					topic,
-					difficulty,
 					numberOfQuestions,
 					model
 				} as GenerateTestDto,
