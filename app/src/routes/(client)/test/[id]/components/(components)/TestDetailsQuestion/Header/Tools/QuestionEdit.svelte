@@ -90,8 +90,6 @@
 		});
 	};
 
-	let codeBlockEnabled = $state<boolean>(!!question.codeBlock);
-
 	const languagesAvailable = supportedLangs.map((lang) => ({
 		value: lang,
 		label: lang
@@ -123,7 +121,7 @@
 					<Label for={`question-edit`}>Question:</Label>
 					<Input
 						id={`question-edit`}
-						class="mt-2 block max-w-[400px]"
+						class="mt-2 block w-full"
 						bind:value={updatedQuestion.question}
 					/>
 				</div>
@@ -153,19 +151,19 @@
 					</RadioGroup.Root>
 				</div>
 
-				{#if updatedQuestion.answerType === 'text'}
-					<div>
-						<Label for={`correct-answer-edit`} class="block">Correct answer:</Label>
-						<Input
-							class="mt-2"
-							id={`correct-answer-edit`}
-							bind:value={updatedQuestion.correctAnswer}
-						/>
-					</div>
-				{:else}
-					<div>
-						<Accordion.Root>
-							<Accordion.Item value="something">
+				<div>
+					<Accordion.Root>
+						<Accordion.Item value="something">
+							{#if updatedQuestion.answerType === 'text'}
+								<Accordion.Trigger>Correct answer</Accordion.Trigger>
+								<Accordion.Content>
+									<Input
+										class="mt-2"
+										id={`correct-answer-edit`}
+										bind:value={updatedQuestion.correctAnswer}
+									/>
+								</Accordion.Content>
+							{:else}
 								<Accordion.Trigger>Options</Accordion.Trigger>
 								<Accordion.Content>
 									{#each updatedQuestion.options ?? [] as option, index}
@@ -187,80 +185,76 @@
 										><Plus size="16" />Add new</Button
 									>
 								</Accordion.Content>
-							</Accordion.Item>
-							<Accordion.Item value="additional" class="border-0">
-								<Accordion.Trigger class="border-0 opacity-50">Advanced settings</Accordion.Trigger>
-								<Accordion.Content class="overflow-hidden">
-									<div class="flex flex-col gap-y-6">
-										<div>
-											<div class="flex items-center justify-between gap-x-1">
-												<div class="flex items-center gap-x-2">
-													<Label class="flex gap-x-1 text-xs"
-														>Code block
-														<Info size="12" />
-													</Label>
-												</div>
-												<div>
-													<Select.Root
-														items={languagesAvailable}
-														onSelectedChange={(val) => {
-															if (!val) return;
-															updatedQuestion.codeLang = val.value as SupportedLanguage;
-														}}
-													>
-														<Select.Trigger class="h-9 w-[200px] text-xs">
-															{updatedQuestion.codeLang ?? 'Select language'}
-														</Select.Trigger>
-														<Select.Content class="max-h-[220px] overflow-y-auto text-xs">
-															{#each languagesAvailable as lang}
-																<Select.Item class="text-xs" value={lang.value}
-																	>{lang.label}</Select.Item
-																>
-															{/each}
-														</Select.Content>
-													</Select.Root>
-												</div>
+							{/if}
+						</Accordion.Item>
+						<Accordion.Item value="additional" class="border-0">
+							<Accordion.Trigger class="border-0 opacity-50">Advanced settings</Accordion.Trigger>
+							<Accordion.Content class="overflow-hidden">
+								<div class="flex flex-col gap-y-6">
+									<div>
+										<div class="flex items-center justify-between gap-x-1">
+											<div class="flex items-center gap-x-2">
+												<Label class="flex gap-x-1 text-xs"
+													>Code block
+													<Info size="12" />
+												</Label>
 											</div>
-
-											<div class="mt-1 flex w-full gap-x-1 text-xs">
-												<div class="relative flex w-full">
-													<Textarea
-														class="flex w-full p-4 font-mono text-xs focus-visible:ring-0"
-														bind:value={updatedQuestion.codeBlock}
-													/>
-													<Button
-														size="icon"
-														variant="ghost"
-														class="absolute right-1 top-1 size-7 "
-													>
-														<Sparkles size="12" />
-													</Button>
-												</div>
-
-												<QuestionCodeBlock
-													codeBlock={updatedQuestion.codeBlock}
-													codeLanguage={updatedQuestion.codeLang}
-												/>
+											<div>
+												<Select.Root
+													items={languagesAvailable}
+													onSelectedChange={(val) => {
+														if (!val) return;
+														updatedQuestion.codeLang = val.value as SupportedLanguage;
+													}}
+												>
+													<Select.Trigger class="h-9 w-[200px] text-xs">
+														{updatedQuestion.codeLang ?? 'Select language'}
+													</Select.Trigger>
+													<Select.Content class="max-h-[220px] overflow-y-auto text-xs">
+														{#each languagesAvailable as lang}
+															<Select.Item class="text-xs" value={lang.value}
+																>{lang.label}</Select.Item
+															>
+														{/each}
+													</Select.Content>
+												</Select.Root>
 											</div>
 										</div>
-										<div>
-											<Label class="flex gap-x-1 text-xs"
-												>Answer explanation
-												<Info size="12" />
-											</Label>
-											<div class="relative mt-1 flex w-full">
-												<Textarea class="flex w-full p-4 font-mono text-xs focus-visible:ring-0" />
+
+										<div class="mt-1 flex w-full gap-x-1 text-xs">
+											<div class="relative flex w-full">
+												<Textarea
+													class="flex w-full p-4 font-mono text-xs focus-visible:ring-0"
+													bind:value={updatedQuestion.codeBlock}
+												/>
 												<Button size="icon" variant="ghost" class="absolute right-1 top-1 size-7 ">
 													<Sparkles size="12" />
 												</Button>
 											</div>
+
+											<QuestionCodeBlock
+												codeBlock={updatedQuestion.codeBlock}
+												codeLanguage={updatedQuestion.codeLang}
+											/>
 										</div>
 									</div>
-								</Accordion.Content>
-							</Accordion.Item>
-						</Accordion.Root>
-					</div>
-				{/if}
+									<div>
+										<Label class="flex gap-x-1 text-xs"
+											>Answer explanation
+											<Info size="12" />
+										</Label>
+										<div class="relative mt-1 flex w-full">
+											<Textarea class="flex w-full p-4 font-mono text-xs focus-visible:ring-0" />
+											<Button size="icon" variant="ghost" class="absolute right-1 top-1 size-7 ">
+												<Sparkles size="12" />
+											</Button>
+										</div>
+									</div>
+								</div>
+							</Accordion.Content>
+						</Accordion.Item>
+					</Accordion.Root>
+				</div>
 			</div>
 			<DialogFooter class="gap-y-2">
 				<Button onclick={onEditApply}>Save</Button>
