@@ -27,6 +27,7 @@
 	});
 </script>
 
-<pre class="hljs flex w-full rounded-md p-4 text-xs">
-	<code>{@html parsed}</code>
+<pre
+	class="hljs inline-flex w-full max-w-full overflow-x-auto whitespace-pre rounded-md p-4 text-xs">
+	<code class=" overflow-x-auto whitespace-pre">{@html parsed}</code>
 </pre>

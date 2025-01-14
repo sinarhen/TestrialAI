@@ -5,8 +5,8 @@
 	import { Checkbox } from '@/components/ui/checkbox';
 	import { Label } from '@/components/ui/label';
 	import { Input } from '@/components/ui/input';
-	import QuestionTitleWithCodeBlock from '../../components/(components)/TestDetailsQuestion/Header/QuestionTitleWithCodeBlock.svelte';
 	import QuestionCodeBlock from '../../components/QuestionCodeBlock.svelte';
+	import QuestionTitle from '../../components/(components)/TestDetailsQuestion/Header/QuestionTitle.svelte';
 
 	const {
 		data
@@ -32,12 +32,16 @@
 				<div class={`group relative`} role="list">
 					<div class="group flex gap-x-6">
 						<div class="w-full">
-							<div class="mt-2">
-								<QuestionTitleWithCodeBlock questionTitle={question.question} />
-								<QuestionCodeBlock
-									codeBlock={question.codeBlock}
-									codeLanguage={question.codeLang}
-								/>
+							<div class="mt-2 w-full">
+								<QuestionTitle questionTitle={question.question} />
+								{#if question.codeBlock && question.codeBlock.length > 0}
+									<div class="mt-1">
+										<QuestionCodeBlock
+											codeBlock={question.codeBlock}
+											codeLanguage={question.codeLang}
+										/>
+									</div>
+								{/if}
 							</div>
 							{#if question?.answerType === 'single'}
 								<RadioGroup.Root class="mt-3" value="option-one">

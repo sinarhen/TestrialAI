@@ -1,13 +1,8 @@
 <script lang="ts">
-	/*
-	 * We NO LONGER import highlight.js at the top-level.
-	 * We only import parseCodeBlock and removeCodeBlock
-	 * from your refined code-parser that DOESN'T import highlight.js.
-	 */
 	import { Check, Sparkles, PlusCircle, Loader } from 'lucide-svelte';
 	import { questionState, type QuestionState } from '../types';
 	import GeneratedQuestionActions from './(components)/TestDetailsQuestion/GeneratedQuestionActions.svelte';
-	import QuestionTitle from './(components)/TestDetailsQuestion/Header/QuestionTitleWithCodeBlock.svelte';
+	import QuestionTitle from './(components)/TestDetailsQuestion/Header/QuestionTitle.svelte';
 	import QuestionAnswers from './(components)/TestDetailsQuestion/QuestionAnswers.svelte';
 	import QuestionAIEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionAIEdit.svelte';
 	import QuestionDelete from './(components)/TestDetailsQuestion/Header/Tools/QuestionDelete.svelte';
@@ -54,7 +49,11 @@
 	<header class="mb-5 mt-0.5 inline-flex w-full justify-between gap-x-7">
 		<div class="w-full">
 			<QuestionTitle questionTitle={question.question} />
-			<QuestionCodeBlock codeBlock={question.codeBlock} codeLanguage={question.codeLang} />
+			{#if question.codeBlock && question.codeBlock.length > 0}
+				<div class="mt-1">
+					<QuestionCodeBlock codeBlock={question.codeBlock} codeLanguage={question.codeLang} />
+				</div>
+			{/if}
 		</div>
 
 		{#if questionState.isEditable(question)}
