@@ -32,10 +32,12 @@
 					<div class="group flex gap-x-6">
 						<div class="w-full">
 							<QuestionTitleWithCodeBlock questionTitle={question?.question} />
-							<QuestionCodeBlock
-								codeBlock={question?.codeBlock}
-								codeLanguage={question?.codeLang}
-							/>
+							{#if question?.codeBlock}
+								<QuestionCodeBlock
+									codeBlock={question?.codeBlock}
+									codeLanguage={question?.codeLang}
+								/>
+							{/if}
 							<div class="mt-4">
 								{#if question?.answerType === 'single'}
 									<RadioGroup.Root value="option-one">

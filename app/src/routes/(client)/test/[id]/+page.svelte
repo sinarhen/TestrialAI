@@ -39,7 +39,8 @@
 				{ value: 'Option 3', isCorrect: false },
 				{ value: 'Option 4', isCorrect: false }
 			],
-			status: 'new'
+			status: 'new',
+			answerExplanation: null
 		});
 
 	const onPdfExport = () => {

@@ -58,6 +58,17 @@
 			}
 		];
 	}
+
+	const onGenerateCodeBlock = async () => {
+		if (!updatedQuestion.codeLang) {
+			toast.error('Please select a language first');
+			return;
+		}
+
+		const hljs = await getHljsWithLanguage(updatedQuestion.codeLang);
+		
+	};
+
 	const onEditApply = async () => {
 		// Didn't change anything
 		if (questionState.isSaved(updatedQuestion)) {
@@ -244,7 +255,10 @@
 											<Info size="12" />
 										</Label>
 										<div class="relative mt-1 flex w-full">
-											<Textarea class="flex w-full p-4 font-mono text-xs focus-visible:ring-0" />
+											<Textarea
+												bind:value={updatedQuestion.answerExplanation}
+												class="flex w-full p-4 text-xs focus-visible:ring-0"
+											/>
 											<Button size="icon" variant="ghost" class="absolute right-1 top-1 size-7 ">
 												<Sparkles size="12" />
 											</Button>

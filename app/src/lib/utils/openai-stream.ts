@@ -41,8 +41,8 @@ export async function streamOpenAiResponse<TFinal>({
 
 	runner.on('content.delta', ({ snapshot }) => {
 		if (onPartial) {
-		try {
-				const partialData = parse(snapshot) as DeepPartial<TFinal>;
+			try {
+				if (string instanceof TFinal) const partialData = parse(snapshot) as DeepPartial<TFinal>;
 				onPartial(partialData);
 			} catch (err) {
 				console.error('Partial parse error:', err);
@@ -53,6 +53,7 @@ export async function streamOpenAiResponse<TFinal>({
 	runner.on('content.done', ({ content }) => {
 		if (onComplete) {
 			try {
+				// if not a string
 				const finalData = parse(content) as TFinal;
 				onComplete(finalData);
 			} catch (err) {

@@ -46,5 +46,9 @@
 	{/if}
 {:else if question.answerType === 'text'}
 	<Input disabled={questionState.isGenerating(question)} type="text" class="mt-2 max-w-[400px]" />
-	<span class="text-xs text-gray-500">Answer: {question.correctAnswer}</span>
+	<p class="mt-1 text-xs opacity-75">{question.correctAnswer}</p>
+{/if}
+
+{#if question.answerExplanation}
+	<p class="mt-2 text-xs opacity-50">{question.answerExplanation}</p>
 {/if}

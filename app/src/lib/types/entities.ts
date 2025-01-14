@@ -16,6 +16,7 @@ export interface Question {
 	codeBlock?: string | null;
 	codeLang?: SupportedLanguage | null;
 	correctAnswer: string | null;
+	answerExplanation?: string | null;
 	question: string;
 	options: Option[];
 }
@@ -67,7 +68,8 @@ export const questionSchema = z
 		question: z.string(),
 		codeBlock: z.string().optional(),
 		codeLang: z.enum(supportedLangs).optional(),
-		options: z.array(optionSchema).nullable()
+		options: z.array(optionSchema).nullable(),
+		answerExplanation: z.string().optional()
 	})
 	.refine(
 		(data) => {

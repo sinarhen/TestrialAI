@@ -62,4 +62,14 @@ export const streamQuestionModification = <TFinal = QuestionCompletion>(
 		...options
 	});
 
+export const streamCodeBlockGeneration = <TFinal = string>(
+	testId: string,
+	questionId: string,
+	options: OpenAiStreamHandlerOptions<TFinal>
+) =>
+	streamOpenAiResponse<TFinal>({
+		endpoint: `/api/tests/${testId}/questions/${questionId}/code-block`,
+		...options
+	});
+
 type OpenAiStreamHandlerOptions<TFinal> = Omit<OpenAiStreamingOptions<TFinal>, 'endpoint'>;

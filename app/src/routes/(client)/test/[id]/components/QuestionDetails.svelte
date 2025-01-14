@@ -68,7 +68,7 @@
 	</header>
 
 	<QuestionAnswers {question} />
-
+	
 	{#if questionState.isGenerated(question)}
 		<GeneratedQuestionActions {testId} {question} {updateQuestionInStore} {deleteQuestionInStore} />
 	{/if}

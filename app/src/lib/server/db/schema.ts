@@ -51,6 +51,7 @@ export const questions = sqliteTable('questions', {
 	codeLang: text('code_lang').$type<SupportedLanguage>(),
 	answerType: text('answer_type').notNull().$type<AnswerType>(),
 	correctAnswer: text('correct_answer'),
+	answerExplanation: text('answer_explanation'),
 	testId: text('test_id')
 		.notNull()
 		.references(() => tests.id, { onDelete: 'cascade' })

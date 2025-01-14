@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Grip } from 'lucide-svelte';
-	import TestDetailsQuestion from './TestDetailsQuestion.svelte';
+	import TestDetailsQuestion from './QuestionDetails.svelte';
 	import type { QuestionState, TestState } from '../types';
 	import type { Question } from '@/types/entities';
 
