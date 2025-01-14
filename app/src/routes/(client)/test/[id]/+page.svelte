@@ -40,7 +40,7 @@
 				{ value: 'Option 4', isCorrect: false }
 			],
 			status: 'new',
-			answerExplanation: null
+			answerExplanation: null,
 		});
 
 	const onPdfExport = () => {

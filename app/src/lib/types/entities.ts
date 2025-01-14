@@ -69,7 +69,7 @@ export const questionSchema = z
 		codeBlock: z.string().optional(),
 		codeLang: z.enum(supportedLangs).optional(),
 		options: z.array(optionSchema).nullable(),
-		answerExplanation: z.string().optional()
+		answerExplanation: z.string().nullable()
 	})
 	.refine(
 		(data) => {
@@ -90,6 +90,11 @@ export const testSchema = z.object({
 	questions: z.array(questionSchema)
 });
 
+export const codeBlockCompletionSchema = z.object({
+	codeBlock: z.string(),
+	codeLang: z.enum(supportedLangs)
+});
+export type CodeBlockCompletion = z.infer<typeof codeBlockCompletionSchema>;
 export type QuestionCompletion = z.infer<typeof questionSchema>;
 export type TestCompletion = z.infer<typeof testSchema>;
 

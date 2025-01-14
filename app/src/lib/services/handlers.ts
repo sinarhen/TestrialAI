@@ -1,4 +1,5 @@
 import type {
+	CodeBlockCompletion,
 	GeneratingQuestionCompletion,
 	GeneratingTestCompletion,
 	Question,
@@ -62,7 +63,7 @@ export const streamQuestionModification = <TFinal = QuestionCompletion>(
 		...options
 	});
 
-export const streamCodeBlockGeneration = <TFinal = string>(
+export const streamCodeBlockGeneration = <TFinal = CodeBlockCompletion>(
 	testId: string,
 	questionId: string,
 	options: OpenAiStreamHandlerOptions<TFinal>

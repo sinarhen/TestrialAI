@@ -1,9 +1,8 @@
 import { type Question, type Test } from '@/types/entities';
 import type { RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
-import { and, eq, inArray, notInArray, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import * as table from '@/server/db/schema';
-import type { Option } from '@/types/entities';
 import { generateCodeBlock } from '@/server/openai/completions/question/code-block';
 
 export type GenerateCodeBlockDto = {

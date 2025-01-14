@@ -22,10 +22,7 @@
 	} = $props();
 </script>
 
-<div
-	class="group"
-	class:motion-preset-confetti={question.status === 'saved' ? question.isJustGenerated : false}
->
+<div class="group">
 	{#key question.status}
 		<span class="motion-preset-focus inline-flex items-center gap-x-1 text-xs opacity-50">
 			<div>
@@ -68,7 +65,7 @@
 	</header>
 
 	<QuestionAnswers {question} />
-	
+
 	{#if questionState.isGenerated(question)}
 		<GeneratedQuestionActions {testId} {question} {updateQuestionInStore} {deleteQuestionInStore} />
 	{/if}

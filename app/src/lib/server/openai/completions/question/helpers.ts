@@ -18,13 +18,9 @@ export const getMessages: (
 		4. **Non-Repetition**: Do not repeat any of the existing questions provided by the user.
 
 		3. **Code Blocks**:
-		- If a question is related to code (e.g., a programming snippet, etc.), you are free to add 'codeBlock' and 'language' fields.
-		- If the question does not require code, omit these fields.
+		- If a question is related to code (e.g., a programming snippet, etc.), you are free to add 'codeBlock' and 'codeLang' fields.
+		- Code block should only include code snippets without triple backticks  
 		
-		Note that the question can include a code block inside the string, e.g.:
-  
-		"question": "What does this code do? \n\`\`\`ts\nconsole.log('Hello, world!');\n\`\`\`"
-  
 		Remember not to repeat any existing questions:
 		${existingQuestions.join(', ')}.
 	  `

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type QuestionState, questionState } from '../../../../../types';
 	import { toast } from 'svelte-sonner';
-	import { createQuestion, updateQuestion } from '@/services/handlers';
+	import { createQuestion, streamCodeBlockGeneration, updateQuestion } from '@/services/handlers';
 	import {
 		Dialog,
 		DialogContent,
@@ -21,7 +21,6 @@
 	import { Checkbox } from '@/components/ui/checkbox';
 	import { Button } from '@/components/ui/button';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
-	import { getHljsWithLanguage } from '@/utils/code-parser';
 	import * as Select from '@/components/ui/select';
 	import QuestionCodeBlock from '../../../../QuestionCodeBlock.svelte';
 
@@ -60,13 +59,32 @@
 	}
 
 	const onGenerateCodeBlock = async () => {
+		if (!questionState.isEditable(updatedQuestion) || questionState.isNew(updatedQuestion)) {
+			console.log(updatedQuestion.status);
+			return;
+		}
 		if (!updatedQuestion.codeLang) {
 			toast.error('Please select a language first');
 			return;
 		}
 
-		const hljs = await getHljsWithLanguage(updatedQuestion.codeLang);
-		
+		toast.info('Generating code block...');
+		try {
+			await streamCodeBlockGeneration(testId, updatedQuestion.id, {
+				onPartial: (partialData) => {
+					updatedQuestion.codeBlock = partialData.codeBlock;
+					updatedQuestion.codeLang = partialData.codeLang;
+				},
+				onComplete: (finalData) => {
+					updatedQuestion.codeBlock = finalData.codeBlock;
+					updatedQuestion.codeLang = finalData.codeLang;
+					toast.success('Code block generated successfully');
+				}
+			});
+		} catch (e) {
+			console.error(e);
+			toast.error('Failed to generate code block');
+		}
 	};
 
 	const onEditApply = async () => {
@@ -238,7 +256,12 @@
 													class="flex w-full p-4 font-mono text-xs focus-visible:ring-0"
 													bind:value={updatedQuestion.codeBlock}
 												/>
-												<Button size="icon" variant="ghost" class="absolute right-1 top-1 size-7 ">
+												<Button
+													onclick={onGenerateCodeBlock}
+													size="icon"
+													variant="ghost"
+													class="absolute right-1 top-1 size-7 "
+												>
 													<Sparkles size="12" />
 												</Button>
 											</div>

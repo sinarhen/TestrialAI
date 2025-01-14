@@ -29,26 +29,28 @@
 	</RadioGroup.Root>
 {:else if question.answerType === 'multiple'}
 	{#if question.options}
-		{#each question.options as option, index}
-			<div class="mt-2 flex items-center space-x-2">
-				<Checkbox
-					disabled={questionState.isGenerating(question)}
-					id={`checkbox-${question.question}-${index}`}
-				/>
-				<Label for={`checkbox-${question.question}-${index}`}>
-					{option?.value}
-					{#if option?.isCorrect}
-						<span class="text-green ml-2">✅</span>
-					{/if}
-				</Label>
-			</div>
-		{/each}
+		<div class="flex flex-col gap-y-3">
+			{#each question.options as option, index}
+				<div class="flex items-center space-x-2">
+					<Checkbox
+						disabled={questionState.isGenerating(question)}
+						id={`checkbox-${question.question}-${index}`}
+					/>
+					<Label for={`checkbox-${question.question}-${index}`}>
+						{option?.value}
+						{#if option?.isCorrect}
+							<span class="text-green ml-2">✅</span>
+						{/if}
+					</Label>
+				</div>
+			{/each}
+		</div>
 	{/if}
 {:else if question.answerType === 'text'}
 	<Input disabled={questionState.isGenerating(question)} type="text" class="mt-2 max-w-[400px]" />
-	<p class="mt-1 text-xs opacity-75">{question.correctAnswer}</p>
+	<p class="mt-2 text-xs opacity-75">{question.correctAnswer}</p>
 {/if}
 
 {#if question.answerExplanation}
-	<p class="mt-2 text-xs opacity-50">{question.answerExplanation}</p>
+	<p class="mt-3 text-xs opacity-50">{question.answerExplanation}</p>
 {/if}
