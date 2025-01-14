@@ -54,8 +54,6 @@
 	const shareLink = browser
 		? `${window.location.origin}/test/${serverData.test.id}/share`
 		: 'Unable to copy link';
-
-	$inspect(serverData.test);
 </script>
 
 <div class="flex gap-x-2">

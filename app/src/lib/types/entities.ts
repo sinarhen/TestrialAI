@@ -30,7 +30,6 @@ export interface Option {
 	id: string;
 	value: string;
 	isCorrect: boolean;
-	isCodeSnippet?: boolean | null;
 }
 
 export const supportedLangs = [
@@ -58,7 +57,6 @@ export type SupportedLanguage = (typeof supportedLangs)[number];
 
 export const optionSchema = z.object({
 	value: z.string(),
-	isCodeSnippet: z.boolean().optional(),
 	isCorrect: z.boolean()
 });
 

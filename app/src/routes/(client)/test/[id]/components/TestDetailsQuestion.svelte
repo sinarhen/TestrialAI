@@ -12,7 +12,7 @@
 	import QuestionAIEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionAIEdit.svelte';
 	import QuestionDelete from './(components)/TestDetailsQuestion/Header/Tools/QuestionDelete.svelte';
 	import QuestionEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionEdit.svelte';
-	import QuestionCodeBlock from '@/components/QuestionCodeBlock.svelte';
+	import QuestionCodeBlock from './QuestionCodeBlock.svelte';
 
 	const {
 		testId,

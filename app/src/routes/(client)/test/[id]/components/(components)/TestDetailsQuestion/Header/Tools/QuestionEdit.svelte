@@ -13,13 +13,17 @@
 	} from '@/components/ui/dialog';
 	import * as RadioGroup from '@/components/ui/radio-group';
 
-	import { AnswerTypes, type Question } from '@/types/entities';
+	import { AnswerTypes, supportedLangs, type SupportedLanguage } from '@/types/entities';
 	import lodash from 'lodash';
 	import { Info, Pencil, Plus, Trash2 } from 'lucide-svelte';
 	import { Label } from '@/components/ui/label';
 	import { Input } from '@/components/ui/input';
 	import { Checkbox } from '@/components/ui/checkbox';
 	import { Button } from '@/components/ui/button';
+	import Textarea from '@/components/ui/textarea/textarea.svelte';
+	import { getHljsWithLanguage } from '@/utils/code-parser';
+	import * as Select from '@/components/ui/select';
+	import QuestionCodeBlock from '../../../../QuestionCodeBlock.svelte';
 
 	const {
 		testId,
@@ -85,11 +89,18 @@
 			}
 		});
 	};
+
+	let codeBlockEnabled = $state<boolean>(!!question.codeBlock);
+
+	const languagesAvailable = supportedLangs.map((lang) => ({
+		value: lang,
+		label: lang
+	}));
 </script>
 
 {#if questionState.isEditable(updatedQuestion)}
 	<Dialog
-		open={isDialogOpen}
+		open={true}
 		onOpenChange={() => {
 			isDialogOpen = !isDialogOpen;
 		}}
@@ -102,77 +113,123 @@
 				<Pencil size="16" />
 			</button>
 		</DialogTrigger>
-		<DialogContent>
+		<DialogContent class="md:min-w-lg w-[85%] max-w-3xl">
 			<DialogHeader>
 				<DialogTitle>Edit Question</DialogTitle>
 				<DialogDescription>Modify the details of the question below.</DialogDescription>
 			</DialogHeader>
 			<div class="space-y-6">
 				<div>
-					<Label class="inline-flex gap-x-0.5" for={`answer-type`}>
-						Answer type
-						<Info size="10" />
-					</Label>
-					<RadioGroup.Root
-						disabled={questionState.isGenerating(updatedQuestion)}
-						bind:value={updatedQuestion.answerType}
-						class="mt-2 gap-x-2"
-						id={`answer-type`}
-					>
-						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value={AnswerTypes.SINGLE} id="single" />
-							<Label for="single">Single</Label>
-						</div>
-						<div class="flex items-center space-x-2">
-							<RadioGroup.Item value={AnswerTypes.MULTIPLE} id="multiple" />
-							<Label for="multiple">Multiple</Label>
-						</div>
-						<div class="items center flex space-x-2">
-							<RadioGroup.Item value={AnswerTypes.TEXT} id="text" />
-							<Label for="text">Text</Label>
-						</div>
-					</RadioGroup.Root>
+					<Label for={`question-edit`}>Question:</Label>
+					<Input
+						id={`question-edit`}
+						class="mt-2 block max-w-[400px]"
+						bind:value={updatedQuestion.question}
+					/>
 				</div>
 				<div>
-					<Label for={`question-edit`} class="block">Question:</Label>
-					<Input class="mt-2" id={`question-edit`} bind:value={updatedQuestion.question} />
-				</div>
-				{#if updatedQuestion.answerType === 'text'}
-					<div>
-						<Label for={`correct-answer-edit`} class="block">Correct answer:</Label>
-						<Input
-							class="mt-2"
-							id={`correct-answer-edit`}
-							bind:value={updatedQuestion.correctAnswer}
+					<div class="flex items-center justify-between gap-x-1">
+						<div class="flex items-center gap-x-2">
+							<Checkbox bind:checked={codeBlockEnabled} />
+							<Label>Code block</Label>
+						</div>
+						<div>
+							<Select.Root
+								items={languagesAvailable}
+								onSelectedChange={(val) => {
+									if (!val) return;
+									updatedQuestion.codeLang = val.value as SupportedLanguage;
+								}}
+							>
+								<Select.Trigger class=" w-[200px]">
+									{updatedQuestion.codeLang ?? 'Select language'}
+								</Select.Trigger>
+								<Select.Content class="max-h-[220px] overflow-y-auto">
+									{#each languagesAvailable as lang}
+										<Select.Item value={lang.value}>{lang.label}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</div>
+					</div>
+
+					<div class="mt-1 flex gap-x-1">
+						<Textarea class="hljs w-full" bind:value={updatedQuestion.codeBlock}>
+							asdads
+							<QuestionCodeBlock
+								codeBlock={updatedQuestion.codeBlock}
+								codeLanguage={updatedQuestion.codeLang}
+							/>
+						</Textarea>
+
+						<QuestionCodeBlock
+							codeBlock={updatedQuestion.codeBlock}
+							codeLanguage={updatedQuestion.codeLang}
 						/>
 					</div>
-				{:else}
+
 					<div>
-						<Label>Options</Label>
-						{#each updatedQuestion.options ?? [] as option, index}
-							<div class="mt-2 flex items-center space-x-2">
-								<Input type="text" bind:value={option.value} class="input flex-1" />
-								<Checkbox
-									id={`checkbox-${updatedQuestion}-${index}`}
-									bind:checked={option.isCorrect}
-								/>
-								<Trash2
-									onclick={() => deleteOption(index)}
-									class="text-destructive cursor-pointer"
-									size="16"
-								/>
-							</div>
-						{/each}
-						<Button onclick={createOption} class="mt-2 w-full" variant="link"
-							><Plus size="16" />Add new</Button
+						<Label class="inline-flex gap-x-0.5" for={`answer-type`}>
+							Answer type
+							<Info size="10" />
+						</Label>
+						<RadioGroup.Root
+							disabled={questionState.isGenerating(updatedQuestion)}
+							bind:value={updatedQuestion.answerType}
+							class="mt-2 flex gap-x-3"
+							id={`answer-type`}
 						>
+							<div class="flex items-center space-x-2">
+								<RadioGroup.Item value={AnswerTypes.SINGLE} id="single" />
+								<Label for="single">Single</Label>
+							</div>
+							<div class="flex items-center space-x-2">
+								<RadioGroup.Item value={AnswerTypes.MULTIPLE} id="multiple" />
+								<Label for="multiple">Multiple</Label>
+							</div>
+							<div class="items center flex space-x-2">
+								<RadioGroup.Item value={AnswerTypes.TEXT} id="text" />
+								<Label for="text">Text</Label>
+							</div>
+						</RadioGroup.Root>
 					</div>
-				{/if}
-			</div>
-			<DialogFooter class="gap-y-2">
-				<Button onclick={onEditApply}>Save</Button>
-				<Button variant="outline" on:click={() => (isDialogOpen = false)}>Cancel</Button>
-			</DialogFooter>
-		</DialogContent>
+					{#if updatedQuestion.answerType === 'text'}
+						<div>
+							<Label for={`correct-answer-edit`} class="block">Correct answer:</Label>
+							<Input
+								class="mt-2"
+								id={`correct-answer-edit`}
+								bind:value={updatedQuestion.correctAnswer}
+							/>
+						</div>
+					{:else}
+						<div>
+							<Label>Options</Label>
+							{#each updatedQuestion.options ?? [] as option, index}
+								<div class="mt-2 flex items-center space-x-2">
+									<Input type="text" bind:value={option.value} class="input flex-1" />
+									<Checkbox
+										id={`checkbox-${updatedQuestion}-${index}`}
+										bind:checked={option.isCorrect}
+									/>
+									<Trash2
+										onclick={() => deleteOption(index)}
+										class="text-destructive cursor-pointer"
+										size="16"
+									/>
+								</div>
+							{/each}
+							<Button onclick={createOption} class="mt-2 w-full" variant="link"
+								><Plus size="16" />Add new</Button
+							>
+						</div>
+					{/if}
+				</div>
+				<DialogFooter class="gap-y-2">
+					<Button onclick={onEditApply}>Save</Button>
+					<Button variant="outline" on:click={() => (isDialogOpen = false)}>Cancel</Button>
+				</DialogFooter>
+			</div></DialogContent
+		>
 	</Dialog>
 {/if}

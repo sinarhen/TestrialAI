@@ -1,4 +1,5 @@
 import type { SupportedLanguage } from '@/types/entities';
+import hljsCore from 'highlight.js/lib/core';
 
 const CODE_BLOCK_REGEX = /```(\w+)?\s*\n([\s\S]*?)```/;
 
@@ -31,21 +32,18 @@ const highlightImportMap: Record<
 	php: () => import('highlight.js/lib/languages/php'),
 	sql: () => import('highlight.js/lib/languages/sql'),
 	perl: () => import('highlight.js/lib/languages/perl')
-	
 };
 
 export async function getHljsWithLanguage(lang: SupportedLanguage) {
-	const hljs = (await import('highlight.js/lib/core')).default;
 	try {
 		// Choose the correct dynamic import from our map
 		const importer = highlightImportMap[lang] || highlightImportMap['plaintext'];
 		const langModule = (await importer()).default;
-		hljs.registerLanguage(lang, langModule);
+		if (!hljsCore.listLanguages().includes(lang)) hljsCore.registerLanguage(lang, langModule);
 	} catch (err) {
 		console.warn(`Could not load language: ${lang}`, err);
 	}
-
-	return hljs;
+	return hljsCore;
 }
 
 export async function getHljsStyles() {
