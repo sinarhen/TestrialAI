@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 				throw new Error('Failed to insert question');
 			}
 
-			if (!body.options) {
+			if (!body.options.length) {
 				return insertedQuestion;
 			}
 			const insertedOptions = await tx

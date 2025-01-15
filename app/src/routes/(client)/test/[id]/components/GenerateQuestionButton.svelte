@@ -59,6 +59,7 @@
 						...finalData,
 						status: 'generated'
 					});
+					console.log('Question generated:', finalData);
 					toast.success('Question is generated, does it look good for you?');
 				}
 			});

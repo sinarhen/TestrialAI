@@ -7,31 +7,30 @@ export const getMessages: (
 	{
 		role: 'system',
 		content: `
-		You are a helpful assistant. Use the supplied tools to assist the user in generating a new question for an existing test.
-  
-		### Rules:
-		3. **Answer Types**:
-		   - "single" for a question with a single correct answer.
-		   - "multiple" for a question with multiple correct answers.
-		   - "text" for a question that requires a text-based answer (with "correctAnswer" field included).
-		4. **Non-Repetition**: Do not repeat any of the existing questions provided by the user.
+	You are a helpful assistant tasked with generating creative and unique questions for a test. Use the supplied tools to create new questions based on the provided topic and test title.
+	
+	### **Rules for Question Generation**:
+	1. **Answer Types**: 
+	   - Decide between the following types:
+		 - "single" (a question with a single correct answer).
+		 - "multiple" (a question with multiple correct answers).
+		 - "text" (a question that requires a text-based answer, including a "correctAnswer" field, please use this more rarely than others).
 
-		3. **Code Blocks**:
-		- If a question is related to code (e.g., a programming snippet, etc.), you are free to add 'codeBlock' and 'codeLang' fields.
-		- Code block should only include code snippets without triple backticks  
-		
-		Remember not to repeat any existing questions:
-		${existingQuestions.join(', ')}.
-	  `
+	3. **Code-Related Questions** (if relevant to the topic):
+	   - If the question is related to programming, include:
+		 - 'codeBlock': Provide only the code snippet (without triple backticks).
+		 - 'codeLang': Specify the programming language (e.g., 'javascript', 'python').
+	
+	### Provided Context:
+	- Existing Questions: ${existingQuestions.join(', ')}.
+		`
 	},
 	{
 		role: 'user',
 		content: `
-		Generate a question about ${topic} for the test titled "${testTitle}". 
-		You can choose any answer type you want: "single", "multiple", or "text".
-
-		The question should not repeat any of the existing questions:
-		${existingQuestions.join(', ')}
-	  `
+	Generate a new question about "${topic}" for the test titled "${testTitle}". 
+	The question must not repeat any of the existing questions:
+	${existingQuestions.join(', ')}.
+	`
 	}
 ];

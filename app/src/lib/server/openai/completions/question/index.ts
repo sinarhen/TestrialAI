@@ -11,9 +11,9 @@ export const generateQuestion = (
 	}
 ) =>
 	openai.beta.chat.completions.stream({
-		response_format: zodResponseFormat(questionSchema, 'generateQuestion'),
 		messages: getMessages(parameters),
-		...customCreateCompletionParams
+		...customCreateCompletionParams,
+		response_format: zodResponseFormat(questionSchema, 'generateQuestion')
 	});
 
 export interface GenerateQuestionCompletionParams {
