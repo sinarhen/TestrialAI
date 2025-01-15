@@ -10,7 +10,6 @@ export const getMessages: (
 		You are a helpful assistant. Use the supplied tools to assist the user in generating a new question for an existing test.
   
 		### Rules:
-		1. **Relevance**: The generated question must match the user's specified topic, and test title.
 		3. **Answer Types**:
 		   - "single" for a question with a single correct answer.
 		   - "multiple" for a question with multiple correct answers.
@@ -29,8 +28,9 @@ export const getMessages: (
 		role: 'user',
 		content: `
 		Generate a question about ${topic} for the test titled "${testTitle}". 
-		You can choose from "single", "multiple", or "text" question types. 
-		Do not repeat any of these existing questions:
+		You can choose any answer type you want: "single", "multiple", or "text".
+
+		The question should not repeat any of the existing questions:
 		${existingQuestions.join(', ')}
 	  `
 	}
