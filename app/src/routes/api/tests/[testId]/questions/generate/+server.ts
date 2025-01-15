@@ -59,7 +59,10 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			}
 		);
 
-		return new Response(openAIStream.toReadableStream());
+		for await (const chunk of openAIStream) {
+		}
+
+		// return new Response(openAIStream.toReadableStream());
 	} catch (e) {
 		console.error(e);
 		return new Response('An error has occurred while generating.', { status: 500 });

@@ -16,7 +16,13 @@ export const GET: RequestHandler = async ({ params, url }) => {
 
 		const pdfBuffer = await page.pdf({
 			format: 'A4',
-			printBackground: true
+			// printBackground: true,
+			margin: {
+				top: '1cm',
+				right: '1cm',
+				bottom: '1cm',
+				left: '1cm'
+			}
 		});
 
 		// 5) Close browser

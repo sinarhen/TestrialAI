@@ -12,7 +12,11 @@
 </script>
 
 {#if question.answerType === 'single'}
-	<RadioGroup.Root disabled={questionState.isGenerating(question)} value="option-one">
+	<RadioGroup.Root
+		class="flex flex-col gap-y-2"
+		disabled={questionState.isGenerating(question)}
+		value="option-one"
+	>
 		{#if question.options}
 			{#each question.options as option, index}
 				<div class="flex items-center space-x-2">
@@ -29,7 +33,7 @@
 	</RadioGroup.Root>
 {:else if question.answerType === 'multiple'}
 	{#if question.options}
-		<div class="flex flex-col gap-y-3">
+		<div class="flex flex-col gap-y-2">
 			{#each question.options as option, index}
 				<div class="flex items-center space-x-2">
 					<Checkbox
