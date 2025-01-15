@@ -5,7 +5,7 @@
 	import { Input } from '@/components/ui/input';
 	import type { GeneratingTestCompletion } from '@/types/entities.js';
 	import { CircleHelp } from 'lucide-svelte';
-	import QuestionTitleWithCodeBlock from '../../[id]/components/(components)/TestDetailsQuestion/Header/QuestionTitle.svelte';
+	import QuestionTitleWithCodeBlock from '../../[id]/components/components/TestDetailsQuestion/Header/QuestionTitle.svelte';
 	import QuestionCodeBlock from '../../[id]/components/QuestionCodeBlock.svelte';
 
 	const {

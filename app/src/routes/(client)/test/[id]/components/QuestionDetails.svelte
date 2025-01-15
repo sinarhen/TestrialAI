@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Check, Sparkles, PlusCircle, Loader } from 'lucide-svelte';
 	import { questionState, type QuestionState } from '../types';
-	import GeneratedQuestionActions from './(components)/TestDetailsQuestion/GeneratedQuestionActions.svelte';
-	import QuestionTitle from './(components)/TestDetailsQuestion/Header/QuestionTitle.svelte';
-	import QuestionAnswers from './(components)/TestDetailsQuestion/QuestionAnswers.svelte';
-	import QuestionAIEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionAIEdit.svelte';
-	import QuestionDelete from './(components)/TestDetailsQuestion/Header/Tools/QuestionDelete.svelte';
-	import QuestionEdit from './(components)/TestDetailsQuestion/Header/Tools/QuestionEdit.svelte';
+	import GeneratedQuestionActions from './components/TestDetailsQuestion/GeneratedQuestionActions.svelte';
+	import QuestionTitle from './components/TestDetailsQuestion/Header/QuestionTitle.svelte';
+	import QuestionAnswers from './components/TestDetailsQuestion/QuestionAnswers.svelte';
+	import QuestionAIEdit from './components/TestDetailsQuestion/Header/Tools/QuestionAIEdit.svelte';
+	import QuestionDelete from './components/TestDetailsQuestion/Header/Tools/QuestionDelete.svelte';
+	import QuestionEdit from './components/TestDetailsQuestion/Header/Tools/QuestionEdit.svelte';
 	import QuestionCodeBlock from './QuestionCodeBlock.svelte';
 
 	const {

@@ -6,7 +6,7 @@
 	import { Label } from '@/components/ui/label';
 	import { Input } from '@/components/ui/input';
 	import QuestionCodeBlock from '../../components/QuestionCodeBlock.svelte';
-	import QuestionTitle from '../../components/(components)/TestDetailsQuestion/Header/QuestionTitle.svelte';
+	import QuestionTitle from '../../components/components/TestDetailsQuestion/Header/QuestionTitle.svelte';
 
 	const {
 		data

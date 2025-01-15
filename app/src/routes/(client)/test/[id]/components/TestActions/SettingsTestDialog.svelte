@@ -1,0 +1,14 @@
+<script>
+	import { Button } from '@/components/ui/button';
+	import { Settings } from 'lucide-svelte';
+	import { toast } from 'svelte-sonner';
+</script>
+
+<Button
+	variant="outline"
+	size="sm"
+	class="-motion-translate-y-in-50 motion-opacity-in-0 motion-duration-500  gap-x-1"
+	onclick={() => {
+		toast.info('Not implemented yet');
+	}}>Settings <Settings size="12" /></Button
+>

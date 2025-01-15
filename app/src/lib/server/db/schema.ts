@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
-import { type AnswerType, type SupportedLanguage } from '@/types/entities';
+import { type AnswerType, type SupportedLanguage, type Test } from '@/types/entities';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -19,6 +19,43 @@ export const sessions = sqliteTable('sessions', {
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
+});
+
+export const testSessions = sqliteTable('test_sessions', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
+	sessionId: text('session_id')
+		.notNull()
+		.references(() => sessions.id, { onDelete: 'cascade' }),
+	testId: text('test_id')
+		.notNull()
+		.references(() => tests.id, { onDelete: 'cascade' }),
+	startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
+	endTime: integer('end_time', { mode: 'timestamp' }),
+	durationInMinutes: integer('duration_in_minutes'),
+	textState: text('text_state', {
+		mode: 'json'
+	})
+		.$type<Test>()
+		.notNull()
+});
+
+export const testParticipant = sqliteTable('test_participant', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
+	testSessionId: text('test_session_id')
+		.notNull()
+		.references(() => testSessions.id, { onDelete: 'cascade' }),
+	userId: text('user_id')
+		// .notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	status: text('status', {
+		enum: ['joined', 'active', 'completed', 'aborted']
+	}).notNull(),
+	score: integer('score').notNull().default(0),
+	feedback: text('feedback')
 });
 
 export const tests = sqliteTable('tests', {
