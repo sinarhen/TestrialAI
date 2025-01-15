@@ -1,8 +1,14 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
-import { type AnswerType, type SupportedLanguage, type Test } from '@/types/entities';
+import {
+	displayModes,
+	testSessionParticipantStatuses,
+	type AnswerType,
+	type SupportedLanguage,
+	type Test
+} from '@/types/entities';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -21,27 +27,34 @@ export const sessions = sqliteTable('sessions', {
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
 
-export const testSessions = sqliteTable('test_sessions', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => uuidv4()),
-	sessionId: text('session_id')
-		.notNull()
-		.references(() => sessions.id, { onDelete: 'cascade' }),
-	testId: text('test_id')
-		.notNull()
-		.references(() => tests.id, { onDelete: 'cascade' }),
-	startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
-	endTime: integer('end_time', { mode: 'timestamp' }),
-	durationInMinutes: integer('duration_in_minutes'),
-	textState: text('text_state', {
-		mode: 'json'
+export const testSessions = sqliteTable(
+	'test_sessions',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => uuidv4()),
+		testId: text('test_id')
+			.notNull()
+			.references(() => tests.id, { onDelete: 'cascade' }),
+		slug: text('slug').notNull(),
+		startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
+		endTime: integer('end_time', { mode: 'timestamp' }),
+		durationInMinutes: integer('duration_in_minutes'),
+		testStateJson: text('test_state_json', {
+			mode: 'json'
+		})
+			.$type<Test>()
+			.notNull(),
+		displayMode: text('display_mode', {
+			enum: displayModes
+		}).notNull()
+	},
+	(table) => ({
+		slugIdx: uniqueIndex('slug_idx').on(table.slug)
 	})
-		.$type<Test>()
-		.notNull()
-});
+);
 
-export const testParticipant = sqliteTable('test_participant', {
+export const testSessionParticipants = sqliteTable('test_session_participant', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
@@ -52,7 +65,7 @@ export const testParticipant = sqliteTable('test_participant', {
 		// .notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	status: text('status', {
-		enum: ['joined', 'active', 'completed', 'aborted']
+		enum: testSessionParticipantStatuses
 	}).notNull(),
 	score: integer('score').notNull().default(0),
 	feedback: text('feedback')

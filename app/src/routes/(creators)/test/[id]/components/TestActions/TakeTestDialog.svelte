@@ -3,9 +3,10 @@
 	import * as Accordion from '@/components/ui/accordion';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
+	import { createTestSession } from '@/services/handlers';
+	import type { DisplayMode } from '@/types/entities';
 	import { Layers, List, Play } from 'lucide-svelte';
-
-	type DisplayMode = 'cards' | 'list';
+	import { toast } from 'svelte-sonner';
 
 	const {
 		testId
@@ -52,9 +53,27 @@
 	};
 
 	const onTestButtonClick = () => {
-		goto(`/test/${testId}/share`);
-	
-		
+		if (!testDurationSelected || !displayModeSelected) {
+			toast.error('Please select test duration and display mode.');
+			return;
+		}
+		toast.promise(
+			createTestSession(testId, {
+				displayMode: displayModeSelected,
+				durationInMinutes: testDurationSelected
+			}),
+			{
+				loading: 'Creating test session...',
+				success: ({ data: sessionId }) => {
+					goto(`/sessions/${sessionId}`);
+					
+
+
+					return 'Test session created.';
+				},
+				error: 'Failed to create test session.'
+			}
+		);
 	};
 
 	let customDurationInput = $state.raw<null | HTMLInputElement>(null);

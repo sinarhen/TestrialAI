@@ -1,10 +1,7 @@
 import type {
 	CodeBlockCompletion,
-	GeneratingQuestionCompletion,
-	GeneratingTestCompletion,
 	Question,
 	QuestionCompletion,
-	Test,
 	TestCompletion
 } from '@/types/entities';
 import axios from 'axios';
@@ -13,6 +10,7 @@ import type { CreateQuestionDto } from '../../routes/api/tests/[testId]/question
 import type { CreateTestDto } from '../../routes/api/tests/+server';
 import { streamOpenAiResponse, type OpenAiStreamingOptions } from '@/utils/openai-stream';
 import type { QuestionModificationTool } from '@/types/openai';
+import type { CreateTestSessionDto } from '../../routes/api/tests/[testId]/sessions/+server';
 
 // returns id
 export const createTest = (parsedTest: CreateTestDto) =>
@@ -28,6 +26,9 @@ export const deleteQuestion = (testId: string, questionId: string) =>
 
 export const createQuestion = (testId: string, question: CreateQuestionDto) =>
 	axios.post<Question>(`/api/tests/${testId}/questions`, question);
+
+export const createTestSession = (testId: string, session: CreateTestSessionDto) =>
+	axios.post<string>(`/api/tests/${testId}/sessions`, session);
 
 export const streamTestGeneration = <TFinal = TestCompletion>(
 	options: OpenAiStreamHandlerOptions<TFinal>

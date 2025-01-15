@@ -61,6 +61,31 @@ export const optionSchema = z.object({
 	isCorrect: z.boolean()
 });
 
+export const displayModes = ['cards', 'list'] as const;
+export type DisplayMode = (typeof displayModes)[number];
+
+export type TestSession = {
+	id: string;
+	slug: string;
+	testId: string;
+	startTime: Date;
+	endTime: Date | null;
+	durationInMinutes: number;
+	testStateJson: Test;
+	displayMode: DisplayMode;
+};
+
+export type TestSessionParticipant = {
+	id: string;
+	testSessionId: string;
+	userId: string | null;
+	status: TestSessionParticipantStatus;
+	score: number;
+	feedback?: string;
+};
+export const testSessionParticipantStatuses = ['joined', 'active', 'completed', 'aborted'] as const;
+export type TestSessionParticipantStatus = (typeof testSessionParticipantStatuses)[number];
+
 export const questionSchema = z
 	.object({
 		answerType: z.enum(['single', 'multiple', 'text']),
