@@ -30,10 +30,10 @@
 		goToStep,
 		setDuration,
 		disabled,
-		currentDuration
+		duration
 	}: {
 		disabled: boolean;
-		currentDuration: number | null;
+		duration: number | null;
 		goToStep: (step: Step) => void;
 		setDuration: (duration: number | null) => void;
 	} = $props();
@@ -44,34 +44,34 @@
 		Select the duration of the test. The test will automatically end after the selected duration.
 	</p>
 	<div class="mt-3 flex flex-col gap-3 text-sm sm:flex-row">
-		{#each durationOptions as duration}
+		{#each durationOptions as durationOption}
 			<Button
 				variant="outline"
-				class="{`flex ${currentDuration === duration ? ' border-black ' : ''} h-24 w-full flex-col items-center justify-center gap-y-2 rounded-md border text-xs font-medium transition-all hover:shadow-sm`}}"
+				class="{`flex ${duration === durationOption ? ' border-black ' : ''} h-24 w-full flex-col items-center justify-center gap-y-2 rounded-md border text-xs font-medium transition-all hover:shadow-sm`}}"
 				onclick={() => {
-					if (currentDuration === duration) {
+					if (durationOption === duration) {
 						setDuration(null);
 						goToStep('displayMode');
 						return;
 					}
-					setDuration(duration);
+					setDuration(durationOption);
 					goToStep('other');
 				}}
 			>
-				{duration} Minutes
+				{durationOption} Minutes
 			</Button>
 		{/each}
 		<button
 			onclick={() => customDurationInput?.focus()}
 			class={`group flex h-24 w-full ${
-				currentDuration && !durationOptions.includes(currentDuration) ? 'border-black' : ''
+				duration && !durationOptions.includes(duration) ? 'border-black' : ''
 			} flex-col items-center justify-center rounded-md border text-xs font-medium outline-none focus:outline-none focus:ring-0`}
 		>
 			<div class="relative flex">
 				<input
 					type="number"
 					bind:this={customDurationInput}
-					value={currentDuration}
+					value={duration}
 					oninput={onCustomDurationChange}
 					class="w-8 border-b bg-white [appearance:textfield] focus:border-0 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 				/>

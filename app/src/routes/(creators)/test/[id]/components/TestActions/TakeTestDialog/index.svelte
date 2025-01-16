@@ -15,7 +15,6 @@
 </script>
 
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import * as Accordion from '@/components/ui/accordion';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
@@ -71,11 +70,11 @@
 		);
 	};
 
-	const stepsDisabled: Record<Step, boolean> = {
+	const stepsDisabled: Record<Step, boolean> = $derived({
 		displayMode: false,
 		duration: !testSessionSettings.displayMode,
 		other: !testSessionSettings.durationInMinutes
-	};
+	});
 
 	type Step = keyof typeof steps;
 
@@ -85,8 +84,8 @@
 		!testSessionSettings.durationInMinutes || !testSessionSettings.displayMode
 	);
 
-	const goToStep = (step: Step) => {
-		step = step;
+	const goToStep = (toStep: Step) => {
+		step = toStep;
 	};
 </script>
 
@@ -114,7 +113,7 @@
 			<DurationPickerStep
 				disabled={stepsDisabled.duration}
 				{setDuration}
-				currentDuration={testSessionSettings.durationInMinutes}
+				duration={testSessionSettings.durationInMinutes}
 				{goToStep}
 			/>
 			<AccordionStep disabled={stepsDisabled.other} class="border-b-0" {...steps.other}>
