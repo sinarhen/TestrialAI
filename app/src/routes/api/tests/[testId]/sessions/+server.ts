@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 	// sleep
 
-	new Promise((resolve) => setTimeout(resolve, 3000));
+	await new Promise((resolve) => setTimeout(resolve, 3000));
 
 	try {
 		// const existingTest = await db.query.tests.findFirst({

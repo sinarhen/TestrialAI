@@ -36,8 +36,8 @@ export const testSessions = sqliteTable(
 		testId: text('test_id')
 			.notNull()
 			.references(() => tests.id, { onDelete: 'cascade' }),
-		slug: text('slug').notNull(),
-		startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
+		code: text('code').unique().notNull(),
+			startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
 		endTime: integer('end_time', { mode: 'timestamp' }),
 		durationInMinutes: integer('duration_in_minutes'),
 		testStateJson: text('test_state_json', {
@@ -50,7 +50,7 @@ export const testSessions = sqliteTable(
 		}).notNull()
 	},
 	(table) => ({
-		slugIdx: uniqueIndex('slug_idx').on(table.slug)
+		codeIdx: uniqueIndex('code_idx').on(table.code)
 	})
 );
 
