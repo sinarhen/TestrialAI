@@ -2,6 +2,7 @@
 	import { Button } from '@/components/ui/button';
 	import AccordionStep from '../AccordionStep.svelte';
 	import { steps, type Step } from '../index.svelte';
+	import StepCardSelector from './StepCardSelector.svelte';
 
 	let invalidDurationError = $state<string | null>(null);
 
@@ -37,6 +38,16 @@
 		goToStep: (step: Step) => void;
 		setDuration: (duration: number | null) => void;
 	} = $props();
+
+	const onCardClick = (durationOption: number) => {
+		if (durationOption === duration) {
+			setDuration(null);
+			goToStep('displayMode');
+			return;
+		}
+		setDuration(durationOption);
+		goToStep('other');
+	};
 </script>
 
 <AccordionStep {disabled} {...steps.duration}>
@@ -45,27 +56,16 @@
 	</p>
 	<div class="mt-3 flex flex-col gap-3 text-sm sm:flex-row">
 		{#each durationOptions as durationOption}
-			<Button
-				variant="outline"
-				class="{`flex ${duration === durationOption ? ' border-black ' : ''} h-24 w-full flex-col items-center justify-center gap-y-2 rounded-md border text-xs font-medium transition-all hover:shadow-sm`}}"
-				onclick={() => {
-					if (durationOption === duration) {
-						setDuration(null);
-						goToStep('displayMode');
-						return;
-					}
-					setDuration(durationOption);
-					goToStep('other');
-				}}
+			<StepCardSelector
+				onclick={() => onCardClick(durationOption)}
+				selected={duration === durationOption}
 			>
 				{durationOption} Minutes
-			</Button>
+			</StepCardSelector>
 		{/each}
-		<button
+		<StepCardSelector
+			selected={!!duration && !durationOptions.includes(duration)}
 			onclick={() => customDurationInput?.focus()}
-			class={`group flex h-24 w-full ${
-				duration && !durationOptions.includes(duration) ? 'border-black' : ''
-			} flex-col items-center justify-center rounded-md border text-xs font-medium outline-none focus:outline-none focus:ring-0`}
 		>
 			<div class="relative flex">
 				<input
@@ -78,6 +78,6 @@
 				Minutes
 				<p class="text-destructive absolute -bottom-4">{invalidDurationError}</p>
 			</div>
-		</button>
+		</StepCardSelector>
 	</div>
 </AccordionStep>

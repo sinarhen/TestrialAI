@@ -5,6 +5,7 @@
 	import AccordionStep from '../AccordionStep.svelte';
 	import { Layers, List } from 'lucide-svelte';
 	import { steps, type Step } from '../index.svelte';
+	import StepCardSelector from './StepCardSelector.svelte';
 
 	const displayModes: {
 		icon: any;
@@ -32,6 +33,15 @@
 	} = $props();
 
 	const { label, value } = steps.displayMode;
+
+	const handleCardClick = (mode: DisplayMode) => {
+		if (currentDisplayMode === mode) {
+			setDisplayMode(null);
+			return;
+		}
+		setDisplayMode(mode);
+		goToStep('duration');
+	};
 </script>
 
 <AccordionStep {disabled} {label} {value}>
@@ -41,29 +51,17 @@
 	</p>
 	<div class="mt-3 flex flex-col gap-3 text-sm sm:flex-row">
 		{#each displayModes as mode}
-			<Button
-				variant="outline"
-				class="{`flex ${currentDisplayMode === mode.value ? ' border-black ' : ''} h-24 w-full flex-col items-center justify-center gap-y-2 rounded-md border text-xs font-medium transition-all hover:shadow-sm`}}"
-				onclick={() => {
-					if (currentDisplayMode === mode.value) {
-						setDisplayMode(null);
-						return;
-					}
-					setDisplayMode(mode.value);
-					goToStep('duration');
-				}}
+			<StepCardSelector
+				selected={currentDisplayMode === mode.value}
+				onclick={() => handleCardClick(mode.value)}
 			>
 				<mode.icon size="24"></mode.icon>
 				{mode.value.charAt(0).toUpperCase() + mode.value.slice(1)}
-			</Button>
+			</StepCardSelector>
 		{/each}
-		<Button
-			variant="outline"
-			disabled
-			class="flex h-24 w-full flex-col items-center justify-center gap-y-2 rounded-md border text-xs font-medium transition-all hover:shadow-sm"
-		>
+		<StepCardSelector disabled={true}>
 			<Layers size="24"></Layers>
 			Coming soon
-		</Button>
+		</StepCardSelector>
 	</div>
 </AccordionStep>
