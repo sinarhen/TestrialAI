@@ -34,7 +34,7 @@ export const testSessions = sqliteTable(
 			.unique()
 			.notNull()
 			.$defaultFn(() => Math.random().toString(36).slice(2, 8)),
-		startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
+		startTime: integer('start_time', { mode: 'timestamp' }),
 		endTime: integer('end_time', { mode: 'timestamp' }),
 		durationInMinutes: integer('duration_in_minutes'),
 		testStateJson: text('test_state_json', {

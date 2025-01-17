@@ -21,7 +21,7 @@
 	};
 </script>
 
-<Dialog.Root open={true}>
+<Dialog.Root>
 	<Dialog.Trigger>
 		<Button size="sm" class="flex gap-x-1" variant="outline"
 			>Sessions

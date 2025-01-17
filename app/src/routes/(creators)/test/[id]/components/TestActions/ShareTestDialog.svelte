@@ -18,6 +18,7 @@
 
 	const onPdfExport = () => {
 		window.location.href = `/api/tests/${testId}/pdf`;
+
 		toast.success('Downloaded started');
 	};
 
@@ -32,7 +33,7 @@
 		<Button
 			variant="outline"
 			size="sm"
-			class="gap-x-1 -motion-translate-y-in-50 motion-opacity-in-0 motion-duration-500 motion-delay-[75ms]"
+			class="-motion-translate-y-in-50 motion-opacity-in-0 motion-duration-500 motion-delay-[75ms] gap-x-1"
 		>
 			Share <Share size="12" />
 		</Button>

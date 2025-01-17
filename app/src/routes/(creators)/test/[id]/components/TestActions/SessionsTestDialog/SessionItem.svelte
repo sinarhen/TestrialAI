@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { Button } from '@/components/ui/button';
 	import { Separator } from '@/components/ui/separator';
 	import type { TestSession } from '@/types/entities';
@@ -40,7 +41,12 @@
 		</div>
 
 		<div class="flex justify-end gap-x-1">
-			<Button class="h-8 px-3 text-xs" variant="outline" size="sm">Details</Button>
+			<Button
+				onclick={() => goto(`/session/${session.code}`)}
+				class="h-8 px-3 text-xs"
+				variant="outline"
+				size="sm">Details</Button
+			>
 
 			<Button class="h-8 px-3 text-xs" variant="outline" size="sm">Configure</Button>
 
