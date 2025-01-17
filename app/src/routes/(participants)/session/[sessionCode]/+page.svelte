@@ -15,7 +15,7 @@
 	const isTestNotStarted = !session.startTime || session.startTime > new Date();
 </script>
 
-<main class="py-24">
+<main class="py-32">
 	<div class="flex items-end gap-x-2">
 		<span class="size-8 overflow-hidden rounded-full border bg-black bg-cover">
 			<img alt="fakelogo" class="h-full w-full object-cover" src="/fakeAuthor.png" />

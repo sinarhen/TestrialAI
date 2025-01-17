@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { ChevronRight, Home, Sparkles } from 'lucide-svelte';
-	import type { PageServerData, ActionData } from '../../(root)/$types';
+	import type { ActionData } from '../../(root)/$types';
 	import AuthDialog from './AuthDialog.svelte';
 	import TestHistorySheet from './TestHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';
-	import PlanButton from './PlanButton.svelte';
 	import LogoutButton from './LogoutButton.svelte';
-	import type { LayoutData } from '../../$types';
+	import type { LayoutData, LayoutServerData } from '../../$types';
 	import * as Popover from '@/components/ui/popover';
 	import { Button } from '@/components/ui/button';
 	import { goto } from '$app/navigation';
@@ -26,7 +25,7 @@
 	<div class="flex w-full items-center gap-x-2 text-sm">
 		<TestHistorySheet history={data.history} />
 		<NotificationsSheet />
-		<div class="relative cursor-pointer">
+		<div class="relative flex cursor-pointer items-center">
 			<Popover.Root
 				onOpenChange={(val) => (isUpgradePlanPopoverOpen = val)}
 				open={isUpgradePlanPopoverOpen}
@@ -36,7 +35,7 @@
 						isUpgradePlanPopoverOpen = true;
 					}}
 				>
-					<Sparkles size="16" />
+					<Sparkles size="17" class="mb-[0.2px]" strokeWidth="1.7" />
 				</Popover.Trigger>
 				<Popover.Content
 					side="bottom"
@@ -54,7 +53,7 @@
 						>
 					</div>
 
-					<p class="text-lg font-medium motion-opacity-in-0">Upgrade your plan</p>
+					<p class="motion-opacity-in-0 text-lg font-medium">Upgrade your plan</p>
 					<Separator class="mb-5 mt-2" />
 					<p class="">Here are some features you can unlock:</p>
 					<ul class="ml-4 mt-2 list-disc text-xs">
@@ -86,7 +85,7 @@
 		{#if data?.user}
 			<LogoutButton />
 		{:else}
-			<AuthDialog {form} />
+			<AuthDialog isInitiallyOpen={data.authRequired} {form} />
 		{/if}
 	</div>
 </header>

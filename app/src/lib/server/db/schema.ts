@@ -90,6 +90,39 @@ export const tests = sqliteTable('tests', {
 		.references(() => users.id, { onDelete: 'cascade' })
 });
 
+export const participantAnswers = sqliteTable('participant_answers', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
+	testParticipantId: text('test_participant_id')
+		.notNull()
+		.references(() => testParticipants.id, { onDelete: 'cascade' }),
+	questionId: text('question_id').notNull(),
+	// selectedOptionId: text('selected_option_id'),
+	typedAnswer: text('typed_answer'),
+	submittedAt: integer('submitted_at', { mode: 'timestamp' })
+});
+
+export const participantAnswerOptions = sqliteTable('participant_answer_options', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => uuidv4()),
+	participantAnswerId: text('participant_answer_id')
+		.notNull()
+		.references(() => participantAnswers.id, { onDelete: 'cascade' }),
+	optionId: text('option_id')
+		.notNull()
+		.references(() => options.id, { onDelete: 'cascade' })
+});
+
+export const participantAnswersRelations = relations(participantAnswers, ({ one, many }) => ({
+	participant: one(testParticipants, {
+		fields: [participantAnswers.testParticipantId],
+		references: [testParticipants.id]
+	}),
+	participantAnswerOptions: many(participantAnswerOptions)
+}));
+
 export const questions = sqliteTable('questions', {
 	id: text('id')
 		.primaryKey()

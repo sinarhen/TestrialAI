@@ -20,12 +20,14 @@
 	import type { ActionData } from '../../../../../.svelte-kit/types/src/routes/(creators)/(root)/$types';
 
 	let {
-		form
+		form,
+		isInitiallyOpen
 	}: {
 		form: ActionData;
+		isInitiallyOpen: boolean;
 	} = $props();
 
-	let isAuthDialogOpen: boolean = $state(!!form?.message);
+	let isAuthDialogOpen: boolean = $state(!!form?.message || isInitiallyOpen);
 	let isLoginMode: boolean = $state(true);
 	let isSigningIn = $state(false);
 
