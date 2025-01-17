@@ -68,7 +68,7 @@
 		{
 			icon: Brain,
 			label: 'Harder',
-			tool: 'complicate'
+			tool: 'harder'
 		},
 		{
 			icon: CaseLower,
