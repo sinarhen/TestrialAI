@@ -184,7 +184,7 @@
 
 			{#if dialogState.status === 'confirming'}
 				<div
-					class="motion-opacity-in-0 -motion-translate-y-in-[10%] motion-delay-[400ms] flex h-48 flex-col items-center justify-center px-24"
+					class="flex h-48 flex-col items-center justify-center px-24 -motion-translate-y-in-[10%] motion-opacity-in-0 motion-delay-[400ms]"
 				>
 					<h1 class=" text-sm">Are you sure?</h1>
 					<p class="mt-0.5 text-center text-xs">
@@ -207,26 +207,26 @@
 				</div>
 			{:else if dialogState.status === 'creating'}
 				<div
-					class="motion-opacity-in-0 -motion-translate-y-in-[10%] flex h-48 flex-col items-center justify-center px-24"
+					class="flex h-48 flex-col items-center justify-center px-24 -motion-translate-y-in-[10%] motion-opacity-in-0"
 				>
 					<h1 class="text-sm">Creating...</h1>
 					<p class="text-xs">Please wait while we create the test session.</p>
 				</div>
 			{:else if dialogState.status === 'created'}
 				<div>
-					<h1 class="-motion-translate-y-in-25 motion-opacity-in-0 text-center font-semibold">
+					<h1 class="text-center font-semibold -motion-translate-y-in-25 motion-opacity-in-0">
 						29:32
 					</h1>
-					<p class="motion-opacity-in motion-delay-200 text-center text-xs">Remaining time</p>
+					<p class="text-center text-xs motion-opacity-in motion-delay-200">Remaining time</p>
 					<div class="mt-5 flex gap-x-2">
 						<div
-							class="motion-delay-200 -motion-translate-y-in-[10%] motion-opacity-in-0 h-full w-1/2"
+							class="h-full w-1/2 -motion-translate-y-in-[10%] motion-opacity-in-0 motion-delay-200"
 						>
 							<QrCode class="h-full w-full" />
 						</div>
 						<Separator class="mx-2" orientation="vertical" />
 						<div class="flex w-full flex-col">
-							<div class="motion-opacity-in-0 motion-delay-500 relative mt-1 flex w-[120px]">
+							<div class="relative mt-1 flex w-[120px] motion-opacity-in-0 motion-delay-500">
 								<Button
 									onclick={() => (dialogState.status === 'created' ? copy(dialogState.code) : null)}
 									size="icon"
@@ -242,7 +242,7 @@
 								/>
 							</div>
 
-							<div class="motion-opacity-in-0 motion-delay-[550ms] relative mt-2">
+							<div class="relative mt-2 motion-opacity-in-0 motion-delay-[550ms]">
 								<Button
 									size="icon"
 									class="absolute bottom-0 right-1.5 top-0 z-10 m-auto size-7 p-2"
@@ -256,14 +256,14 @@
 									class="w-full text-sm disabled:opacity-100"
 								/>
 							</div>
-							<p class="motion-opacity-in-0 motion-delay-[600ms] ml-1 mt-1 text-xs">
+							<p class="ml-1 mt-1 text-xs motion-opacity-in-0 motion-delay-[600ms]">
 								Link to invite participants to the test.
 							</p>
 							<div class="mt-3.5 flex flex-col gap-1 sm:flex-row">
 								<Button
 									onclick={() => (browser ? goto(`/sessions/${dialogState.code!}`) : null)}
 									size="sm"
-									class="motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[650ms] flex items-center gap-x-1"
+									class="flex items-center gap-x-1 -motion-translate-y-in-25 motion-opacity-in-0 motion-delay-[650ms]"
 								>
 									<Play size="12" />
 									Join
@@ -271,7 +271,7 @@
 								<Button
 									size="sm"
 									variant="outline"
-									class="motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-700 flex items-center gap-x-1"
+									class="flex items-center gap-x-1 -motion-translate-y-in-25 motion-opacity-in-0 motion-delay-700"
 								>
 									<Settings size="12" />
 									Configure

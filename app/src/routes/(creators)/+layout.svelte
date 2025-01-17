@@ -7,7 +7,7 @@
 	let { data, form, children }: { data: LayoutData; form: ActionData; children: any } = $props();
 </script>
 
-	<Header {data} {form} />
-	<div class="h-full w-full py-20 pb-12">
-		{@render children()}
-	</div>
+<Header {data} {form} />
+<div class="h-full w-full py-20 pb-12">
+	{@render children()}
+</div>

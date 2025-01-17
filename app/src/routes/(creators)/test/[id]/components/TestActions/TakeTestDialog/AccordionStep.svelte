@@ -14,8 +14,6 @@
 		value: string;
 		children: any;
 	} = $props();
-
-    
 </script>
 
 <Accordion.Item class={className} {value}>

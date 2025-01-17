@@ -204,7 +204,7 @@
 											/>
 											<Trash2
 												onclick={() => deleteOption(index)}
-												class="text-destructive cursor-pointer"
+												class="cursor-pointer text-destructive"
 												size="16"
 											/>
 										</div>

@@ -56,7 +56,7 @@
 	};
 </script>
 
-<div class="motion-opacity-in-0 mt-5 flex gap-x-2 duration-200">
+<div class="mt-5 flex gap-x-2 duration-200 motion-opacity-in-0">
 	<Button onclick={onQuestionApprove} variant="default" size="sm" class="gap-x-1 text-xs">
 		<Sparkles size="12" />
 		Approve

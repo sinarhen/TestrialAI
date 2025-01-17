@@ -52,7 +52,7 @@
 	<div class="flex w-full flex-col gap-y-12">
 		{#each test.questions ?? [] as question, index (index)}
 			<div
-				class={`motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[--delay] group relative`}
+				class={`group relative -motion-translate-y-in-25 motion-opacity-in-0 motion-delay-[--delay]`}
 				style={`--delay: ${!isQuestionNewlyAdded(index) ? 200 + 150 * (index + 1) : 0}ms`}
 				ondragover={onDragOver}
 				ondrop={(event) => onDrop(event, index)}

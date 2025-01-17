@@ -17,7 +17,7 @@
 	import { applyAction } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import type {ActionData} from "../../../../../.svelte-kit/types/src/routes/(creators)/(root)/$types";
+	import type { ActionData } from '../../../../../.svelte-kit/types/src/routes/(creators)/(root)/$types';
 
 	let {
 		form

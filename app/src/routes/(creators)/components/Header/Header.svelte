@@ -54,7 +54,7 @@
 						>
 					</div>
 
-					<p class="motion-opacity-in-0 text-lg font-medium">Upgrade your plan</p>
+					<p class="text-lg font-medium motion-opacity-in-0">Upgrade your plan</p>
 					<Separator class="mb-5 mt-2" />
 					<p class="">Here are some features you can unlock:</p>
 					<ul class="ml-4 mt-2 list-disc text-xs">

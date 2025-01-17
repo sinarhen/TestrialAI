@@ -16,7 +16,7 @@
 <AlertDialog.Root>
 	<AlertDialog.Trigger asChild let:builder>
 		<Button
-			class="-motion-translate-y-in-50 motion-delay-[150ms] motion-opacity-in-0 motion-duration-500 gap-x-1"
+			class="gap-x-1 -motion-translate-y-in-50 motion-opacity-in-0 motion-duration-500 motion-delay-[150ms]"
 			size="sm"
 			onclick={() => {}}
 			builders={[builder]}

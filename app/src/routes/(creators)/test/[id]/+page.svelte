@@ -61,16 +61,16 @@
 	<TakeTestDialog testId={serverData.test.id} />
 	<SettingsTestDialog />
 	<ShareTestDialog testId={serverData.test.id} />
-	<Separator orientation="vertical" class="motion-delay-[150ms] motion-opacity-in-0" />
+	<Separator orientation="vertical" class="motion-opacity-in-0 motion-delay-[150ms]" />
 	<DeleteTestButton testId={serverData.test.id} />
 	<SessionsTestDialog />
 </div>
 
-<h2 class="motion-opacity-in-0 motion-duration-1500 motion-delay-200 mt-7 text-2xl font-bold">
+<h2 class="mt-7 text-2xl font-bold motion-opacity-in-0 motion-duration-1500 motion-delay-200">
 	{test.title}
 </h2>
 <div class="mt-3 flex gap-x-4 text-sm">
-	<span class="motion-opacity-in-0 motion-delay-300 flex items-center gap-x-1"
+	<span class="flex items-center gap-x-1 motion-opacity-in-0 motion-delay-300"
 		><CircleHelp size="12" /> {test?.questions?.length} Questions</span
 	>
 	<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->

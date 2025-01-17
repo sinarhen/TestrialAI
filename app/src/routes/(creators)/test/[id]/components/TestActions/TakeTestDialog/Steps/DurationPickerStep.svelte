@@ -76,7 +76,7 @@
 					class="w-8 border-b bg-white [appearance:textfield] focus:border-0 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 				/>
 				Minutes
-				<p class="text-destructive absolute -bottom-4">{invalidDurationError}</p>
+				<p class="absolute -bottom-4 text-destructive">{invalidDurationError}</p>
 			</div>
 		</StepCardSelector>
 	</div>

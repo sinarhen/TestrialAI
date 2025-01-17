@@ -7,7 +7,7 @@
 <Button
 	variant="outline"
 	size="sm"
-	class="-motion-translate-y-in-50 motion-opacity-in-0 motion-duration-500  gap-x-1"
+	class="gap-x-1 -motion-translate-y-in-50 motion-opacity-in-0  motion-duration-500"
 	onclick={() => {
 		toast.info('Not implemented yet');
 	}}>Settings <Settings size="12" /></Button
