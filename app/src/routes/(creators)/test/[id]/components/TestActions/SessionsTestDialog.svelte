@@ -61,7 +61,12 @@
 							</div>
 							<div class="flex items-center gap-x-1 text-lg uppercase">
 								{session.code}
-								<Button variant="ghost" class="size-7" size="icon">
+								<Button
+									onclick={() => copy(session.code)}
+									variant="ghost"
+									class="size-7"
+									size="icon"
+								>
 									<Copy size="14" />
 								</Button>
 							</div>
@@ -74,7 +79,7 @@
 									{!session.endTime ? 'Active' : 'Finished'}
 								</span>
 								<span class="flex items-center gap-x-1">
-									<User strokeWidth={2.5} size="12" />
+									<User strokeWidth={2.5} size="14" />
 									{session.participants.length}
 								</span>
 							</div>
