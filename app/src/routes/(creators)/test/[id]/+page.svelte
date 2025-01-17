@@ -25,6 +25,7 @@
 	import DeleteTestButton from './components/TestActions/DeleteTestButton.svelte';
 	import SettingsTestDialog from './components/TestActions/SettingsTestDialog.svelte';
 	import TakeTestDialog from './components/TestActions/TakeTestDialog/index.svelte';
+	import SessionsTestDialog from './components/TestActions/SessionsTestDialog.svelte';
 
 	const {
 		data: serverData
@@ -57,15 +58,15 @@
 </script>
 
 <div class="flex gap-x-2">
-	<TakeTestDialog />
+	<TakeTestDialog testId={serverData.test.id} />
 	<SettingsTestDialog />
 	<ShareTestDialog testId={serverData.test.id} />
 	<Separator orientation="vertical" class="motion-delay-[150ms] motion-opacity-in-0" />
 	<DeleteTestButton testId={serverData.test.id} />
+	<SessionsTestDialog />
 </div>
-<h2
-	class="motion-opacity-in-0 motion-preset-confetti motion-duration-1500 motion-delay-200 mt-7 text-2xl font-bold"
->
+
+<h2 class="motion-opacity-in-0 motion-duration-1500 motion-delay-200 mt-7 text-2xl font-bold">
 	{test.title}
 </h2>
 <div class="mt-3 flex gap-x-4 text-sm">

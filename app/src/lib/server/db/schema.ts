@@ -2,6 +2,8 @@ import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
+
+import { createSixCharCode } from '@/utils/slugify';
 import {
 	displayModes,
 	testSessionParticipantStatuses,
@@ -36,8 +38,11 @@ export const testSessions = sqliteTable(
 		testId: text('test_id')
 			.notNull()
 			.references(() => tests.id, { onDelete: 'cascade' }),
-		code: text('code').unique().notNull(),
-			startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
+		code: text('code')
+			.unique()
+			.notNull()
+			.$defaultFn(() => createSixCharCode()),
+		startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
 		endTime: integer('end_time', { mode: 'timestamp' }),
 		durationInMinutes: integer('duration_in_minutes'),
 		testStateJson: text('test_state_json', {

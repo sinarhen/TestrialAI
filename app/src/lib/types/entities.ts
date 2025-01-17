@@ -73,6 +73,7 @@ export type TestSession = {
 	durationInMinutes: number;
 	testStateJson: Test;
 	displayMode: DisplayMode;
+	participants: TestSessionParticipant[];
 };
 
 export type TestSessionParticipant = {

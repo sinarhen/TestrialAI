@@ -128,7 +128,7 @@
 	};
 </script>
 
-<Dialog.Root open={true}>
+<Dialog.Root>
 	<Dialog.Trigger>
 		<Button size="sm" class="gap-x-1">
 			Take a test
@@ -261,7 +261,7 @@
 							</p>
 							<div class="mt-3.5 flex flex-col gap-1 sm:flex-row">
 								<Button
-									onclick={() => goto(`/sessions/${dialogState.code}`)}
+									onclick={() => (browser ? goto(`/sessions/${dialogState.code!}`) : null)}
 									size="sm"
 									class="motion-opacity-in-0 -motion-translate-y-in-25 motion-delay-[650ms] flex items-center gap-x-1"
 								>
