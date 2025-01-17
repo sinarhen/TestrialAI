@@ -48,11 +48,16 @@
 					<Button variant="outline" class="block h-full w-full rounded-md border p-4">
 						<div class="flex justify-between">
 							<div class="flex w-full justify-between">
-								<h2 class="flex w-full gap-x-1 text-start text-sm font-medium">
-									{session.testStateJson.title}
-									<ExternalLink size="12" />
-								</h2>
-								<div class="flex gap-x-3">
+								<div>
+									<span class="flex text-xs opacity-75">
+										{session.startTime.getDate()}/{session.startTime.getMonth() +
+											1}/{session.startTime.getFullYear()}
+									</span>
+									<h2 class="flex w-full gap-x-1 text-start text-sm font-medium">
+										{session.testStateJson.title}
+									</h2>
+								</div>
+								<div class="flex h-full gap-x-3">
 									<span class="flex items-center gap-x-1 text-xs">
 										<User size="12" />
 										{session.participants.length}
