@@ -1,0 +1,44 @@
+<script lang="ts">
+	import { Button } from '@/components/ui/button';
+	import type { TestSession } from '@/types/entities';
+	import { FileClock } from 'lucide-svelte';
+	import * as Dialog from '@/components/ui/dialog';
+	import SessionItem from './SessionItem.svelte';
+
+	const {
+		sessions
+	}: {
+		sessions?: TestSession[];
+	} = $props();
+
+	const calculateAverageScore = (participants: TestSession['participants']) => {
+		const finishedParticipants = participants.filter(
+			(participant) => participant.status === 'completed'
+		);
+
+		const totalScore = finishedParticipants.reduce((prev, curr) => prev + curr.score, 0);
+		return totalScore / finishedParticipants.length;
+	};
+</script>
+
+<Dialog.Root open={true}>
+	<Dialog.Trigger>
+		<Button size="sm" class="flex gap-x-1" variant="outline"
+			>Sessions
+			<FileClock size="12" />
+		</Button>
+	</Dialog.Trigger>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Sessions</Dialog.Title>
+			<Dialog.Description>View and manage test sessions</Dialog.Description>
+		</Dialog.Header>
+		{#if !!sessions?.length}
+			<div class="flex flex-col gap-y-2">
+				{#each sessions as session}
+					<SessionItem {session} />
+				{/each}
+			</div>
+		{/if}
+	</Dialog.Content>
+</Dialog.Root>

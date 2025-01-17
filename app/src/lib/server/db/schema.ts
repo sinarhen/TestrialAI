@@ -2,8 +2,7 @@ import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
-
-import { type AnswerType, type SupportedLanguage, type Test } from '@/types/entities';
+import * as entities from '../../types/entities';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -41,9 +40,11 @@ export const testSessions = sqliteTable(
 		testStateJson: text('test_state_json', {
 			mode: 'json'
 		})
-			.$type<Test>()
+			.$type<entities.Test>()
 			.notNull(),
-		displayMode: text('display_mode').notNull()
+		displayMode: text('display_mode', {
+			enum: entities.displayModes
+		}).notNull()
 	},
 	(table) => ({
 		codeIdx: uniqueIndex('code_idx').on(table.code)
@@ -61,7 +62,9 @@ export const testParticipants = sqliteTable('test_participant', {
 		// .notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	name: text('name').notNull(),
-	status: text('status').notNull(),
+	status: text('status', {
+		enum: entities.testSessionParticipantStatuses
+	}).notNull(),
 	score: integer('score').notNull().default(0),
 	feedback: text('feedback')
 });
@@ -93,8 +96,8 @@ export const questions = sqliteTable('questions', {
 		.$defaultFn(() => uuidv4()),
 	question: text('question').notNull(),
 	codeBlock: text('code_block'),
-	codeLang: text('code_lang').$type<SupportedLanguage>(),
-	answerType: text('answer_type').notNull().$type<AnswerType>(),
+	codeLang: text('code_lang').$type<entities.SupportedLanguage>(),
+	answerType: text('answer_type').notNull().$type<entities.AnswerType>(),
 	correctAnswer: text('correct_answer'),
 	answerExplanation: text('answer_explanation'),
 	testId: text('test_id')

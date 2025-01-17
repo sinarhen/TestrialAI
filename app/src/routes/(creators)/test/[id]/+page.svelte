@@ -25,7 +25,7 @@
 	import DeleteTestButton from './components/TestActions/DeleteTestButton.svelte';
 	import SettingsTestDialog from './components/TestActions/SettingsTestDialog.svelte';
 	import TakeTestDialog from './components/TestActions/TakeTestDialog/index.svelte';
-	import SessionsTestDialog from './components/TestActions/SessionsTestDialog.svelte';
+	import SessionsTestDialog from './components/TestActions/SessionsTestDialog/index.svelte';
 
 	const {
 		data: serverData

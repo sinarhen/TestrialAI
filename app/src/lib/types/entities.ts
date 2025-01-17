@@ -82,7 +82,7 @@ export type TestSessionParticipant = {
 	userId: string | null;
 	status: TestSessionParticipantStatus;
 	score: number;
-	feedback?: string;
+	feedback: string | null;
 };
 export const testSessionParticipantStatuses = ['joined', 'active', 'completed', 'aborted'] as const;
 export type TestSessionParticipantStatus = (typeof testSessionParticipantStatuses)[number];
