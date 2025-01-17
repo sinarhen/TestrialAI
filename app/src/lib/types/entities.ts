@@ -66,11 +66,11 @@ export type DisplayMode = (typeof displayModes)[number];
 
 export type TestSession = {
 	id: string;
-	slug: string;
+	code: string;
 	testId: string;
 	startTime: Date;
 	endTime: Date | null;
-	durationInMinutes: number;
+	durationInMinutes: number | null;
 	testStateJson: Test;
 	displayMode: DisplayMode;
 	participants: TestSessionParticipant[];

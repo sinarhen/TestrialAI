@@ -9,6 +9,7 @@
 	let className: $$Props['class'] = undefined;
 	export let level: AccordionPrimitive.HeaderProps['level'] = 3;
 	export { className as class };
+	export let hideIcon: boolean = false;
 </script>
 
 <AccordionPrimitive.Header {level} class="flex">
@@ -21,6 +22,8 @@
 		on:click
 	>
 		<slot />
-		<ChevronDown class="h-4 w-4 transition-transform duration-200" />
+		{#if !hideIcon}
+			<ChevronDown class="h-4 w-4 transition-transform duration-200" />
+		{/if}
 	</AccordionPrimitive.Trigger>
 </AccordionPrimitive.Header>

@@ -3,14 +3,7 @@ import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
 
-import { createSixCharCode } from '@/utils/slugify';
-import {
-	displayModes,
-	testSessionParticipantStatuses,
-	type AnswerType,
-	type SupportedLanguage,
-	type Test
-} from '@/types/entities';
+import { type AnswerType, type SupportedLanguage, type Test } from '@/types/entities';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -41,7 +34,7 @@ export const testSessions = sqliteTable(
 		code: text('code')
 			.unique()
 			.notNull()
-			.$defaultFn(() => createSixCharCode()),
+			.$defaultFn(() => Math.random().toString(36).slice(2, 8)),
 		startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
 		endTime: integer('end_time', { mode: 'timestamp' }),
 		durationInMinutes: integer('duration_in_minutes'),
@@ -50,16 +43,14 @@ export const testSessions = sqliteTable(
 		})
 			.$type<Test>()
 			.notNull(),
-		displayMode: text('display_mode', {
-			enum: displayModes
-		}).notNull()
+		displayMode: text('display_mode').notNull()
 	},
 	(table) => ({
 		codeIdx: uniqueIndex('code_idx').on(table.code)
 	})
 );
 
-export const testSessionParticipants = sqliteTable('test_session_participant', {
+export const testParticipants = sqliteTable('test_participant', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => uuidv4()),
@@ -69,9 +60,8 @@ export const testSessionParticipants = sqliteTable('test_session_participant', {
 	userId: text('user_id')
 		// .notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
-	status: text('status', {
-		enum: testSessionParticipantStatuses
-	}).notNull(),
+	name: text('name').notNull(),
+	status: text('status').notNull(),
 	score: integer('score').notNull().default(0),
 	feedback: text('feedback')
 });
@@ -122,6 +112,25 @@ export const options = sqliteTable('options', {
 	value: text('value').notNull(),
 	isCorrect: integer('is_correct', { mode: 'boolean' }).notNull().default(false)
 });
+
+export const testSessionRelations = relations(testSessions, ({ one, many }) => ({
+	participants: many(testParticipants),
+	test: one(tests, {
+		fields: [testSessions.testId],
+		references: [tests.id]
+	})
+}));
+
+export const testSessionParticipantRelations = relations(testParticipants, ({ one }) => ({
+	testSession: one(testSessions, {
+		fields: [testParticipants.testSessionId],
+		references: [testSessions.id]
+	}),
+	user: one(users, {
+		fields: [testParticipants.userId],
+		references: [users.id]
+	})
+}));
 
 export const userRelations = relations(users, ({ many }) => ({
 	tests: many(tests),
