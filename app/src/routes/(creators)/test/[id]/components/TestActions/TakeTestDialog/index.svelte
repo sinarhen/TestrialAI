@@ -252,7 +252,7 @@
 								</Button>
 								<Input
 									disabled
-									value={browser ? `${window.location.origin}/sessions/${dialogState.code}` : null}
+									value={browser ? `${window.location.origin}/session/${dialogState.code}` : null}
 									class="w-full text-sm disabled:opacity-100"
 								/>
 							</div>
@@ -261,7 +261,7 @@
 							</p>
 							<div class="mt-3.5 flex flex-col gap-1 sm:flex-row">
 								<Button
-									onclick={() => (browser ? goto(`/sessions/${dialogState.code!}`) : null)}
+									onclick={() => (browser ? goto(`/session/${dialogState.code!}`) : null)}
 									size="sm"
 									class="-motion-translate-y-in-25 motion-opacity-in-0 motion-delay-[650ms] flex items-center gap-x-1"
 								>

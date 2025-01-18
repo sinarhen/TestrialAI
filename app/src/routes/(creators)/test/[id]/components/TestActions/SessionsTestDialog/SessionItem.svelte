@@ -31,7 +31,11 @@
 	<div class="flex justify-between">
 		<div class="flex gap-x-3 text-sm">
 			<span class="flex items-center gap-x-1 font-medium">
-				<Circle fill={!session.endTime ? 'green' : 'red'} size="12" />
+				<Circle
+					color={!session.endTime ? 'green' : 'red'}
+					fill={!session.endTime ? 'green' : 'red'}
+					size="12"
+				/>
 				{!session.endTime ? 'Active' : 'Finished'}
 			</span>
 			<span class="flex items-center gap-x-1">
