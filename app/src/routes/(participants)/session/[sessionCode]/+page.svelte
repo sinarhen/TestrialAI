@@ -16,7 +16,9 @@
 </script>
 
 <main class="py-32">
-	<div class="flex items-end gap-x-2">
+	<div
+		class="motion-opacity-in-0 motion-duration-500 -motion-translate-x-in-[10%] flex items-end gap-x-2"
+	>
 		<span class="size-8 overflow-hidden rounded-full border bg-black bg-cover">
 			<img alt="fakelogo" class="h-full w-full object-cover" src="/fakeAuthor.png" />
 		</span>
@@ -25,33 +27,49 @@
 			<span class="font-bold">{session.test.user.username}</span>
 		</p>
 	</div>
-	<div class="mt-5 flex items-center justify-between gap-x-2">
-		<h1 class="text-2xl font-semibold">{session.testStateJson.title}</h1>
+	<div class=" mt-5 flex items-center justify-between gap-x-2">
+		<h1
+			class="-motion-translate-y-in-25 motion-delay-200 motion-opacity-in-0 text-2xl font-semibold"
+		>
+			{session.testStateJson.title}
+		</h1>
 
-		<p class="flex items-center gap-x-1 text-sm font-medium">
+		<p
+			class="motion-opacity-in-0 motion-translate-x-in-25 motion-delay-[250ms] flex items-center gap-x-1 text-sm font-medium"
+		>
 			<Circle fill={'green'} color="green" size="16" />
 			<span>{isTestFinished ? 'Ended' : 'Active'}</span>
 		</p>
 	</div>
-	<p class="mt-1 text-base">{session.testStateJson.description}</p>
+	<p class="motion-delay-300 motion-opacity-in-0 mt-1 text-base">
+		{session.testStateJson.description}
+	</p>
 	<!-- <p>{session.}</p> -->
 	<div class="mb-8 mt-4 flex flex-col gap-y-5 text-sm">
-		<p class="flex items-center gap-x-1 font-medium">
+		<p
+			class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[450ms] flex items-center gap-x-1 font-medium"
+		>
 			<Timer size="20" />
 			<span>{session.durationInMinutes} Minutes</span>
 		</p>
-		<p class="flex items-center gap-x-1 font-medium">
+		<p
+			class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[550ms] flex items-center gap-x-1 font-medium"
+		>
 			<FileQuestion size="20" />
 			<span>{session.testStateJson.questions.length} Questions</span>
 		</p>
-		<p class="flex items-center gap-x-1 font-medium">
+		<p
+			class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[650ms] flex items-center gap-x-1 font-medium"
+		>
 			<User size="20" />
 			{session.participants.length} Participants
 		</p>
 	</div>
 
 	<div class="lg: flex flex-col gap-2 md:flex-row">
-		<Button disabled={isTestFinished || isTestNotStarted} class="h-8 w-full px-10 md:w-fit"
+		<Button
+			disabled={isTestFinished || isTestNotStarted}
+			class="motion-opacity-in-0 motion-delay-700 -motion-translate-y-in-[10px] h-8 w-full px-10 md:w-fit"
 			>Start</Button
 		>
 
@@ -59,7 +77,7 @@
 			onclick={() => goto('/')}
 			variant="outline"
 			disabled={isTestFinished || isTestNotStarted}
-			class="h-8 w-full gap-x-1 px-10 md:w-fit"
+			class="motion-opacity-in-0 motion-delay-[800ms] -motion-translate-y-in-[10px] h-8 w-full gap-x-1 px-10 md:w-fit"
 		>
 			<Sparkles size="16" />
 			Generate my own test
