@@ -120,8 +120,12 @@
 		<div id="login-dialog-footer">
 			<Separator class="mb-4" />
 			<div class="flex flex-col items-center gap-x-2 gap-y-1 text-sm">
-				<Button disabled={isSigningIn} class="w-full" variant="outline">Github</Button>
-				<Button disabled={isSigningIn} class="w-full" variant="outline">Google</Button>
+				<a class="w-full" href="/auth/github">
+					<Button disabled={isSigningIn} class="w-full" variant="outline">Github</Button>
+				</a>
+				<a class="w-full" href="/auth/google">
+					<Button disabled={isSigningIn} class="w-full" variant="outline">Google</Button>
+				</a>
 			</div>
 		</div>
 	</DialogContent>

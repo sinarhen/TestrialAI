@@ -1,24 +1,36 @@
-import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, uniqueIndex, primaryKey } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from 'drizzle-orm/sql/sql';
 import * as entities from '../../types/entities';
 
-export const users = sqliteTable('users', {
-	id: text('id').primaryKey(),
-	age: integer('age'),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull()
-});
+export const users = sqliteTable(
+	'users',
+	{
+		id: text('id').unique().notNull(),
+		provider: text('provider', {
+			enum: ['google', 'github']
+		}),
+		email: text('email'),
+		providerId: text('provider_id', { length: 255 }),
+		username: text('username').notNull().unique(),
+		firstName: text('first_name'),
+		lastName: text('last_name'),
+		passwordHash: text('password_hash'),
+	},
+	(table) => ({
+		pk: primaryKey({
+			columns: [table.provider, table.providerId]
+		})
+	})
+);
 
 export const sessions = sqliteTable('sessions', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => uuidv4()),
+	id: text('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
+		.references(() => users.id),
+	expiresAt: integer('expires_at').notNull()
 });
 
 export const testSessions = sqliteTable(

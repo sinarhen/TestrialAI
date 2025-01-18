@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { invalidateAll } from '$app/navigation';
-	import { Button } from '@/components/ui/button';
+	import { goto, invalidateAll } from '$app/navigation';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { DoorOpen } from 'lucide-svelte';
 
 	let isLoggingOutInProgress = $state(false);
 
@@ -40,6 +40,7 @@
 </script>
 
 <form use:enhance={onLogout} method="POST" action="?/logout">
-	<Button disabled={isLoggingOutInProgress} type="submit" variant="outline" size="sm">Logout</Button
-	>
+	<button type="submit">
+		<DoorOpen size="18" class="cursor-pointer" />
+	</button>
 </form>

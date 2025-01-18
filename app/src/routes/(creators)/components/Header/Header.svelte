@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { ChevronRight, Home, Sparkles } from 'lucide-svelte';
+	import { ChevronRight, DoorOpen, Home, Sparkles } from 'lucide-svelte';
 	import type { ActionData } from '../../(root)/$types';
 	import AuthDialog from './AuthDialog.svelte';
 	import TestHistorySheet from './TestHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';
-	import LogoutButton from './LogoutButton.svelte';
-	import type { LayoutData, LayoutServerData } from '../../$types';
+	import type { LayoutData } from '../../$types';
 	import * as Popover from '@/components/ui/popover';
 	import { Button } from '@/components/ui/button';
 	import { goto } from '$app/navigation';
 	import { Separator } from '@/components/ui/separator';
+	import LogoutButton from './LogoutButton.svelte';
 	const {
 		data,
 		form
@@ -83,7 +83,11 @@
 
 	<div class="flex w-full justify-end">
 		{#if data?.user}
-			<LogoutButton />
+			<div class="flex text-sm gap-x-2">
+				{data.user.username}
+				<Separator orientation="vertical"/>
+				<LogoutButton/>
+			</div>
 		{:else}
 			<AuthDialog isInitiallyOpen={data.authRequired} {form} />
 		{/if}

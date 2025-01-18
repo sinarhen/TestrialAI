@@ -4,7 +4,7 @@ import { hash } from '@node-rs/argon2';
 import type { RequestHandler } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import * as table from '@/server/db/schema';
-import * as auth from '@/server/auth';
+import * as auth from '@/server/lucia/auth';
 
 export const POST: RequestHandler = async (event) => {
 	const formData = await event.request.formData();
