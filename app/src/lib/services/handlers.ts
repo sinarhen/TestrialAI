@@ -12,7 +12,16 @@ import { streamOpenAiResponse, type OpenAiStreamingOptions } from '@/utils/opena
 import type { QuestionModificationTool } from '@/types/openai';
 import type { CreateTestSessionDto } from '../../routes/api/tests/[testId]/sessions/+server';
 
-// returns id
+export const login = (username: string, password: string) => {
+	return axios.post<string>('/api/auth/login', { username, password });
+};
+
+export const register = (username: string, password: string) => {
+	return axios.post<string>('/api/auth/register', { username, password });
+};
+
+export const logout = () => axios.post<void>('/api/auth/logout');
+
 export const createTest = (parsedTest: CreateTestDto) =>
 	axios.post<string>('/api/tests', parsedTest);
 

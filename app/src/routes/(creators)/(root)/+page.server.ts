@@ -4,7 +4,7 @@ import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { hash, verify } from '@node-rs/argon2';
-import { encodeBase32LowerCase } from '@oslojs/encoding';
+import { generateUserId, validatePassword, validateUsername } from '@/utils/auth';
 
 export const actions: Actions = {
 	logout: async (event) => {
@@ -90,22 +90,3 @@ export const actions: Actions = {
 		return { success: true };
 	}
 };
-
-function generateUserId() {
-	// ID with 120 bits of entropy, or about the same as UUID v4.
-	const bytes = crypto.getRandomValues(new Uint8Array(15));
-	return encodeBase32LowerCase(bytes);
-}
-
-function validateUsername(username: unknown): username is string {
-	return (
-		typeof username === 'string' &&
-		username.length >= 3 &&
-		username.length <= 31 &&
-		/^[a-z0-9_-]+$/.test(username)
-	);
-}
-
-function validatePassword(password: unknown): password is string {
-	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
-}

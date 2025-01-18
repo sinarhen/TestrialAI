@@ -1,18 +1,33 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
 	import type { PageServerData } from './$types';
-	import { Circle, FileQuestion, Sparkles, Timer, User } from 'lucide-svelte';
+	import {
+		Circle,
+		DoorOpen,
+		FileQuestion,
+		Info,
+		Layout,
+		Sparkles,
+		Timer,
+		User
+	} from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import * as Tooltip from '@/components/ui/tooltip';
+	import * as Dialog from '@/components/ui/dialog';
+	import Input from '@/components/ui/input/input.svelte';
+	import Separator from '@/components/ui/separator/separator.svelte';
 
 	const {
 		data
 	}: {
 		data: PageServerData;
 	} = $props();
-	const { session } = data;
+	const { session, user } = data;
 
 	const isTestFinished = session.endTime && session.endTime < new Date();
 	const isTestNotStarted = !session.startTime || session.startTime > new Date();
+
+	const onStart = () => {};
 </script>
 
 <main class="py-32">
@@ -58,20 +73,73 @@
 			<FileQuestion size="20" />
 			<span>{session.testStateJson.questions.length} Questions</span>
 		</p>
-		<p
-			class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[650ms] flex items-center gap-x-1 font-medium"
-		>
-			<User size="20" />
-			{session.participants.length} Participants
-		</p>
+		<Tooltip.Root>
+			<Tooltip.Trigger
+				class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[650ms] flex w-fit items-center gap-x-1 font-medium"
+			>
+				<Layout size="20" />
+				{session.displayMode.charAt(0).toUpperCase() + session.displayMode.slice(1)} mode
+				<Info class="self-start" size="12" />
+			</Tooltip.Trigger>
+			<Tooltip.Content>
+				<p class="text-xs">
+					{session.displayMode === 'cards'
+						? 'Questions are displayed one by one in a card format'
+						: 'Questions are displayed all at once in a list format'}
+				</p>
+			</Tooltip.Content>
+		</Tooltip.Root>
 	</div>
 
 	<div class="lg: flex flex-col gap-2 md:flex-row">
-		<Button
-			disabled={isTestFinished || isTestNotStarted}
-			class="motion-opacity-in-0 motion-delay-700 -motion-translate-y-in-[10px] h-8 w-full px-10 md:w-fit"
-			>Start</Button
-		>
+		<Dialog.Root open={true}>
+			<Dialog.Trigger>
+				<Button
+					disabled={isTestFinished || isTestNotStarted}
+					class="motion-opacity-in-0 motion-delay-700 -motion-translate-y-in-[10px] h-8 w-full px-10 md:w-fit"
+					>Start</Button
+				>
+			</Dialog.Trigger>
+			<Dialog.Content class="max-w-[400px]">
+				<Dialog.Header>
+					<Dialog.Title>Please enter your name to start the test</Dialog.Title>
+					<Dialog.Description>Your name will be displayed to the test creator</Dialog.Description>
+				</Dialog.Header>
+
+				<div>
+					<Input value={user.username} disabled={!!user} type="text" placeholder="Your name" />
+					<Button class="mt-2 w-full">Start</Button>
+				</div>
+				<Separator />
+				{#if !user}
+					<div class="flex flex-col text-center text-sm font-medium">
+						<p>Or login with your account</p>
+						<Input type="text" class="mt-2" placeholder="Username" />
+						<Input type="text" class="mt-1.5" placeholder="Password" />
+						<div class="flex justify-between">
+							<Button class="mt-2 self-end" variant="outline">Login</Button>
+							<Button class="mt-2 self-end" variant="ghost">Register?</Button>
+						</div>
+					</div>
+				{:else}
+					<div class="">
+						<p class=" text-center font-medium">
+							You are logged in as
+							<span class="underline">{user.username}</span>
+						</p>
+						<p class="mt-1 px-5 text-center text-sm">
+							We will use your name to start the test
+							<br />
+							You can logout and start as a guest with a different name
+						</p>
+						<Button  size="sm" variant="outline" class="mt-3 w-full gap-x-1">
+							<DoorOpen size="16" />
+							Logout
+						</Button>
+					</div>
+				{/if}
+			</Dialog.Content>
+		</Dialog.Root>
 
 		<Button
 			onclick={() => goto('/')}
