@@ -20,9 +20,6 @@
 	import LogoutButton from '../../../(creators)/components/Header/LogoutButton.svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import type { ActionData, SubmitFunction } from '../../../auth/$types';
-	import { Label } from '@/components/ui/label';
-	import GitHubLogin from '@/components/auth/GitHubLogin.svelte';
-	import GoogleLogin from '@/components/auth/GoogleLogin.svelte';
 	import AuthDialog from '../../../(creators)/components/Header/AuthDialog.svelte';
 
 	const {
@@ -32,10 +29,8 @@
 		data: PageServerData;
 		form: ActionData;
 	} = $props();
-	const { session, user } = data;
-
-	const isTestFinished = session.endTime && session.endTime < new Date();
-	const isTestNotStarted = !session.startTime || session.startTime > new Date();
+	const isTestFinished = data.session.endTime && data.session.endTime < new Date();
+	const isTestNotStarted = !data.session.startTime || data.session.startTime > new Date();
 
 	let isAuthDialogOpen: boolean = $state(!!form?.message);
 	let isLoginMode: boolean = $state(true);
@@ -65,7 +60,14 @@
 		};
 	};
 
-	let userTestName = $state<string | null>(user ? user.firstName + user.lastName : null);
+	let userTestName = $state<string | null>(
+		data.user ? data.user.firstName + data.user.lastName : null
+	);
+
+	const onSuggestionClick = (suggestion: string | undefined) => {
+		if (!suggestion) return;
+		userTestName = suggestion;
+	};
 </script>
 
 <main class="py-32">
@@ -77,14 +79,14 @@
 		</span>
 		<p>
 			Created by
-			<span class="font-bold">{session.test.user.username}</span>
+			<span class="font-bold">{data.session.test.user.username}</span>
 		</p>
 	</div>
 	<div class=" mt-5 flex items-center justify-between gap-x-2">
 		<h1
 			class="-motion-translate-y-in-25 motion-delay-200 motion-opacity-in-0 text-2xl font-semibold"
 		>
-			{session.testStateJson.title}
+			{data.session.testStateJson.title}
 		</h1>
 
 		<p
@@ -95,7 +97,7 @@
 		</p>
 	</div>
 	<p class="motion-delay-300 motion-opacity-in-0 mt-1 text-base">
-		{session.testStateJson.description}
+		{data.session.testStateJson.description}
 	</p>
 	<!-- <p>{session.}</p> -->
 	<div class="mb-8 mt-4 flex flex-col gap-y-5 text-sm">
@@ -103,25 +105,25 @@
 			class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[450ms] flex items-center gap-x-1 font-medium"
 		>
 			<Timer size="20" />
-			<span>{session.durationInMinutes} Minutes</span>
+			<span>{data.session.durationInMinutes} Minutes</span>
 		</p>
 		<p
 			class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[550ms] flex items-center gap-x-1 font-medium"
 		>
 			<FileQuestion size="20" />
-			<span>{session.testStateJson.questions.length} Questions</span>
+			<span>{data.session.testStateJson.questions.length} Questions</span>
 		</p>
 		<Tooltip.Root>
 			<Tooltip.Trigger
 				class="motion-opacity-in-0 -motion-translate-x-in-[30px] motion-delay-[650ms] flex w-fit items-center gap-x-1 font-medium"
 			>
 				<Layout size="20" />
-				{session.displayMode.charAt(0).toUpperCase() + session.displayMode.slice(1)} mode
+				{data.session.displayMode.charAt(0).toUpperCase() + data.session.displayMode.slice(1)} mode
 				<Info class="self-start" size="12" />
 			</Tooltip.Trigger>
 			<Tooltip.Content>
 				<p class="text-xs">
-					{session.displayMode === 'cards'
+					{data.session.displayMode === 'cards'
 						? 'Questions are displayed one by one in a card format'
 						: 'Questions are displayed all at once in a list format'}
 				</p>
@@ -141,16 +143,46 @@
 			</Dialog.Trigger>
 			<Dialog.Content class="max-w-[400px]">
 				<Dialog.Header>
-					<Dialog.Title>{user ? 'Start the test' : 'Start the test as a guest'}</Dialog.Title>
+					<Dialog.Title>{data.user ? 'Start the test' : 'Start the test as a guest'}</Dialog.Title>
 					<Dialog.Description>Your name will be displayed to the test creator</Dialog.Description>
 				</Dialog.Header>
 
 				<div>
 					<Input bind:value={userTestName} type="text" placeholder="Your name" />
-					<Button class="mt-2 w-full" disabled={!userTestName}>Start</Button>
+					{#if data.user}
+						<div class="mt-2 flex gap-x-1 text-xs">
+							{#if data.user.firstName}
+								<button onclick={() => onSuggestionClick(data.user?.firstName)} class="underline"
+									>{data.user.firstName}</button
+								>
+							{/if}
+							{#if data.user.lastName}
+								<button onclick={() => onSuggestionClick(data.user?.lastName)} class="underline"
+									>{data.user.lastName}</button
+								>
+							{/if}
+							{#if data.user.firstName && data.user.lastName}
+								<button
+									onclick={() =>
+										onSuggestionClick(data.user?.firstName ?? '' + data.user?.lastName)}
+									class="underline">{data.user.firstName} {data.user.lastName}</button
+								>
+							{/if}
+							<button onclick={() => onSuggestionClick(data.user?.username)} class="underline"
+								>{data.user.username}</button
+							>
+							{#if data.user.email}
+								<button
+									onclick={() => onSuggestionClick(data.user?.email.split('@').at(0)) ?? ''}
+									class="underline">{data.user.email.split('@').at(0)}</button
+								>
+							{/if}
+						</div>
+					{/if}
+					<Button class="mt-3 w-full" disabled={!userTestName}>Start</Button>
 				</div>
 				<Separator />
-				{#if !user}
+				{#if !data.user}
 					<div class="flex flex-col items-center">
 						<p class="mb-1 text-center text-sm">Or login to start the test as a registered user</p>
 						<AuthDialog {form} />
@@ -159,7 +191,7 @@
 					<div class="">
 						<p class=" text-center font-medium">
 							You are logged in as
-							<span class="underline">{user.username}</span>
+							<span class="underline">{data.user.username}</span>
 						</p>
 						<p class="mt-1 px-2 text-center text-sm">
 							We will save your test results to your account. Logout to start the test as a <span
