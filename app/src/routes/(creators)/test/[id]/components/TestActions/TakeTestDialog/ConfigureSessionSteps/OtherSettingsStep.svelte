@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AccordionStep from '../AccordionStep.svelte';
+	import AccordionStep from './AccordionStep.svelte';
 	import { steps } from '../index.svelte';
 
 	const {

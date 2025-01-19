@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
-	import AccordionStep from '../AccordionStep.svelte';
+	import AccordionStep from './AccordionStep.svelte';
 	import { steps, type Step } from '../index.svelte';
 	import StepCardSelector from './StepCardSelector.svelte';
 

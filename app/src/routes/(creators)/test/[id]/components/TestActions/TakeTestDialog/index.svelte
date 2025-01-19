@@ -24,10 +24,10 @@
 	import * as Dialog from '@/components/ui/dialog';
 	import type { DisplayMode } from '@/types/entities';
 	import { Copy, Layers, Play, Settings, Share, Timer } from 'lucide-svelte';
-	import DisplayModeStep from './Steps/DisplayModeStep.svelte';
-	import DurationPickerStep from './Steps/DurationPickerStep.svelte';
-	import OtherSettingsStep from './Steps/OtherSettingsStep.svelte';
-	import StepCardSelector from './Steps/StepCardSelector.svelte';
+	import DisplayModeStep from './ConfigureSessionSteps/DisplayModeStep.svelte';
+	import DurationPickerStep from './ConfigureSessionSteps/DurationPickerStep.svelte';
+	import OtherSettingsStep from './ConfigureSessionSteps/OtherSettingsStep.svelte';
+	import StepCardSelector from './ConfigureSessionSteps/StepCardSelector.svelte';
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import { Input } from '@/components/ui/input';
 	import { copy } from '@/utils/copy';
@@ -100,8 +100,7 @@
 				code: string;
 		  }
 	>({
-		status: 'created',
-		code: 'sadads'
+		status: 'configuring'
 	});
 
 	const confirmCreating = async () => {
