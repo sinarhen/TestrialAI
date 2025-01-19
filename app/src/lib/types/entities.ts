@@ -68,7 +68,7 @@ export type TestSession = {
 	id: string;
 	code: string;
 	testId: string;
-	startTime: Date;
+	startTime: Date | null;
 	endTime: Date | null;
 	durationInMinutes: number | null;
 	testStateJson: Test;

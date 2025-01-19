@@ -83,10 +83,14 @@
 
 	<div class="flex w-full justify-end">
 		{#if data?.user}
-			<div class="flex text-sm gap-x-2">
+			<div class="flex items-center gap-x-2 text-sm">
 				{data.user.username}
-				<Separator orientation="vertical"/>
-				<LogoutButton/>
+				<Separator orientation="vertical" />
+				<LogoutButton>
+					<button type="submit">
+						<DoorOpen size="16" />
+					</button>
+				</LogoutButton>
 			</div>
 		{:else}
 			<AuthDialog isInitiallyOpen={data.authRequired} {form} />

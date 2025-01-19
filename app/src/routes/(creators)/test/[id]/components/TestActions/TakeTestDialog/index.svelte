@@ -1,5 +1,4 @@
 <script module lang="ts">
-	import { browser } from '$app/environment';
 	export type Step = keyof typeof steps;
 
 	export const steps = {
@@ -16,11 +15,15 @@
 </script>
 
 <script lang="ts">
+	import { createQrPngDataUrl } from '@svelte-put/qr';
+
+	import { browser } from '$app/environment';
+
 	import * as Accordion from '@/components/ui/accordion';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
 	import type { DisplayMode } from '@/types/entities';
-	import { Copy, Layers, Play, QrCode, Settings, Timer } from 'lucide-svelte';
+	import { Copy, Layers, Play, Settings, Share, Timer } from 'lucide-svelte';
 	import DisplayModeStep from './Steps/DisplayModeStep.svelte';
 	import DurationPickerStep from './Steps/DurationPickerStep.svelte';
 	import OtherSettingsStep from './Steps/OtherSettingsStep.svelte';
@@ -31,11 +34,13 @@
 	import { toast } from 'svelte-sonner';
 	import { createTestSession } from '@/services/handlers';
 	import { goto } from '$app/navigation';
-
+	import QR from '@svelte-put/qr/svg/QR.svelte';
 	const {
-		testId
+		testId,
+		testTitle
 	}: {
 		testId: string;
+		testTitle: string;
 	} = $props();
 
 	const testSessionSettings = $state<{
@@ -95,7 +100,8 @@
 				code: string;
 		  }
 	>({
-		status: 'configuring'
+		status: 'created',
+		code: 'sadads'
 	});
 
 	const confirmCreating = async () => {
@@ -126,9 +132,55 @@
 			status: 'configuring'
 		};
 	};
+
+	const getSessionLink = (code: string) => {
+		return `${window.location.origin}/session/${code}`;
+	};
+
+	const shareQr = async () => {
+		if (dialogState.status !== 'created') {
+			return;
+		}
+		const qrImage = await createQrPngDataUrl({
+			data: getSessionLink(dialogState.code),
+			width: 300,
+			height: 300,
+			backgroundFill: '#fff',
+			anchorInnerFill: 'pink',
+			shape: 'circle'
+		});
+		const blob = await fetch(qrImage).then((res) => res.blob());
+		const qrImageFile = new File([blob], 'qr.png', { type: blob.type });
+		if (navigator.share && navigator.canShare && navigator.canShare({ files: [qrImageFile] })) {
+			navigator.share({
+				files: qrImageFile ? [qrImageFile] : undefined
+			});
+		} else {
+			toast.error('Your browser does not support sharing files.');
+		}
+	};
+
+	const shareLink = async () => {
+		if (dialogState.status !== 'created') {
+			return;
+		}
+		if (
+			navigator.share &&
+			navigator.canShare &&
+			navigator.canShare({ url: getSessionLink(dialogState.code) })
+		) {
+			navigator.share({
+				text: `Join the test session for ${testTitle} at ${getSessionLink(dialogState.code)}`,
+				title: testTitle,
+				url: getSessionLink(dialogState.code)
+			});
+		} else {
+			toast.error('Your browser does not support sharing links.');
+		}
+	};
 </script>
 
-<Dialog.Root>
+<Dialog.Root open={true}>
 	<Dialog.Trigger>
 		<Button size="sm" class="gap-x-1">
 			Take a test
@@ -214,16 +266,34 @@
 				</div>
 			{:else if dialogState.status === 'created'}
 				<div>
-					<h1 class="-motion-translate-y-in-25 motion-opacity-in-0 text-center font-semibold">
-						29:32
-					</h1>
-					<p class="motion-opacity-in motion-delay-200 text-center text-xs">Remaining time</p>
-					<div class="mt-5 flex gap-x-2">
-						<div
-							class="-motion-translate-y-in-[10%] motion-opacity-in-0 motion-delay-200 h-full w-1/2"
-						>
-							<QrCode class="h-full w-full" />
+					<div class="flex justify-between gap-x-3">
+						<div>
+							<h1 class="-motion-translate-y-in-25 motion-opacity-in-0 text-center font-semibold">
+								19:00 25/01/2024
+							</h1>
+							<p class="motion-opacity-in motion-delay-200 text-center text-xs">Start time</p>
 						</div>
+					</div>
+					<div class="mt-5 flex gap-x-2">
+						<div class="h-full w-1/2">
+							<button
+								onclick={shareQr}
+								class="-motion-translate-y-in-[10%] motion-opacity-in-0 motion-delay-200 h-full w-full rounded border p-2"
+							>
+								{#if browser}
+									<QR
+										anchorInnerFill="pink"
+										shape="circle"
+										class="h-full w-full"
+										data={getSessionLink(dialogState.code)}
+									/>
+								{/if}
+							</button>
+							<p class="motion-delay-[300ms] motion-opacity-in-0 mt-2 text-center text-xs">
+								Click to share
+							</p>
+						</div>
+
 						<Separator class="mx-2" orientation="vertical" />
 						<div class="flex w-full flex-col">
 							<div class="motion-opacity-in-0 motion-delay-500 relative mt-1 flex w-[120px]">
@@ -252,7 +322,7 @@
 								</Button>
 								<Input
 									disabled
-									value={browser ? `${window.location.origin}/session/${dialogState.code}` : null}
+									value={browser ? getSessionLink(dialogState.code) : null}
 									class="w-full text-sm disabled:opacity-100"
 								/>
 							</div>
@@ -261,20 +331,21 @@
 							</p>
 							<div class="mt-3.5 flex flex-col gap-1 sm:flex-row">
 								<Button
-									onclick={() => (browser ? goto(`/session/${dialogState.code!}`) : null)}
+									onclick={() => (browser ? goto(`/session/${dialogState.code}`) : null)}
 									size="sm"
 									class="-motion-translate-y-in-25 motion-opacity-in-0 motion-delay-[650ms] flex items-center gap-x-1"
 								>
 									<Play size="12" />
-									Join
+									View session
 								</Button>
 								<Button
+									onclick={shareLink}
 									size="sm"
 									variant="outline"
 									class="-motion-translate-y-in-25 motion-opacity-in-0 motion-delay-700 flex items-center gap-x-1"
 								>
-									<Settings size="12" />
-									Configure
+									<Share size="12" />
+									Share link
 								</Button>
 							</div>
 						</div>

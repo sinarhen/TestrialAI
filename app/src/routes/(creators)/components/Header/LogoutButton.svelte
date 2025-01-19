@@ -45,5 +45,7 @@
 </script>
 
 <form use:enhance={onLogout} method="POST" action="/auth?/logout">
-	{@render children()}
+	{#if children}
+		{@render children()}
+	{/if}
 </form>

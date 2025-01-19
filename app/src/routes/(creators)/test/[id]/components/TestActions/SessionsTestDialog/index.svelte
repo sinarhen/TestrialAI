@@ -23,7 +23,10 @@
 
 <Dialog.Root>
 	<Dialog.Trigger>
-		<Button size="sm" class="flex gap-x-1" variant="outline"
+		<Button
+			size="sm"
+			class="-motion-translate-y-in-50 motion-opacity-in-0 motion-duration-500 motion-delay-[75ms] gap-x-1"
+			variant="outline"
 			>Sessions
 			<FileClock size="12" />
 		</Button>

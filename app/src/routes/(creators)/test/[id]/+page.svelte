@@ -11,11 +11,6 @@
 		Trash2
 	} from 'lucide-svelte';
 	import type { PageServerData } from './$types';
-	import { Button } from '@/components/ui/button';
-	import { toast } from 'svelte-sonner';
-	import { deleteTest } from '@/services/handlers';
-	import { goto, invalidate } from '$app/navigation';
-	import * as Dialog from '@/components/ui/dialog';
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import type { TestState } from './types';
 	import AddQuestionButton from './components/AddQuestionButton.svelte';
@@ -58,12 +53,12 @@
 </script>
 
 <div class="flex gap-x-2">
-	<TakeTestDialog testId={serverData.test.id} />
+	<TakeTestDialog testTitle={serverData.test.title} testId={serverData.test.id} />
+	<SessionsTestDialog sessions={serverData.sessions} />
 	<!-- <SettingsTestDialog /> -->
 	<ShareTestDialog testId={serverData.test.id} />
 	<Separator orientation="vertical" class="motion-opacity-in-0 motion-delay-[150ms]" />
 	<DeleteTestButton testId={serverData.test.id} />
-	<SessionsTestDialog sessions={serverData.sessions} />
 </div>
 
 <h2 class="motion-opacity-in-0 motion-duration-1500 motion-delay-200 mt-7 text-2xl font-bold">
