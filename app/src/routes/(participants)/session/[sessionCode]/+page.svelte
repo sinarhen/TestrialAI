@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import type { PageServerData } from './$types';
 	import {
@@ -11,23 +12,60 @@
 		Timer,
 		User
 	} from 'lucide-svelte';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import * as Tooltip from '@/components/ui/tooltip';
 	import * as Dialog from '@/components/ui/dialog';
 	import Input from '@/components/ui/input/input.svelte';
 	import Separator from '@/components/ui/separator/separator.svelte';
+	import LogoutButton from '../../../(creators)/components/Header/LogoutButton.svelte';
+	import { applyAction, enhance } from '$app/forms';
+	import type { ActionData, SubmitFunction } from '../../../auth/$types';
+	import { Label } from '@/components/ui/label';
+	import GitHubLogin from '@/components/auth/GitHubLogin.svelte';
+	import GoogleLogin from '@/components/auth/GoogleLogin.svelte';
+	import AuthDialog from '../../../(creators)/components/Header/AuthDialog.svelte';
 
 	const {
-		data
+		data,
+		form
 	}: {
 		data: PageServerData;
+		form: ActionData;
 	} = $props();
 	const { session, user } = data;
 
 	const isTestFinished = session.endTime && session.endTime < new Date();
 	const isTestNotStarted = !session.startTime || session.startTime > new Date();
 
-	const onStart = () => {};
+	let isAuthDialogOpen: boolean = $state(!!form?.message);
+	let isLoginMode: boolean = $state(true);
+	let isSigningIn = $state(false);
+
+	function toggleAuthMode() {
+		isLoginMode = !isLoginMode;
+	}
+	const onLogin: SubmitFunction = () => {
+		isSigningIn = true;
+		return async ({ result }) => {
+			switch (result.type) {
+				case 'success':
+					toast.success('Successfully logged in');
+					isAuthDialogOpen = false;
+					break;
+				case 'error':
+					toast.error(result.error);
+					break;
+				default:
+					break;
+			}
+
+			await applyAction(result);
+			await invalidateAll();
+			isSigningIn = false;
+		};
+	};
+
+	let userTestName = $state<string | null>(user ? user.firstName + user.lastName : null);
 </script>
 
 <main class="py-32">
@@ -97,29 +135,25 @@
 				<Button
 					disabled={isTestFinished || isTestNotStarted}
 					class="motion-opacity-in-0 motion-delay-700 -motion-translate-y-in-[10px] h-8 w-full px-10 md:w-fit"
-					>Start</Button
 				>
+					{isTestFinished ? "Test's over" : isTestNotStarted ? 'Test not started' : 'Start Test'}
+				</Button>
 			</Dialog.Trigger>
 			<Dialog.Content class="max-w-[400px]">
 				<Dialog.Header>
-					<Dialog.Title>Please enter your name to start the test</Dialog.Title>
+					<Dialog.Title>{user ? 'Start the test' : 'Start the test as a guest'}</Dialog.Title>
 					<Dialog.Description>Your name will be displayed to the test creator</Dialog.Description>
 				</Dialog.Header>
 
 				<div>
-					<Input value={user.username} disabled={!!user} type="text" placeholder="Your name" />
-					<Button class="mt-2 w-full">Start</Button>
+					<Input bind:value={userTestName} type="text" placeholder="Your name" />
+					<Button class="mt-2 w-full" disabled={!userTestName}>Start</Button>
 				</div>
 				<Separator />
 				{#if !user}
-					<div class="flex flex-col text-center text-sm font-medium">
-						<p>Or login with your account</p>
-						<Input type="text" class="mt-2" placeholder="Username" />
-						<Input type="text" class="mt-1.5" placeholder="Password" />
-						<div class="flex justify-between">
-							<Button class="mt-2 self-end" variant="outline">Login</Button>
-							<Button class="mt-2 self-end" variant="ghost">Register?</Button>
-						</div>
+					<div class="flex flex-col items-center">
+						<p class="mb-1 text-center text-sm">Or login to start the test as a registered user</p>
+						<AuthDialog {form} />
 					</div>
 				{:else}
 					<div class="">
@@ -127,15 +161,17 @@
 							You are logged in as
 							<span class="underline">{user.username}</span>
 						</p>
-						<p class="mt-1 px-5 text-center text-sm">
-							We will use your name to start the test
-							<br />
-							You can logout and start as a guest with a different name
+						<p class="mt-1 px-2 text-center text-sm">
+							We will save your test results to your account. Logout to start the test as a <span
+								class="underline">guest</span
+							>
 						</p>
-						<Button  size="sm" variant="outline" class="mt-3 w-full gap-x-1">
-							<DoorOpen size="16" />
-							Logout
-						</Button>
+						<LogoutButton>
+							<Button type="submit" size="sm" variant="outline" class="mt-3 w-full gap-x-1">
+								<DoorOpen size="16" />
+								Logout
+							</Button>
+						</LogoutButton>
 					</div>
 				{/if}
 			</Dialog.Content>

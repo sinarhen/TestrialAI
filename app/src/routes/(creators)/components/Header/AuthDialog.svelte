@@ -24,12 +24,12 @@
 		isInitiallyOpen
 	}: {
 		form: ActionData;
-		isInitiallyOpen: boolean;
+		isInitiallyOpen?: boolean;
 	} = $props();
 
-	let isAuthDialogOpen: boolean = $state(!!form?.message || isInitiallyOpen);
-	let isLoginMode: boolean = $state(true);
-	let isSigningIn = $state(false);
+	let isAuthDialogOpen = $state<boolean | undefined>(!!form?.message || isInitiallyOpen);
+	let isLoginMode = $state<boolean>(true);
+	let isSigningIn = $state<boolean>(false);
 
 	function toggleAuthMode() {
 		isLoginMode = !isLoginMode;
@@ -147,7 +147,7 @@
 				>{isLoginMode ? 'Login' : 'Register'}</Button
 			>
 		</form>
-		<div id="login-dialog-footer">
+		<div>
 			<Separator class="mb-4" />
 			<div class="flex flex-col items-center gap-x-2 gap-y-1 text-sm">
 				<a class="w-full" href="/auth/github">

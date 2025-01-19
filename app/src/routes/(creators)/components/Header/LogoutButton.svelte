@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { applyAction, enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import type { SubmitFunction } from '@sveltejs/kit';
-	import { DoorOpen } from 'lucide-svelte';
 
 	let isLoggingOutInProgress = $state(false);
 
@@ -37,10 +36,14 @@
 			isLoggingOutInProgress = false;
 		};
 	};
+
+	const {
+		children
+	}: {
+		children: any;
+	} = $props();
 </script>
 
 <form use:enhance={onLogout} method="POST" action="/auth?/logout">
-	<button type="submit">
-		<DoorOpen size="18" class="cursor-pointer" />
-	</button>
+	{@render children()}
 </form>
