@@ -2,15 +2,20 @@ import { generateCodeVerifier, generateState } from 'arctic';
 import type { RequestEvent } from './$types';
 import { google } from '@/server/lucia/auth';
 import { redirect } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 export async function GET(event: RequestEvent) {
 	const state = generateState();
 	const codeVerifier = generateCodeVerifier();
-	const url = await google.createAuthorizationURL(state, codeVerifier, ['user:email']);
+	const url = await google.createAuthorizationURL(state, codeVerifier, [
+		'openid',
+		'profile',
+		'email'
+	]);
 
 	event.cookies.set('google_oauth_state', state, {
 		path: '/',
 		httpOnly: true,
-		secure: true,
+		secure: !dev,
 		maxAge: 60 * 5,
 		sameSite: 'lax'
 	});
@@ -18,7 +23,7 @@ export async function GET(event: RequestEvent) {
 	event.cookies.set('google_oauth_code_verifier', codeVerifier, {
 		path: '/',
 		httpOnly: true,
-		secure: true,
+		secure: !dev,
 		maxAge: 60 * 5,
 		sameSite: 'lax'
 	});

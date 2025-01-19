@@ -1,8 +1,9 @@
 import { db } from '@/server/db';
 import { users } from '@/server/db/schema';
 import { google, lucia } from '@/server/lucia/auth';
+import { ObjectParser } from '@pilcrowjs/object-parser';
 import type { RequestHandler } from '@sveltejs/kit';
-import { OAuth2RequestError } from 'arctic';
+import { decodeIdToken, OAuth2RequestError, OAuth2Tokens } from 'arctic';
 import { and, eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 
@@ -21,23 +22,39 @@ export const GET: RequestHandler = async (event) => {
 	const storedState = event.cookies.get('google_oauth_state');
 
 	if (!code || !state || !codeVerifier || !storedState || state !== storedState) {
-		return new Response(null, {
+		return new Response('Unauthorized', {
 			status: 400
 		});
 	}
 
 	try {
-		const tokens = await google.validateAuthorizationCode(code, codeVerifier);
-		const googleUserResponse = await fetch('https://www.googleapis.com/auth/userinfo.profile', {
-			headers: {
-				Authorization: `Bearer ${tokens.accessToken}`
-			}
-		});
+		let tokens: OAuth2Tokens;
+		try {
+			tokens = await google.validateAuthorizationCode(code, codeVerifier);
+		} catch (e) {
+			return new Response('Please restart the process.', {
+				status: 400
+			});
+		}
 
-		const googleUser: GoogleUser = await googleUserResponse.json();
-		console.log(googleUser);
+		const claims = decodeIdToken(tokens.idToken());
+		const claimsParser = new ObjectParser(claims);
+
+		const googleId = claimsParser.getString('sub');
+		const name = claimsParser.getString('name');
+		// const picture = claimsParser.getString('picture');
+		const email = claimsParser.getString('email');
+		const givenName = claimsParser.getString('given_name');
+		const familyName = claimsParser.getString('family_name');
+		// const googleUserResponse = await fetch('https://www.googleapis.com/auth/userinfo.profile', {
+		// 	headers: {
+		// 		Authorization: `Bearer ${tokens.accessToken()}`
+		// 	}
+		// });
+
+		// const googleUser: GoogleUser = await googleUserResponse.json();
 		const existingUser = await db.query.users.findFirst({
-			where: and(eq(users.providerId, googleUser.sub), eq(users.provider, 'google'))
+			where: and(eq(users.providerId, googleId), eq(users.provider, 'google'))
 		});
 
 		if (existingUser) {
@@ -52,12 +69,11 @@ export const GET: RequestHandler = async (event) => {
 			await db.insert(users).values({
 				id: userId,
 				provider: 'google',
-				providerId: googleUser.sub,
-				username: googleUser.name,
-				// username: googleUser.login,
-				// firstName: nameParts[0] ?? '',
-				// lastName: nameParts[1] ?? '',
-				email: googleUser.email
+				providerId: googleId,
+				username: name,
+				firstName: givenName,
+				lastName: familyName,
+				email: email
 			});
 
 			const session = await lucia.createSession(userId, {});
@@ -68,7 +84,8 @@ export const GET: RequestHandler = async (event) => {
 			});
 		}
 		return new Response(null, {
-			status: 200
+			status: 302,
+			headers: { location: '/' }
 		});
 	} catch (error) {
 		console.error(error);

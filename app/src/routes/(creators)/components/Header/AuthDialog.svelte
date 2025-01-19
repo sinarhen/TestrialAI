@@ -17,7 +17,7 @@
 	import { applyAction } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import type { ActionData } from '../../../../../.svelte-kit/types/src/routes/(creators)/(root)/$types';
+	import type { ActionData } from '../../../auth/$types';
 
 	let {
 		form,
@@ -81,20 +81,50 @@
 		<form
 			method="POST"
 			use:enhance={onLogin}
-			action={isLoginMode ? '?/login' : '?/register'}
+			action={isLoginMode ? '/auth?/login' : 'auth?/register'}
 			class="flex flex-col gap-x-4 gap-y-2"
 		>
 			<div class="col-span-1">
-				<Label for="username-input" id="username-input-label">Username</Label>
-				<Input required type="text" name="username" class="sm:max-w-[270px]" id="username-input" />
-				{#if form?.username}
-					<p class="text-sm text-red-500">{form.username}</p>
+				<Label for="email-input" id="email-input-label">Email</Label>
+				<Input required type="email" name="email" class="sm:max-w-[270px]" id="email-input" />
+
+				{#if form?.email}
+					<p class="text-sm text-red-500">{form.email}</p>
 				{/if}
 			</div>
 			{#if !isLoginMode}
 				<div class="col-span-1">
-					<Label for="email-input" id="email-input-label">Email</Label>
-					<Input required type="email" name="email" class="sm:max-w-[270px]" id="email-input" />
+					<Label for="username-input" id="username-input-label">Username</Label>
+					<Input
+						required
+						type="text"
+						name="username"
+						class="sm:max-w-[270px]"
+						id="username-input"
+					/>
+					{#if form?.username}
+						<p class="text-sm text-red-500">{form.username}</p>
+					{/if}
+				</div>
+				<div class="col-span-1">
+					<Label for="first-name-input" id="first-name-input-label">First Name</Label>
+					<Input
+						placeholder="Optional(but preferable)"
+						type="text"
+						name="first_name"
+						class="sm:max-w-[270px]"
+						id="first-name-input"
+					/>
+				</div>
+				<div class="col-span-1">
+					<Label for="last-name-input" id="last-name-input-label">Last Name</Label>
+					<Input
+						placeholder="Optional(but preferable)"
+						type="text"
+						name="last_name"
+						class="sm:max-w-[270px]"
+						id="last-name-input"
+					/>
 				</div>
 			{/if}
 			<div class="col-span-1">

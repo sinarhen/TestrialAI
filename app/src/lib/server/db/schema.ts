@@ -7,24 +7,26 @@ import * as entities from '../../types/entities';
 export const users = sqliteTable(
 	'users',
 	{
-		id: text('id').unique().notNull(),
+		id: text('id').notNull(),
+
 		provider: text('provider', {
 			enum: ['google', 'github']
 		}),
-		email: text('email'),
 		providerId: text('provider_id', { length: 255 }),
+		email: text('email'),
 		username: text('username').notNull().unique(),
 		firstName: text('first_name'),
 		lastName: text('last_name'),
-		passwordHash: text('password_hash'),
+		passwordHash: text('password_hash')
 	},
 	(table) => ({
 		pk: primaryKey({
-			columns: [table.provider, table.providerId]
-		})
+			name: 'pk',
+			columns: [table.id]
+		}),
+		providerIndex: uniqueIndex('provider_idx').on(table.provider, table.providerId)
 	})
 );
-
 export const sessions = sqliteTable('sessions', {
 	id: text('id').primaryKey(),
 	userId: text('user_id')

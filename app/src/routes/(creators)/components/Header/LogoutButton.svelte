@@ -39,7 +39,7 @@
 	};
 </script>
 
-<form use:enhance={onLogout} method="POST" action="?/logout">
+<form use:enhance={onLogout} method="POST" action="/auth?/logout">
 	<button type="submit">
 		<DoorOpen size="18" class="cursor-pointer" />
 	</button>
