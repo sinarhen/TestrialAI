@@ -499,7 +499,7 @@
     <routine id="190" parent="1" name="fts5"/>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-01-04.14:25:50</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-01-24.23:29:42</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1590,33 +1590,45 @@
     <argument id="554" parent="190">
       <Position>1</Position>
     </argument>
-    <table id="555" parent="191" name="__drizzle_migrations"/>
-    <table id="556" parent="191" name="options"/>
-    <table id="557" parent="191" name="question"/>
+    <table id="555" parent="191" name="options"/>
+    <table id="556" parent="191" name="participant_answer_options"/>
+    <table id="557" parent="191" name="participant_answers"/>
     <table id="558" parent="191" name="questions"/>
-    <table id="559" parent="191" name="session"/>
-    <table id="560" parent="191" name="sessions"/>
-    <table id="561" parent="191" name="sqlite_master">
+    <table id="559" parent="191" name="sqlite_master">
       <System>1</System>
     </table>
-    <table id="562" parent="191" name="survey"/>
-    <table id="563" parent="191" name="surveys"/>
-    <table id="564" parent="191" name="user"/>
-    <table id="565" parent="191" name="users"/>
-    <column id="566" parent="555" name="id">
+    <table id="560" parent="191" name="test_participant"/>
+    <table id="561" parent="191" name="test_sessions"/>
+    <table id="562" parent="191" name="tests"/>
+    <table id="563" parent="191" name="users"/>
+    <column id="564" parent="555" name="id">
+      <NotNull>1</NotNull>
       <Position>1</Position>
-      <StoredType>SERIAL|0s</StoredType>
+      <StoredType>text|0s</StoredType>
     </column>
-    <column id="567" parent="555" name="hash">
+    <column id="565" parent="555" name="question_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="568" parent="555" name="created_at">
+    <column id="566" parent="555" name="value">
+      <NotNull>1</NotNull>
       <Position>3</Position>
-      <StoredType>numeric|0s</StoredType>
+      <StoredType>text|0s</StoredType>
     </column>
-    <index id="569" parent="555" name="sqlite_autoindex___drizzle_migrations_1">
+    <column id="567" parent="555" name="is_correct">
+      <DefaultExpression>false</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <foreign-key id="568" parent="555">
+      <ColNames>question_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>questions</RefTableName>
+    </foreign-key>
+    <index id="569" parent="555" name="sqlite_autoindex_options_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
@@ -1624,30 +1636,30 @@
     <key id="570" parent="555">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex___drizzle_migrations_1</UnderlyingIndexName>
+      <UnderlyingIndexName>sqlite_autoindex_options_1</UnderlyingIndexName>
     </key>
     <column id="571" parent="556" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="572" parent="556" name="question_id">
+    <column id="572" parent="556" name="participant_answer_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="573" parent="556" name="value">
+    <column id="573" parent="556" name="option_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="574" parent="556" name="is_correct">
-      <DefaultExpression>false</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StoredType>integer|0s</StoredType>
-    </column>
-    <index id="575" parent="556" name="sqlite_autoindex_options_1">
+    <foreign-key id="574" parent="556">
+      <ColNames>participant_answer_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>participant_answers</RefTableName>
+    </foreign-key>
+    <index id="575" parent="556" name="sqlite_autoindex_participant_answer_options_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
@@ -1655,303 +1667,333 @@
     <key id="576" parent="556">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_options_1</UnderlyingIndexName>
+      <UnderlyingIndexName>sqlite_autoindex_participant_answer_options_1</UnderlyingIndexName>
     </key>
     <column id="577" parent="557" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="578" parent="557" name="question">
+    <column id="578" parent="557" name="test_participant_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="579" parent="557" name="answer">
+    <column id="579" parent="557" name="question_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="580" parent="557" name="options">
-      <NotNull>1</NotNull>
+    <column id="580" parent="557" name="typed_answer">
       <Position>4</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="581" parent="557" name="survey_id">
-      <NotNull>1</NotNull>
+    <column id="581" parent="557" name="submitted_at">
       <Position>5</Position>
-      <StoredType>text|0s</StoredType>
+      <StoredType>integer|0s</StoredType>
     </column>
-    <index id="582" parent="557" name="sqlite_autoindex_question_1">
+    <foreign-key id="582" parent="557">
+      <ColNames>test_participant_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>test_participant</RefTableName>
+    </foreign-key>
+    <index id="583" parent="557" name="sqlite_autoindex_participant_answers_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="583" parent="557">
+    <key id="584" parent="557">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_question_1</UnderlyingIndexName>
+      <UnderlyingIndexName>sqlite_autoindex_participant_answers_1</UnderlyingIndexName>
     </key>
-    <column id="584" parent="558" name="id">
+    <column id="585" parent="558" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="585" parent="558" name="question">
+    <column id="586" parent="558" name="question">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="586" parent="558" name="answer_type">
-      <NotNull>1</NotNull>
+    <column id="587" parent="558" name="code_block">
       <Position>3</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="587" parent="558" name="correct_answer">
+    <column id="588" parent="558" name="code_lang">
       <Position>4</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="588" parent="558" name="survey_id">
+    <column id="589" parent="558" name="answer_type">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <index id="589" parent="558" name="sqlite_autoindex_questions_1">
+    <column id="590" parent="558" name="correct_answer">
+      <Position>6</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="591" parent="558" name="answer_explanation">
+      <Position>7</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="592" parent="558" name="test_id">
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <foreign-key id="593" parent="558">
+      <ColNames>test_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>tests</RefTableName>
+    </foreign-key>
+    <index id="594" parent="558" name="sqlite_autoindex_questions_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="590" parent="558">
+    <key id="595" parent="558">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_questions_1</UnderlyingIndexName>
     </key>
-    <column id="591" parent="559" name="id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="592" parent="559" name="user_id">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="593" parent="559" name="expires_at">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>integer|0s</StoredType>
-    </column>
-    <index id="594" parent="559" name="sqlite_autoindex_session_1">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Unique>1</Unique>
-    </index>
-    <key id="595" parent="559">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_session_1</UnderlyingIndexName>
-    </key>
-    <column id="596" parent="560" name="id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="597" parent="560" name="user_id">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="598" parent="560" name="expires_at">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>integer|0s</StoredType>
-    </column>
-    <index id="599" parent="560" name="sqlite_autoindex_sessions_1">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Unique>1</Unique>
-    </index>
-    <key id="600" parent="560">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_sessions_1</UnderlyingIndexName>
-    </key>
-    <column id="601" parent="561" name="type">
+    <column id="596" parent="559" name="type">
       <Position>1</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="602" parent="561" name="name">
+    <column id="597" parent="559" name="name">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="603" parent="561" name="tbl_name">
+    <column id="598" parent="559" name="tbl_name">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="604" parent="561" name="rootpage">
+    <column id="599" parent="559" name="rootpage">
       <Position>4</Position>
       <StoredType>INT|0s</StoredType>
     </column>
-    <column id="605" parent="561" name="sql">
+    <column id="600" parent="559" name="sql">
       <Position>5</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="606" parent="562" name="id">
+    <column id="601" parent="560" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="607" parent="562" name="created_at">
-      <DefaultExpression>(unixepoch())</DefaultExpression>
+    <column id="602" parent="560" name="test_session_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StoredType>integer|0s</StoredType>
+      <StoredType>text|0s</StoredType>
     </column>
-    <column id="608" parent="562" name="updated_at">
-      <DefaultExpression>(unixepoch())</DefaultExpression>
-      <NotNull>1</NotNull>
+    <column id="603" parent="560" name="user_id">
       <Position>3</Position>
-      <StoredType>integer|0s</StoredType>
+      <StoredType>text|0s</StoredType>
     </column>
-    <column id="609" parent="562" name="title">
+    <column id="604" parent="560" name="name">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="610" parent="562" name="description">
+    <column id="605" parent="560" name="status">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="611" parent="562" name="user_id">
+    <column id="606" parent="560" name="score">
+      <DefaultExpression>0</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="612" parent="562" name="difficulty">
-      <NotNull>1</NotNull>
-      <Position>7</Position>
       <StoredType>integer|0s</StoredType>
     </column>
-    <index id="613" parent="562" name="sqlite_autoindex_survey_1">
+    <column id="607" parent="560" name="feedback">
+      <Position>7</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <foreign-key id="608" parent="560">
+      <ColNames>test_session_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>test_sessions</RefTableName>
+    </foreign-key>
+    <foreign-key id="609" parent="560">
+      <ColNames>user_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>users</RefTableName>
+    </foreign-key>
+    <index id="610" parent="560" name="sqlite_autoindex_test_participant_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="614" parent="562">
+    <key id="611" parent="560">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_survey_1</UnderlyingIndexName>
+      <UnderlyingIndexName>sqlite_autoindex_test_participant_1</UnderlyingIndexName>
     </key>
-    <column id="615" parent="563" name="id">
+    <column id="612" parent="561" name="id">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="616" parent="563" name="created_at">
+    <column id="613" parent="561" name="test_id">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="614" parent="561" name="code">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="615" parent="561" name="start_time">
+      <Position>4</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="616" parent="561" name="end_time">
+      <Position>5</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="617" parent="561" name="duration_in_minutes">
+      <Position>6</Position>
+      <StoredType>integer|0s</StoredType>
+    </column>
+    <column id="618" parent="561" name="test_state_json">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="619" parent="561" name="display_mode">
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <foreign-key id="620" parent="561">
+      <ColNames>test_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>tests</RefTableName>
+    </foreign-key>
+    <index id="621" parent="561" name="sqlite_autoindex_test_sessions_1">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Unique>1</Unique>
+    </index>
+    <index id="622" parent="561" name="code_idx">
+      <ColNames>code</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <index id="623" parent="561" name="test_sessions_code_unique">
+      <ColNames>code</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="624" parent="561">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>sqlite_autoindex_test_sessions_1</UnderlyingIndexName>
+    </key>
+    <column id="625" parent="562" name="id">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="626" parent="562" name="created_at">
       <DefaultExpression>(unixepoch())</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>integer|0s</StoredType>
     </column>
-    <column id="617" parent="563" name="updated_at">
+    <column id="627" parent="562" name="updated_at">
       <DefaultExpression>(unixepoch())</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>integer|0s</StoredType>
     </column>
-    <column id="618" parent="563" name="difficulty">
+    <column id="628" parent="562" name="title">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="619" parent="563" name="title">
+    <column id="629" parent="562" name="description">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="620" parent="563" name="description">
+    <column id="630" parent="562" name="user_id">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="621" parent="563" name="user_id">
+    <foreign-key id="631" parent="562">
+      <ColNames>user_id</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>id</RefColNames>
+      <RefTableName>users</RefTableName>
+    </foreign-key>
+    <index id="632" parent="562" name="sqlite_autoindex_tests_1">
+      <ColNames>id</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Unique>1</Unique>
+    </index>
+    <key id="633" parent="562">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>sqlite_autoindex_tests_1</UnderlyingIndexName>
+    </key>
+    <column id="634" parent="563" name="id">
       <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="635" parent="563" name="provider">
+      <Position>2</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="636" parent="563" name="provider_id">
+      <Position>3</Position>
+      <StoredType>text(255)|0s</StoredType>
+    </column>
+    <column id="637" parent="563" name="email">
+      <Position>4</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="638" parent="563" name="username">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="639" parent="563" name="first_name">
+      <Position>6</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="640" parent="563" name="last_name">
       <Position>7</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <index id="622" parent="563" name="sqlite_autoindex_surveys_1">
+    <column id="641" parent="563" name="password_hash">
+      <Position>8</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <index id="642" parent="563" name="sqlite_autoindex_users_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="623" parent="563">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_surveys_1</UnderlyingIndexName>
-    </key>
-    <column id="624" parent="564" name="id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="625" parent="564" name="age">
-      <Position>2</Position>
-      <StoredType>integer|0s</StoredType>
-    </column>
-    <column id="626" parent="564" name="username">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="627" parent="564" name="password_hash">
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <index id="628" parent="564" name="sqlite_autoindex_user_1">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
+    <index id="643" parent="563" name="provider_idx">
+      <ColNames>provider
+provider_id</ColNames>
       <Unique>1</Unique>
     </index>
-    <index id="629" parent="564" name="user_username_unique">
+    <index id="644" parent="563" name="users_username_unique">
       <ColNames>username</ColNames>
       <Unique>1</Unique>
     </index>
-    <key id="630" parent="564">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_user_1</UnderlyingIndexName>
-    </key>
-    <column id="631" parent="565" name="id">
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="632" parent="565" name="age">
-      <Position>2</Position>
-      <StoredType>integer|0s</StoredType>
-    </column>
-    <column id="633" parent="565" name="username">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="634" parent="565" name="password_hash">
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <index id="635" parent="565" name="sqlite_autoindex_users_1">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Unique>1</Unique>
-    </index>
-    <index id="636" parent="565" name="users_username_unique">
-      <ColNames>username</ColNames>
-      <Unique>1</Unique>
-    </index>
-    <key id="637" parent="565">
+    <key id="645" parent="563">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_users_1</UnderlyingIndexName>
