@@ -12,6 +12,19 @@
 			label: 'Other settings'
 		}
 	} as const;
+
+	export type DialogState =
+		| { status: 'configuring' }
+		| {
+				status: 'confirming';
+		  }
+		| {
+				status: 'creating';
+		  }
+		| {
+				status: 'created';
+				code: string;
+		  };
 </script>
 
 <script lang="ts">
@@ -24,10 +37,6 @@
 	import * as Dialog from '@/components/ui/dialog';
 	import type { DisplayMode } from '@/types/entities';
 	import { Copy, Layers, Play, Settings, Share, Timer } from 'lucide-svelte';
-	import DisplayModeStep from './ConfigureSessionSteps/DisplayModeStep.svelte';
-	import DurationPickerStep from './ConfigureSessionSteps/DurationPickerStep.svelte';
-	import OtherSettingsStep from './ConfigureSessionSteps/OtherSettingsStep.svelte';
-	import StepCardSelector from './ConfigureSessionSteps/StepCardSelector.svelte';
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import { Input } from '@/components/ui/input';
 	import { copy } from '@/utils/copy';
@@ -35,6 +44,10 @@
 	import { createTestSession } from '@/services/handlers';
 	import { goto } from '$app/navigation';
 	import QR from '@svelte-put/qr/svg/QR.svelte';
+	import StepCardSelector from './StepCardSelector.svelte';
+	import ConfigureSession from './DialogStates/SessionConfiguringSteps/index.svelte';
+	import ConfirmingState from './DialogStates/ConfirmingState.svelte';
+
 	const {
 		testId,
 		testTitle
@@ -43,92 +56,33 @@
 		testTitle: string;
 	} = $props();
 
-	const testSessionSettings = $state<{
-		displayMode: DisplayMode | null;
-		durationInMinutes: number | null;
-		otherSettings: any | null;
-	}>({
-		displayMode: null,
-		durationInMinutes: null,
-		otherSettings: null
-	});
+
 
 	const setDisplayMode = (mode: DisplayMode | null) => {
-		testSessionSettings.displayMode = mode;
+		testSettings.displayMode = mode;
 	};
 
 	const setDuration = (duration: number | null) => {
-		testSessionSettings.durationInMinutes = duration;
+		testSettings.durationInMinutes = duration;
 	};
 
 	const onCreateButtonClick = () => {
-		if (!testSessionSettings.durationInMinutes || !testSessionSettings.displayMode) {
-			toast.error('Please select test duration and display mode.');
-			return;
-		}
 		dialogState = {
 			status: 'confirming'
 		};
 	};
 
-	const stepsDisabled: Record<Step, boolean> = $derived({
-		displayMode: false,
-		duration: !testSessionSettings.displayMode,
-		other: !testSessionSettings.durationInMinutes || !testSessionSettings.displayMode
-	});
-
-	let currentStep = $state<Step>('displayMode');
-
 	const isCreateButtonDisabled = $derived(
-		!testSessionSettings.durationInMinutes || !testSessionSettings.displayMode
+		!testSettings.durationInMinutes || !testSettings.displayMode
 	);
 
-	const goToStep = (toStep: Step) => {
-		currentStep = toStep;
-	};
-
-	let dialogState = $state<
-		| { status: 'configuring' }
-		| {
-				status: 'confirming';
-		  }
-		| {
-				status: 'creating';
-		  }
-		| {
-				status: 'created';
-				code: string;
-		  }
-	>({
+	let dialogState = $state<DialogState>({
 		status: 'configuring'
 	});
 
-	const confirmCreating = async () => {
-		if (!testSessionSettings.durationInMinutes || !testSessionSettings.displayMode) {
-			toast.error('Please select test duration and display mode.');
-			return;
-		}
-		try {
-			dialogState.status = 'creating';
-			const { data: code } = await createTestSession(testId, {
-				displayMode: testSessionSettings.displayMode,
-				durationInMinutes: testSessionSettings.durationInMinutes
-			});
-
-			dialogState = {
-				status: 'created',
-				code
-			};
-		} catch (error) {
-			dialogState.status = 'configuring';
-			toast.error('Failed to create test session.');
-			console.error(error);
-		}
-	};
-
-	const cancelCreating = () => {
+	const setDialogState = (status: DialogState['status']) => {
 		dialogState = {
-			status: 'configuring'
+			status
 		};
 	};
 
@@ -179,7 +133,7 @@
 	};
 </script>
 
-<Dialog.Root open={true}>
+<Dialog.Root>
 	<Dialog.Trigger>
 		<Button size="sm" class="gap-x-1">
 			Take a test
@@ -194,22 +148,12 @@
 
 		<!-- <Separator /> -->
 		{#if dialogState.status === 'configuring'}
-			<Accordion.Root value={currentStep}>
-				<DisplayModeStep
-					disabled={stepsDisabled.displayMode}
-					{setDisplayMode}
-					currentDisplayMode={testSessionSettings.displayMode}
-					{goToStep}
-				/>
-				<DurationPickerStep
-					disabled={stepsDisabled.duration}
-					{setDuration}
-					duration={testSessionSettings.durationInMinutes}
-					{goToStep}
-				/>
-				<OtherSettingsStep disabled={stepsDisabled.other} />
-			</Accordion.Root>
-
+			<ConfigureSession
+				{setDisplayMode}
+				{setDuration}
+				duration={testSettings.durationInMinutes}
+				displayMode={testSettings.displayMode}
+			/>
 			<Dialog.Footer>
 				<Button onclick={onCreateButtonClick} disabled={isCreateButtonDisabled} size="sm"
 					>Create</Button
@@ -220,11 +164,11 @@
 				<div class="flex gap-x-3 text-xs">
 					<StepCardSelector class="motion-opacity-in-0 motion-delay-100">
 						<Layers size="24" />
-						{testSessionSettings.displayMode ?? 'cards'}
+						{testSettings.displayMode ?? 'cards'}
 					</StepCardSelector>
 					<StepCardSelector class="motion-opacity-in-0 motion-delay-200">
 						<Timer size="24" />
-						<p>{testSessionSettings.durationInMinutes ?? 10} Minutes</p>
+						<p>{testSettings.durationInMinutes ?? 10} Minutes</p>
 					</StepCardSelector>
 					<StepCardSelector class="motion-opacity-in-0 motion-delay-300"
 						>No other settings</StepCardSelector
@@ -234,28 +178,7 @@
 			<Separator />
 
 			{#if dialogState.status === 'confirming'}
-				<div
-					class="-motion-translate-y-in-[10%] motion-opacity-in-0 motion-delay-[400ms] flex h-48 flex-col items-center justify-center px-24"
-				>
-					<h1 class=" text-sm">Are you sure?</h1>
-					<p class="mt-0.5 text-center text-xs">
-						Please confirm that you want to create the test session with the following settings.
-					</p>
-
-					<div class="just mt-2.5 flex justify-center gap-x-2">
-						<Button onclick={confirmCreating} size="sm" class="flex items-center gap-x-1">
-							Create
-						</Button>
-						<Button
-							onclick={cancelCreating}
-							size="sm"
-							variant="outline"
-							class="flex items-center gap-x-1"
-						>
-							Cancel
-						</Button>
-					</div>
-				</div>
+				<ConfirmingState />
 			{:else if dialogState.status === 'creating'}
 				<div
 					class="-motion-translate-y-in-[10%] motion-opacity-in-0 flex h-48 flex-col items-center justify-center px-24"

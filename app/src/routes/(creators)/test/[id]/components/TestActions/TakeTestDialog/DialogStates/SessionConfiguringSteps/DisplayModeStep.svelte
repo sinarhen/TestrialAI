@@ -5,7 +5,7 @@
 	import AccordionStep from './AccordionStep.svelte';
 	import { Layers, List } from 'lucide-svelte';
 	import { steps, type Step } from '../index.svelte';
-	import StepCardSelector from './StepCardSelector.svelte';
+	import StepCardSelector from '../../StepCardSelector.svelte';
 
 	const displayModes: {
 		icon: any;

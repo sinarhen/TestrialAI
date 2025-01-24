@@ -21,10 +21,6 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 	const currentTestId = params.testId!;
 
-	// sleep
-
-	await new Promise((resolve) => setTimeout(resolve, 3000));
-
 	try {
 		const existingTest = await db.query.tests.findFirst({
 			where: eq(tests.id, currentTestId),
@@ -48,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			.insert(testSessions)
 			.values({
 				testId: existingTest.id,
-				startTime: new Date(),
+				startTime: new Date(), // TODO: Add scheduling support
 				endTime: null,
 				durationInMinutes,
 				testStateJson: existingTest,
