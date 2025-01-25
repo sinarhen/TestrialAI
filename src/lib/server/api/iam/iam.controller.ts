@@ -7,10 +7,8 @@ import { SessionsService } from './sessions/sessions.service';
 import { authState } from '../common/middleware/auth.middleware';
 import { Controller } from '../common/factories/controllers.factory';
 import { userDto } from '../users/dtos/user.dto';
-import { GitHubLoginService } from './external-login/providers/github/github-login.service';
-import { GoogleLoginService } from './external-login/providers/google/google-login.service';
 import { z } from 'zod';
-import { generateCodeVerifier, generateState } from '../common/utils/crypto';
+import { generateState } from '../common/utils/crypto';
 import { ExternalLoginService } from './external-login/external-login.service';
 
 @injectable()

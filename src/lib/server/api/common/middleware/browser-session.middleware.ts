@@ -3,7 +3,7 @@ import { getSignedCookie, setSignedCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { Container } from '@needle-di/core';
 import { ConfigService } from '../configs/config.service';
-import { generateId } from 'lucia';
+import { generateId } from '../utils/crypto';
 
 export const browserSessions: MiddlewareHandler = createMiddleware(async (c, next) => {
 	const BROWSER_SESSION_COOKIE_NAME = '_id';
@@ -17,7 +17,7 @@ export const browserSessions: MiddlewareHandler = createMiddleware(async (c, nex
 	let browserSessionId = browserSessionCookie;
 
 	if (!browserSessionCookie) {
-		browserSessionId = generateId(40);
+		browserSessionId = generateId();
 		setSignedCookie(
 			c,
 			BROWSER_SESSION_COOKIE_NAME,

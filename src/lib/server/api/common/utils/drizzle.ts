@@ -1,5 +1,6 @@
 import type { BuildQueryResult, DBQueryConfig, ExtractTablesWithRelations } from 'drizzle-orm';
 import * as schema from '../../db/libsql/drizzle-schema';
+import { NotFound } from './exceptions';
 
 type Schema = typeof schema;
 
@@ -22,3 +23,15 @@ export type InferResultType<
 		with: With;
 	}
 >;
+
+// get the first element of an array or return null
+export const takeFirst = <T>(values: T[]): T | null => {
+	return values.shift() || null;
+};
+
+// get the first element of an array or throw a 404 error
+export const takeFirstOrThrow = <T>(values: T[]): T => {
+	const value = values.shift();
+	if (!value) throw NotFound('The requested resource was not found.');
+	return value;
+};
