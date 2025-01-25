@@ -1,8 +1,7 @@
 import { inject, injectable } from '@needle-di/core';
 import { zValidator } from '@hono/zod-validator';
-import { createLoginRequestDto } from './login-requests/dtos/create-login-request.dto';
-import { LoginRequestsService } from './login-requests/login-requests.service';
-import { verifyLoginRequestDto } from './login-requests/dtos/verify-login-request.dto';
+import { createRegisterRequestDto } from './register-requests/dtos/create-register-request.dto';
+import { RegisterRequestsService } from './register-requests/register-requests.service';
 import { SessionsService } from './sessions/sessions.service';
 import { authState } from '../common/middleware/auth.middleware';
 import { Controller } from '../common/factories/controllers.factory';
@@ -10,11 +9,12 @@ import { userDto } from '../users/dtos/user.dto';
 import { z } from 'zod';
 import { generateState } from '../common/utils/crypto';
 import { ExternalLoginService } from './external-login/external-login.service';
+import { loginDto } from './register-requests/dtos/verify-register-request.dto';
 
 @injectable()
 export class IamController extends Controller {
 	constructor(
-		private loginRequestsService = inject(LoginRequestsService),
+		private loginRequestsService = inject(RegisterRequestsService),
 		private sessionsService = inject(SessionsService),
 		private externalLoginService = inject(ExternalLoginService)
 	) {
@@ -26,22 +26,22 @@ export class IamController extends Controller {
 			.post(
 				'/register/request',
 				authState('none'),
-				zValidator('json', createLoginRequestDto),
+				zValidator('json', createRegisterRequestDto),
 				async (c) => {
 					await this.loginRequestsService.sendVerificationCode(c.req.valid('json'));
 					return c.json({ message: 'Please check your email for the verification code' });
 				}
 			)
-			.post(
-				'/login/verify',
-				authState('none'),
-				zValidator('json', verifyLoginRequestDto),
-				async (c) => {
-					const session = await this.loginRequestsService.verify(c.req.valid('json'));
-					await this.sessionsService.setSessionCookie(session);
-					return c.json({ message: 'welcome' });
-				}
-			)
+			.post('/register/verify', authState('none'), zValidator('json', verifyRequ), async (c) => {
+				const session = await this.loginRequestsService.verify(c.req.valid('json'));
+				await this.sessionsService.setSessionCookie(session);
+				return c.json({ message: 'welcome' });
+			})
+			.post('/login', authState('none'), zValidator('json', loginDto), async (c) => {
+				const session = await this.loginRequestsService.verify(c.req.valid('json'));
+				await this.sessionsService.setSessionCookie(session);
+				return c.json({ message: 'welcome' });
+			})
 			.post('/logout', async (c) => {
 				await this.sessionsService.invalidateSession('');
 				this.sessionsService.deleteSessionCookie();

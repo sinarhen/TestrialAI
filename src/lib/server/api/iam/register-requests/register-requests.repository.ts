@@ -1,11 +1,11 @@
 import { injectable } from '@needle-di/core';
 import { RedisRepository } from '../../common/factories/redis-repository.factory';
 
-type LoginRequest = { email: string; hashedCode: string };
+type RegisterRequest = { email: string; hashedCode: string };
 
 @injectable()
-export class LoginRequestsRepository extends RedisRepository<'login-request'> {
-	async set(args: LoginRequest) {
+export class RegisterRequestsRepository extends RedisRepository<'login-request'> {
+	async set(args: RegisterRequest) {
 		return this.redis.setWithExpiry({
 			prefix: this.prefix,
 			key: args.email.toLowerCase(),
@@ -18,7 +18,7 @@ export class LoginRequestsRepository extends RedisRepository<'login-request'> {
 		return this.redis.delete({ prefix: this.prefix, key: email.toLowerCase() });
 	}
 
-	async get(email: string): Promise<LoginRequest | null> {
+	async get(email: string): Promise<RegisterRequest | null> {
 		const hashedCode = await this.redis.get({
 			prefix: this.prefix,
 			key: email.toLowerCase()
