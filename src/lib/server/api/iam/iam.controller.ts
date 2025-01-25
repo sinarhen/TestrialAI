@@ -71,7 +71,6 @@ export class IamController extends Controller {
 					const provider = c.req.valid('param').provider;
 					const { code, state } = c.req.valid('query');
 
-					// Get required provider: Google, Github, etc... and handle the callback
 					const providerService = this.externalLoginService.getProviderService(provider);
 
 					const session = await providerService.handleCallback(code, state);
