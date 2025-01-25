@@ -4,27 +4,25 @@ import { Forbidden, InternalError, Unauthorized } from '@/server/api/common/util
 import { UsersService } from '@/server/api/users/users.service';
 import { BaseExternalLoginService } from '../external-login-provider.service';
 
-type GitHubAuthorizeQueryParams = 
-{
-		client_id: string;
-		redirect_uri: string;
-		state: string;
-		scope: string;
-	};
+type GitHubAuthorizeQueryParams = {
+	client_id: string;
+	redirect_uri: string;
+	state: string;
+	scope: string;
+};
 
 type GitHubGetAccessTokenQueryParams = {
 	client_id: string;
 	client_secret: string;
 	code: string;
 	redirect_uri: string;
-}
+};
 
 type GitHubAccessTokenResponse = {
 	access_token: string;
 	token_type: string;
 	scope: string;
-}
-
+};
 
 interface GitHubUser {
 	id: string;
@@ -41,19 +39,16 @@ type GitHubEmail = {
 	visibility: string;
 };
 
-
 @injectable()
 export class GitHubLoginService extends BaseExternalLoginService {
 	private OAUTH_URL = 'https://github.com/login/oauth/authorize';
 	private SCOPE = 'user';
 	OAUTHSTATE_COOKIE_NAME = 'github_oauth_state';
 
-	constructor(
-		private usersService = inject(UsersService),
-	) {
+	constructor(private usersService = inject(UsersService)) {
 		super();
 	}
-	
+
 	getAuthorizationUrl(state: string) {
 		const qs = this.constructQs<GitHubAuthorizeQueryParams>({
 			client_id: this.clientId,
@@ -65,13 +60,13 @@ export class GitHubLoginService extends BaseExternalLoginService {
 		return `${this.OAUTH_URL}?${qs}`;
 	}
 
-	async handleCallbackAndReturnUserId(code: string, state: string){
-		const storedState = await this.getStateCookie()
-						
+	async handleCallbackAndReturnUserId(code: string, state: string) {
+		const storedState = await this.getStateCookie();
+
 		if (!storedState || state !== storedState) {
 			throw Unauthorized('Invalid state');
 		}
-		const {access_token} = await this.validateAuthorizationCode(code);
+		const { access_token } = await this.validateAuthorizationCode(code);
 		const githubUser = await this.getUserData(access_token);
 		const existingUser = await this.usersService.getUserByProviderId('github', githubUser.id);
 
@@ -90,7 +85,7 @@ export class GitHubLoginService extends BaseExternalLoginService {
 					firstName: nameParts[0] ?? '',
 					lastName: nameParts[1] ?? '',
 					email: primary.email
-				})
+				});
 				if (!createdUser) {
 					throw InternalError('Failed to create user');
 				}
@@ -115,7 +110,7 @@ export class GitHubLoginService extends BaseExternalLoginService {
 		return githubEmail;
 	}
 
-	private async getUserData(accessToken: string){
+	private async getUserData(accessToken: string) {
 		const githubUserResponse = await axios.post<GitHubUser>('https://api.github.com/user', {
 			headers: {
 				Authorization: `Bearer ${accessToken}`
@@ -128,19 +123,21 @@ export class GitHubLoginService extends BaseExternalLoginService {
 		return githubUser;
 	}
 
-
 	private async validateAuthorizationCode(code: string) {
 		const qs = this.constructQs<GitHubGetAccessTokenQueryParams>({
 			code,
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
 			redirect_uri: this.redirectUrl
-		})
-		const resp = await axios.post<GitHubAccessTokenResponse>(`https://github.com/login/oauth/access_token?${qs}`, {
-			headers: {
-				Accept: 'application/json',
-			}
 		});
+		const resp = await axios.post<GitHubAccessTokenResponse>(
+			`https://github.com/login/oauth/access_token?${qs}`,
+			{
+				headers: {
+					Accept: 'application/json'
+				}
+			}
+		);
 
 		if (!resp.data || !resp.data.access_token) {
 			throw Forbidden('Invalid code');
@@ -149,11 +146,10 @@ export class GitHubLoginService extends BaseExternalLoginService {
 		return resp.data;
 	}
 
-
 	private get clientSecret() {
 		return this.configService.envs.GITHUB_CLIENT_SECRET;
 	}
-	
+
 	private get callbackUrl() {
 		return `${this.configService.envs.BASE_URL}/auth/github/callback`;
 	}
@@ -162,7 +158,7 @@ export class GitHubLoginService extends BaseExternalLoginService {
 		return this.configService.envs.GITHUB_CLIENT_ID;
 	}
 
-	private get redirectUrl(){
+	private get redirectUrl() {
 		return `${this.configService.envs.BASE_URL}/auth/github/callback`;
 	}
 }

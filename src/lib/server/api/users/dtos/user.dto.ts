@@ -25,5 +25,4 @@ export const userDto = z.object({
 	// 	}, 'File must be a PNG')
 });
 
-
 export type UserDto = z.infer<typeof userDto>;

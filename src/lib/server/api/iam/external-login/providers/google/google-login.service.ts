@@ -8,7 +8,7 @@ type GoogleAuthorizeQueryParams = {
 	client_id: string;
 	redirect_uri: string;
 	state: string;
-	response_type: "code";
+	response_type: 'code';
 	scope: string;
 };
 
@@ -33,21 +33,17 @@ type GoogleUser = {
 	email: string;
 	given_name: string;
 	family_name: string;
-}
-
+};
 
 @injectable()
-export class GoogleLoginService extends BaseExternalLoginService  {
+export class GoogleLoginService extends BaseExternalLoginService {
 	private GOOGLE_OAUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 	private GET_ACCESS_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 	private SCOPE = 'openid profile email';
-	
-    OAUTHSTATE_COOKIE_NAME = 'google_oauth_state';
 
-	constructor(
-		private usersService = inject(UsersService),
-	
-	) {
+	OAUTHSTATE_COOKIE_NAME = 'google_oauth_state';
+
+	constructor(private usersService = inject(UsersService)) {
 		super();
 	}
 
@@ -66,17 +62,18 @@ export class GoogleLoginService extends BaseExternalLoginService  {
 
 	async handleCallbackAndReturnUserId(code: string, state: string) {
 		const storedState = await this.getStateCookie();
-	
-		if (!storedState || state !== storedState) { 
+
+		if (!storedState || state !== storedState) {
 			throw Unauthorized('Invalid state or code verifier');
 		}
-	
-		const {
-			access_token
-		} = await this.validateAuthorizationCode(code);
+
+		const { access_token } = await this.validateAuthorizationCode(code);
 
 		const googleUserResponse = await this.getUserInfo(access_token);
-		const existingUser = await this.usersService.getUserByProviderId('google', googleUserResponse.sub);
+		const existingUser = await this.usersService.getUserByProviderId(
+			'google',
+			googleUserResponse.sub
+		);
 
 		if (existingUser) {
 			return existingUser.id;
@@ -102,24 +99,28 @@ export class GoogleLoginService extends BaseExternalLoginService  {
 			client_secret: this.clientSecret,
 			code,
 			grant_type: 'authorization_code',
-			redirect_uri: this.redirectUrl,
+			redirect_uri: this.redirectUrl
 		});
 
-		const response = await axios.post<GoogleAccessTokenResponse>(`${this.GET_ACCESS_TOKEN_URL}?${qs}`)
+		const response = await axios.post<GoogleAccessTokenResponse>(
+			`${this.GET_ACCESS_TOKEN_URL}?${qs}`
+		);
 		if (response.status !== 200) {
 			throw Unauthorized('Invalid code');
 		}
 
-		return response.data
-
+		return response.data;
 	}
 
 	private async getUserInfo(accessToken: string) {
-		const response = await axios.get<GoogleUser>('https://www.googleapis.com/auth/userinfo.profile', {
-			headers: {
-				Authorization: `Bearer ${accessToken}`
+		const response = await axios.get<GoogleUser>(
+			'https://www.googleapis.com/auth/userinfo.profile',
+			{
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
 			}
-		});
+		);
 
 		if (response.status !== 200) {
 			throw Unauthorized('Failed to get user info');
@@ -139,5 +140,4 @@ export class GoogleLoginService extends BaseExternalLoginService  {
 	private get clientId() {
 		return this.configService.envs.GOOGLE_CLIENT_ID;
 	}
-
 }

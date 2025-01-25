@@ -3,7 +3,6 @@ import { ObjectParser } from '@pilcrowjs/object-parser';
 import type { RequestHandler } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
-
 export const GET: RequestHandler = async (event) => {
 	const code = event.url.searchParams.get('code');
 	const state = event.url.searchParams.get('state');

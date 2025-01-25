@@ -1,9 +1,9 @@
 import { inject, injectable } from '@needle-di/core';
 import { zValidator } from '@hono/zod-validator';
-import { createLoginRequestDto } from '../iam/login-requests/dtos/create-login-request.dto';
-import { LoginRequestsService } from '../iam/login-requests/login-requests.service';
-import { verifyLoginRequestDto } from '../iam/login-requests/dtos/verify-login-request.dto';
-import { SessionsService } from '../iam/sessions/sessions.service';
+import { createLoginRequestDto } from './login-requests/dtos/create-login-request.dto';
+import { LoginRequestsService } from './login-requests/login-requests.service';
+import { verifyLoginRequestDto } from './login-requests/dtos/verify-login-request.dto';
+import { SessionsService } from './sessions/sessions.service';
 import { authState } from '../common/middleware/auth.middleware';
 import { Controller } from '../common/factories/controllers.factory';
 import { userDto } from '../users/dtos/user.dto';
@@ -13,18 +13,16 @@ import { z } from 'zod';
 import { generateCodeVerifier, generateState } from '../common/utils/crypto';
 import { ExternalLoginService } from './external-login/external-login.service';
 
-
-
 @injectable()
 export class IamController extends Controller {
 	constructor(
 		private loginRequestsService = inject(LoginRequestsService),
 		private sessionsService = inject(SessionsService),
-		private externalLoginService = inject(ExternalLoginService),
+		private externalLoginService = inject(ExternalLoginService)
 	) {
 		super();
 	}
-	
+
 	routes() {
 		return this.controller
 			.post(
@@ -50,24 +48,30 @@ export class IamController extends Controller {
 				await this.sessionsService.invalidateSession('');
 				this.sessionsService.deleteSessionCookie();
 				return c.json({ message: 'logout' });
-			}).get("/login/:provider", authState('none'),
+			})
+			.get(
+				'/login/:provider',
+				authState('none'),
 				zValidator('param', userDto.pick({ provider: true }).required()),
 				(c) => {
 					const provider = c.req.valid('param').provider;
 
-					const providerService = this.externalLoginService.getProviderService(provider); 
+					const providerService = this.externalLoginService.getProviderService(provider);
 					const state = generateState();
-					
+
 					providerService.setStateCookie(state);
 
 					return c.redirect(providerService.getAuthorizationUrl(state));
 				}
-			).get("/login/:provider/callback", authState('none'), 
+			)
+			.get(
+				'/login/:provider/callback',
+				authState('none'),
 				zValidator('param', userDto.pick({ provider: true }).required()),
 				zValidator('query', z.object({ code: z.string(), state: z.string() })),
 				async (c) => {
 					const provider = c.req.valid('param').provider;
-					const {code, state } = c.req.valid('query')
+					const { code, state } = c.req.valid('query');
 
 					// Get required provider: Google, Github, etc... and handle the callback
 					const providerService = this.externalLoginService.getProviderService(provider);
@@ -76,10 +80,8 @@ export class IamController extends Controller {
 					const session = await this.sessionsService.createSession(userId);
 					await this.sessionsService.setSessionCookie(session);
 
-					return c.redirect("/")
-
-					}
-						
-						)
+					return c.redirect('/');
 				}
+			);
+	}
 }

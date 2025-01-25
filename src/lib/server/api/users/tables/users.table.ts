@@ -5,7 +5,7 @@ import type { InferResultType } from '@/server/api/common/utils/drizzle';
 import { generateId } from '../../common/utils/crypto';
 
 const providers = ['google', 'github'] as const;
-export type Provider = typeof providers[number];
+export type Provider = (typeof providers)[number];
 
 export const usersTable = sqliteTable(
 	'users',
