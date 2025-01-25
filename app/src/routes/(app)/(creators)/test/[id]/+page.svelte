@@ -61,11 +61,11 @@
 	<DeleteTestButton testId={serverData.test.id} />
 </div>
 
-<h2 class="motion-opacity-in-0 motion-duration-1500 motion-delay-200 mt-7 text-2xl font-bold">
+<h2 class="mt-7 text-2xl font-bold motion-opacity-in-0 motion-duration-1500 motion-delay-200">
 	{test.title}
 </h2>
 <div class="mt-3 flex gap-x-4 text-sm">
-	<span class="motion-opacity-in-0 motion-delay-300 flex items-center gap-x-1"
+	<span class="flex items-center gap-x-1 motion-opacity-in-0 motion-delay-300"
 		><CircleHelp size="12" /> {test?.questions?.length} Questions</span
 	>
 	<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->

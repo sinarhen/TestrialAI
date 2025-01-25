@@ -7,7 +7,7 @@ import { ApplicationController } from './application.controller';
 export class ApplicationModule {
 	constructor(
 		private applicationController = inject(ApplicationController),
-		private configService = inject(ConfigService),
+		private configService = inject(ConfigService)
 		// private storageService = inject(StorageService)
 	) {}
 

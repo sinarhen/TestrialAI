@@ -1,7 +1,7 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { generateId } from "../../common/utils/crypto";
-import { questionsTable } from "./questions.table";
-import { relations, type InferSelectModel } from "drizzle-orm";
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { generateId } from '../../common/utils/crypto';
+import { questionsTable } from './questions.table';
+import { relations, type InferSelectModel } from 'drizzle-orm';
 import type { InferResultType } from '@/server/api/common/utils/drizzle';
 
 export const optionsTable = sqliteTable('options', {
@@ -22,8 +22,10 @@ export const optionRelations = relations(optionsTable, ({ one }) => ({
 	})
 }));
 
-
 export type Option = InferSelectModel<typeof optionsTable>;
-export type OptionWithRelations = InferResultType<"optionsTable", {
-	question: true
-}>;
+export type OptionWithRelations = InferResultType<
+	'optionsTable',
+	{
+		question: true;
+	}
+>;

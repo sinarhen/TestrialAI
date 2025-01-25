@@ -1,10 +1,10 @@
-import type { EmailTemplate } from "../interfaces/email-template.interface";
+import type { EmailTemplate } from '../interfaces/email-template.interface';
 
 export class EmailChangeNoticeEmail implements EmailTemplate {
 	constructor() {}
 
 	subject(): string {
-		return "Email Change Notice";
+		return 'Email Change Notice';
 	}
 
 	html() {

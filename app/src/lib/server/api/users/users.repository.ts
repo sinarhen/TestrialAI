@@ -6,8 +6,6 @@ import { DrizzleRepository } from '../common/factories/drizzle-repository.factor
 import type { CreateUserDto } from './dtos/create-user.dto';
 import type { UpdateUserDto } from './dtos/update-user.dto';
 
-
-
 @injectable()
 export class UsersRepository extends DrizzleRepository {
 	async findOneById(id: string, db = this.drizzle.db) {
@@ -15,7 +13,7 @@ export class UsersRepository extends DrizzleRepository {
 	}
 
 	async findOneByEmail(email: string, db = this.drizzle.db) {
-		return (await (db.select().from(usersTable).where(eq(usersTable.email, email)))).at(0);
+		return (await db.select().from(usersTable).where(eq(usersTable.email, email))).at(0);
 	}
 
 	async findOneByIdOrThrow(id: string, db = this.drizzle.db) {
@@ -29,6 +27,6 @@ export class UsersRepository extends DrizzleRepository {
 	}
 
 	async create(data: CreateUserDto, db = this.drizzle.db) {
-		return (await (db.insert(usersTable).values(data).returning())).at(0);
+		return (await db.insert(usersTable).values(data).returning()).at(0);
 	}
 }

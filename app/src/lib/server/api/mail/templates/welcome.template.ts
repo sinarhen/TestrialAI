@@ -1,10 +1,10 @@
-import { type EmailTemplate } from "../interfaces/email-template.interface";
+import { type EmailTemplate } from '../interfaces/email-template.interface';
 
 export class WelcomeEmail implements EmailTemplate {
-	constructor() { }
+	constructor() {}
 
 	subject(): string {
-		return 'Welcome!'
+		return 'Welcome!';
 	}
 
 	html(): string {

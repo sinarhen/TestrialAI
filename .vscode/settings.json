@@ -8,5 +8,6 @@
       "group": "DevEnv",
       "database": "./local.db"
     }
-  ]
+  ],
+  "prettier.configPath": ""
 }

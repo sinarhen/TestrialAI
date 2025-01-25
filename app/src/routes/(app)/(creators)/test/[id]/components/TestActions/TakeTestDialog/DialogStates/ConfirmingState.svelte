@@ -46,7 +46,7 @@
 </script>
 
 <div
-	class="-motion-translate-y-in-[10%] motion-opacity-in-0 motion-delay-[400ms] flex h-48 flex-col items-center justify-center px-24"
+	class="flex h-48 flex-col items-center justify-center px-24 -motion-translate-y-in-[10%] motion-opacity-in-0 motion-delay-[400ms]"
 >
 	<h1 class=" text-sm">Are you sure?</h1>
 	<p class="mt-0.5 text-center text-xs">

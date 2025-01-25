@@ -1,4 +1,4 @@
-import { createHono } from "../utils/hono";
+import { createHono } from '../utils/hono';
 
 export abstract class Controller {
 	protected readonly controller: ReturnType<typeof createHono>;

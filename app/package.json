@@ -50,7 +50,6 @@
 	"dependencies": {
 		"@hono/zod-validator": "^0.4.2",
 		"@libsql/client": "^0.14.0",
-		"@lucia-auth/adapter-drizzle": "^1.1.0",
 		"@needle-di/core": "^0.10.1",
 		"@node-rs/argon2": "^1.1.0",
 		"@oslojs/crypto": "^1.0.1",

@@ -11,13 +11,12 @@ const client = createClient({ url: env.DATABASE_URL });
 
 export const db = drizzle(client, { schema });
 
-
 @injectable()
 export class DrizzleService {
-    public db: LibSQLDatabase<typeof schema>;
-    public schema = schema
+	public db: LibSQLDatabase<typeof schema>;
+	public schema = schema;
 
-    constructor(private configService = inject(ConfigService)) {
-        this.db = drizzle(client, { schema: this.schema })
-    }
+	constructor(private configService = inject(ConfigService)) {
+		this.db = drizzle(client, { schema: this.schema });
+	}
 }

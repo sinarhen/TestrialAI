@@ -9,8 +9,8 @@ export const userDto = z.object({
 	username: z.string().min(3).max(20),
 	firstName: z.string().min(3).max(20).optional(),
 	lastName: z.string().min(3).max(20).optional(),
-	provider: z.enum(["google", "github"]).optional(),
-	providerId: z.string().optional(),
+	provider: z.enum(['google', 'github']).optional(),
+	providerId: z.string().optional()
 
 	// avatar: z
 	// 	.instanceof(File)
@@ -20,9 +20,10 @@ export const userDto = z.object({
 	// 		return !file || file.size <= MAX_UPLOAD_SIZE;
 	// 	}, 'File size must be less than 3MB')
 	// 	.refine((file) => {
-	// 		if (!file) return 'File is required';	
+	// 		if (!file) return 'File is required';
 	// 		return ACCEPTED_FILE_TYPES.includes(file!.type);
 	// 	}, 'File must be a PNG')
 });
+
 
 export type UserDto = z.infer<typeof userDto>;

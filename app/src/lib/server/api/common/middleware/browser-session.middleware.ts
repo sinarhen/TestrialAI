@@ -6,32 +6,32 @@ import { ConfigService } from '../configs/config.service';
 import { generateId } from 'lucia';
 
 export const browserSessions: MiddlewareHandler = createMiddleware(async (c, next) => {
-  const BROWSER_SESSION_COOKIE_NAME = '_id';
-  const container = new Container();
-  const configService = container.get(ConfigService);
-  const browserSessionCookie = await getSignedCookie(
-    c,
-    configService.envs.SIGNING_SECRET,
-    BROWSER_SESSION_COOKIE_NAME
-  );
-  let browserSessionId = browserSessionCookie;
+	const BROWSER_SESSION_COOKIE_NAME = '_id';
+	const container = new Container();
+	const configService = container.get(ConfigService);
+	const browserSessionCookie = await getSignedCookie(
+		c,
+		configService.envs.SIGNING_SECRET,
+		BROWSER_SESSION_COOKIE_NAME
+	);
+	let browserSessionId = browserSessionCookie;
 
-  if (!browserSessionCookie) {
-    browserSessionId = generateId(40);
-    setSignedCookie(
-      c,
-      BROWSER_SESSION_COOKIE_NAME,
-      browserSessionId,
-      configService.envs.SIGNING_SECRET,
-      {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: configService.envs.ENV === 'prod',
-        path: '/'
-      }
-    );
-  }
+	if (!browserSessionCookie) {
+		browserSessionId = generateId(40);
+		setSignedCookie(
+			c,
+			BROWSER_SESSION_COOKIE_NAME,
+			browserSessionId,
+			configService.envs.SIGNING_SECRET,
+			{
+				httpOnly: true,
+				sameSite: 'lax',
+				secure: configService.envs.ENV === 'prod',
+				path: '/'
+			}
+		);
+	}
 
-  c.set('browserSessionId', browserSessionId);
-  return next();
+	c.set('browserSessionId', browserSessionId);
+	return next();
 });

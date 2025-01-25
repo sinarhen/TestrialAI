@@ -1,8 +1,8 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { generateId } from "../../common/utils/crypto";
-import { relations } from "drizzle-orm";
-import { testParticipantsTable } from "./testSessionParticipants.table";
-import { participantAnswerOptionsTable } from "./participantsAnswerOptions";
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { generateId } from '../../common/utils/crypto';
+import { relations } from 'drizzle-orm';
+import { testParticipantsTable } from './testSessionParticipants.table';
+import { participantAnswerOptionsTable } from './participantsAnswerOptions';
 import type { InferResultType } from '@/server/api/common/utils/drizzle';
 
 export const participantAnswersTable = sqliteTable('participant_answers', {
@@ -18,7 +18,6 @@ export const participantAnswersTable = sqliteTable('participant_answers', {
 	submittedAt: integer('submitted_at', { mode: 'timestamp' })
 });
 
-
 export const participantAnswersRelations = relations(participantAnswersTable, ({ one, many }) => ({
 	participant: one(testParticipantsTable, {
 		fields: [participantAnswersTable.testParticipantId],
@@ -28,7 +27,10 @@ export const participantAnswersRelations = relations(participantAnswersTable, ({
 }));
 
 export type ParticipantAnswer = typeof participantAnswersTable.$inferSelect;
-export type ParticipantAnswerWithRelations = InferResultType<'participantAnswersTable', {
-	participant: true,
-	participantAnswerOptions: true
-}>;
+export type ParticipantAnswerWithRelations = InferResultType<
+	'participantAnswersTable',
+	{
+		participant: true;
+		participantAnswerOptions: true;
+	}
+>;

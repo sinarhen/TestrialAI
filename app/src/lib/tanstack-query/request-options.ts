@@ -6,7 +6,6 @@ export abstract class TanstackRequestOptions {
 	protected readonly api: ReturnType<typeof honoClient>;
 
 	constructor(opts?: ClientRequestOptions) {
-        
 		this.opts = opts;
 		this.api = honoClient(opts);
 	}

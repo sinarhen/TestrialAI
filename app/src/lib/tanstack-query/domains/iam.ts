@@ -6,6 +6,7 @@ import { parseClientResponse } from '@/utils/api';
 export type RequestLogin = Api['iam']['login']['request']['$post'];
 export type VerifyLogin = Api['iam']['login']['verify']['$post'];
 export type Logout = Api['iam']['logout']['$post'];
+export type ExternaLogin = Api['iam']['login'];
 
 export class IamModule extends TanstackRequestOptions {
 	namespace = 'iam';
@@ -27,4 +28,5 @@ export class IamModule extends TanstackRequestOptions {
 				await this.api.iam.login.verify.$post(data).then(parseClientResponse)
 		};
 	}
+	// loginWithExternalProvider(): ApiMutation<>
 }

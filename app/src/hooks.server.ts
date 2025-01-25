@@ -1,5 +1,5 @@
-import { startServer } from "@/server/api";
+import { startServer } from '@/server/api';
 
 export const init = async () => {
 	await startServer();
-}
+};

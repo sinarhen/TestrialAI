@@ -5,14 +5,25 @@ import { envsDto, type EnvsDto } from './dtos/env.dto';
 
 @injectable()
 export class ConfigService {
-	envs: EnvsDto;
+	envs: EnvsDto & {
+		BASE_URL: string;
+	};
 
 	constructor() {
-		this.envs = this.parseEnvs()!;
+		this.envs = this.initEnvs();
+
+		// TODO: Find a better way to set the base url
+		this.envs.BASE_URL =
+			this.envs.ENV === 'dev' ? this.envs.PUBLIC_DEV_BASE_URL : this.envs.PUBLIC_PROD_BASE_URL;
 	}
 
-	private parseEnvs() {
-		return envsDto.parse(envs);
+	private initEnvs() {
+		const parsedEnvs = envsDto.parse(envs);
+
+		const baseUrl =
+			parsedEnvs.ENV === 'dev' ? parsedEnvs.PUBLIC_DEV_BASE_URL : parsedEnvs.PUBLIC_PROD_BASE_URL;
+
+		return { ...parsedEnvs, BASE_URL: baseUrl };
 	}
 
 	validateEnvs() {

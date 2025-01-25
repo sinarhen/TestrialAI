@@ -3,11 +3,11 @@ import { hash, verify } from '@node-rs/argon2';
 
 @injectable()
 export class HashingService {
-  hash(data: string): Promise<string> {
-    return hash(data);
-  }
+	hash(data: string): Promise<string> {
+		return hash(data);
+	}
 
-  compare(data: string, encrypted: string): Promise<boolean> {
-    return verify(encrypted, data);
-  }
+	compare(data: string, encrypted: string): Promise<boolean> {
+		return verify(encrypted, data);
+	}
 }

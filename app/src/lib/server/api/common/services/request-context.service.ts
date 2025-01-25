@@ -4,19 +4,19 @@ import type { HonoEnv } from '../utils/hono';
 
 @injectable()
 export class RequestContextService {
-  getContext() {
-    return getContext<HonoEnv>();
-  }
+	getContext() {
+		return getContext<HonoEnv>();
+	}
 
-  getRequestId(): string {
-    return this.getContext().get('requestId');
-  }
+	getRequestId(): string {
+		return this.getContext().get('requestId');
+	}
 
-  getAuthedUserId() {
-    return this.getContext().get('session')?.userId;
-  }
+	getAuthedUserId() {
+		return this.getContext().get('session')?.userId;
+	}
 
-  getSession() {
-    return this.getContext().get('session');
-  }
+	getSession() {
+		return this.getContext().get('session');
+	}
 }

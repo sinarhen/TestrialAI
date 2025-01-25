@@ -13,30 +13,30 @@ type UnauthedReturnType = typeof unauthed;
 export function authState(state: 'session'): AuthedReturnType;
 export function authState(state: 'none'): UnauthedReturnType;
 export function authState(state: AuthStates): AuthedReturnType | UnauthedReturnType {
-  if (state === 'session') return authed;
-  return unauthed;
+	if (state === 'session') return authed;
+	return unauthed;
 }
 
 /* ------------------------------ Require Auth ------------------------------ */
 const authed: MiddlewareHandler<{
-  Variables: {
-    session: SessionDto;
-  };
+	Variables: {
+		session: SessionDto;
+	};
 }> = createMiddleware(async (c, next) => {
-  if (!c.var.session) {
-    throw Unauthorized('You must be logged in to access this resource');
-  }
-  return next();
+	if (!c.var.session) {
+		throw Unauthorized('You must be logged in to access this resource');
+	}
+	return next();
 });
 
 /* ---------------------------- Require Unauthed ---------------------------- */
 const unauthed: MiddlewareHandler<{
-  Variables: {
-    session: null;
-  };
+	Variables: {
+		session: null;
+	};
 }> = createMiddleware(async (c, next) => {
-  if (c.var.session) {
-    throw Unauthorized('You must be logged out to access this resource');
-  }
-  return next();
+	if (c.var.session) {
+		throw Unauthorized('You must be logged out to access this resource');
+	}
+	return next();
 });

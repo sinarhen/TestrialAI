@@ -1,6 +1,6 @@
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { generateId } from "../../common/utils/crypto";
-import { participantAnswersTable } from "./participantsAnswers.table";
+import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { generateId } from '../../common/utils/crypto';
+import { participantAnswersTable } from './participantsAnswers.table';
 
 export const participantAnswerOptionsTable = sqliteTable('participant_answer_options', {
 	id: text('id')
@@ -9,9 +9,8 @@ export const participantAnswerOptionsTable = sqliteTable('participant_answer_opt
 	participantAnswerId: text('participant_answer_id')
 		.notNull()
 		.references(() => participantAnswersTable.id, { onDelete: 'cascade' }),
-	optionId: text('option_id')
-		.notNull()
-		// .references(() => optionsTable.id, { onDelete: 'cascade' })
+	optionId: text('option_id').notNull()
+	// .references(() => optionsTable.id, { onDelete: 'cascade' })
 });
 
 export type ParticipantAnswerOption = typeof participantAnswerOptionsTable.$inferSelect;
