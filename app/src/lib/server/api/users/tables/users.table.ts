@@ -2,11 +2,12 @@ import { getTableColumns, relations, type InferSelectModel } from "drizzle-orm";
 import { primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { testsTable } from "../../tests/tables/tests.table";
 import type { InferResultType } from '@/server/api/common/utils/drizzle';
+import { generateId } from "../../common/utils/crypto";
 
 export const usersTable = sqliteTable(
 	'users',
 	{
-		id: text('id').notNull(),
+		id: text('id').notNull().$default(() => generateId()),
 
 		provider: text('provider', {
 			enum: ['google', 'github']

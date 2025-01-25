@@ -1,15 +1,15 @@
 import { inject, injectable } from '@needle-di/core';
 import { LoginRequestsRepository } from './login-requests.repository';
-import { MailerService } from '../../mail/mailer.service';
 import { LoginVerificationEmail } from '../../mail/templates/login-verification.template';
 import { BadRequest } from '../../common/utils/exceptions';
 import { WelcomeEmail } from '../../mail/templates/welcome.template';
 import { SessionsService } from '../sessions/sessions.service';
 import type { VerifyLoginRequestDto } from './dtos/verify-login-request.dto';
 import type { CreateLoginRequestDto } from './dtos/create-login-request.dto';
-import { UsersService } from '../../users/users.service';
 import { UsersRepository } from '../../users/users.repository';
 import { VerificationCodesService } from '../../common/services/verification-codes.service';
+import { UsersService } from '../../users/users.service';
+import { MailerService } from '../../mail/mailer.service';
 
 @injectable()
 export class LoginRequestsService {
