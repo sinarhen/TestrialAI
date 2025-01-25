@@ -9,7 +9,7 @@ export const sessionManagement: MiddlewareHandler = createMiddleware(async (c, n
   const sessionId = await sessionService.getSessionCookie();
 
   if (!sessionId) {
-    c.set('session', null);
+    c.set(sessionService.sessionCookieName, null);
     return next();
   }
 
@@ -22,7 +22,7 @@ export const sessionManagement: MiddlewareHandler = createMiddleware(async (c, n
     sessionService.setSessionCookie(session);
   }
   // Set the session in the context
-  c.set('session', session);
+  c.set(sessionService.sessionCookieName, session);
 
   // Continue to the next middleware
   return next();

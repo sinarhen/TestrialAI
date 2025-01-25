@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from '../../../../(participants)/session/[sessionCode]/$types';
 import { db } from '@/server/db';
 import { eq } from 'drizzle-orm';
 import { testSessions } from '@/server/db/schema';

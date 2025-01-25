@@ -10,7 +10,7 @@ import { generateId } from 'lucia';
 
 @injectable()
 export class SessionsService {
-  private readonly sessionCookieName = 'session';
+  public readonly sessionCookieName = 'session';
 
   constructor(
     private sessionsRepository = inject(SessionsRepository),
