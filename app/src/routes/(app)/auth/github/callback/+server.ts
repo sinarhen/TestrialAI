@@ -83,18 +83,3 @@ export const GET: RequestHandler = async (event) => {
 		return new Response(null, { status: 500 });
 	}
 };
-
-interface GitHubUser {
-	id: string;
-	login: string;
-	name: string;
-	email: string;
-	avatar_url: string;
-}
-
-type GitHubEmail = {
-	email: string;
-	primary: boolean;
-	verified: boolean;
-	visibility: string;
-};

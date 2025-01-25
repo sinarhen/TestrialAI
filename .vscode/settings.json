@@ -9,5 +9,13 @@
       "database": "./local.db"
     }
   ],
-  "prettier.configPath": ""
+  "prettier.configPath": "./app/prettierc.json",
+  "files.autoSave": "onFocusChange",
+  "prettier.prettierPath": "./app/node-modules/prettier",
+  "prettier.insertPragma": false,
+  "prettier.ignorePath": "./app/.prettierignore",
+  "prettier.requireConfig": true,
+  "prettier.semi": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "notebook.defaultFormatter": "esbenp.prettier-vscode"
 }

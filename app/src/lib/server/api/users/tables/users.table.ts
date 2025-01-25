@@ -4,6 +4,9 @@ import { testsTable } from '../../tests/tables/tests.table';
 import type { InferResultType } from '@/server/api/common/utils/drizzle';
 import { generateId } from '../../common/utils/crypto';
 
+const providers = ['google', 'github'] as const;
+export type Provider = typeof providers[number];
+
 export const usersTable = sqliteTable(
 	'users',
 	{
@@ -12,7 +15,7 @@ export const usersTable = sqliteTable(
 			.$default(() => generateId()),
 
 		provider: text('provider', {
-			enum: ['google', 'github']
+			enum: providers
 		}),
 		providerId: text('provider_id', { length: 255 }),
 		email: text('email'),
@@ -35,7 +38,6 @@ export const userRelations = relations(usersTable, ({ many }) => ({
 
 export type User = InferSelectModel<typeof usersTable>;
 export type UserWithRelations = InferResultType<'usersTable', { tests: true }>;
-export type Provider = User['provider'];
 
 const userColumns = getTableColumns(usersTable);
 

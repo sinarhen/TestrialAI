@@ -1,19 +1,8 @@
-import { db } from '@/server/db';
-import { users } from '@/server/db/schema';
 import { google, lucia } from '@/server/lucia/auth';
 import { ObjectParser } from '@pilcrowjs/object-parser';
 import type { RequestHandler } from '@sveltejs/kit';
-import { decodeIdToken, OAuth2RequestError, OAuth2Tokens } from 'arctic';
 import { and, eq } from 'drizzle-orm';
-import { generateId } from 'lucia';
 
-interface GoogleUser {
-	sub: string;
-	name: string;
-	email: string;
-	given_name: string;
-	family_name: string;
-}
 
 export const GET: RequestHandler = async (event) => {
 	const code = event.url.searchParams.get('code');

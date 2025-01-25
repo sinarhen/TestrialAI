@@ -1,66 +1,143 @@
 import { inject, injectable } from '@needle-di/core';
-import { setSignedCookie } from 'hono/cookie';
-import { dev } from '$app/environment';
-import { ConfigService } from '@/server/api/common/configs/config.service';
-import { RequestContextService } from '@/server/api/common/services/request-context.service';
+import { Unauthorized } from '@/server/api/common/utils/exceptions';
+import axios from 'axios';
+import { UsersService } from '@/server/api/users/users.service';
+import { BaseExternalLoginService } from '../external-login-provider.service';
 
-type GoogleQueryParams = {
+type GoogleAuthorizeQueryParams = {
 	client_id: string;
 	redirect_uri: string;
 	state: string;
+	response_type: "code";
 	scope: string;
 };
 
+type GoogleGetAccessTokenQueryParams = {
+	client_id: string;
+	client_secret: string;
+	code: string;
+	grant_type: string;
+	redirect_uri: string;
+};
+
+type GoogleAccessTokenResponse = {
+	access_token: string;
+	expires_in: number;
+	token_type: string;
+	scope: string;
+	id_token: string;
+};
+type GoogleUser = {
+	sub: string;
+	name: string;
+	email: string;
+	given_name: string;
+	family_name: string;
+}
+
+
 @injectable()
-export class GoogleLoginService  {
-	PROVIDER_OAUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
-	SCOPE = 'openid profile email';
+export class GoogleLoginService extends BaseExternalLoginService  {
+	private GOOGLE_OAUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+	private GET_ACCESS_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+	private SCOPE = 'openid profile email';
+	
     OAUTHSTATE_COOKIE_NAME = 'google_oauth_state';
-    OAUTHCODEVERIFIER_COOKIE_NAME = 'google_oauth_code_verifier';
 
 	constructor(
-		private configService = inject(ConfigService),
-		private requestContextService = inject(RequestContextService)
+		private usersService = inject(UsersService),
+	
 	) {
+		super();
 	}
 
 	getAuthorizationUrl(state: string): string {
 		const callbackUrl = `${this.configService.envs.BASE_URL}/auth/google/callback`;
-
-		const qs = this.constructProviderAuthUrlQs<GoogleQueryParams>({
+		const qs = this.constructQs<GoogleAuthorizeQueryParams>({
 			client_id: this.configService.envs.GOOGLE_CLIENT_ID,
 			redirect_uri: callbackUrl,
 			state,
+			response_type: 'code',
 			scope: this.SCOPE
 		});
 
-		return `${this.PROVIDER_OAUTH_URL}?${qs}`;
-	}
-    
-	setStateCookie(state: string) {
-        this.setAuthorizationCookie(this.OAUTHSTATE_COOKIE_NAME, state);
+		return `${this.GOOGLE_OAUTH_URL}?${qs}`;
 	}
 
-    setCodeVerifierCookie(code: string) {
-        this.setAuthorizationCookie(this.OAUTHCODEVERIFIER_COOKIE_NAME, code);
-    }
+	async handleCallbackAndReturnUserId(code: string, state: string) {
+		const storedState = await this.getStateCookie();
+	
+		if (!storedState || state !== storedState) { 
+			throw Unauthorized('Invalid state or code verifier');
+		}
+	
+		const {
+			access_token
+		} = await this.validateAuthorizationCode(code);
 
-    private setAuthorizationCookie(name: string, value: string) {
-        setSignedCookie(
-            this.requestContextService.getContext(),
-            name,
-            value,
-            this.configService.envs.SIGNING_SECRET,
-            {
-                path: '/',
-                httpOnly: true,
-                secure: !dev,
-                maxAge: 60 * 5,
-                sameSite: 'lax'
-            }
-        )};
+		const googleUserResponse = await this.getUserInfo(access_token);
+		const existingUser = await this.usersService.getUserByProviderId('google', googleUserResponse.sub);
 
-    private constructProviderAuthUrlQs<TParams extends Record<string, string>>(params: TParams) {
-		return new URLSearchParams(params).toString();
+		if (existingUser) {
+			return existingUser.id;
+		} else {
+			const createdUser = await this.usersService.create({
+				provider: 'google',
+				providerId: googleUserResponse.sub,
+				username: googleUserResponse.name,
+				firstName: googleUserResponse.given_name,
+				lastName: googleUserResponse.family_name,
+				email: googleUserResponse.email
+			});
+			if (!createdUser) {
+				throw Unauthorized('Failed to create user');
+			}
+			return createdUser.id;
+		}
 	}
+
+	private async validateAuthorizationCode(code: string) {
+		const qs = this.constructQs<GoogleGetAccessTokenQueryParams>({
+			client_id: this.clientId,
+			client_secret: this.clientSecret,
+			code,
+			grant_type: 'authorization_code',
+			redirect_uri: this.redirectUrl,
+		});
+
+		const response = await axios.post<GoogleAccessTokenResponse>(`${this.GET_ACCESS_TOKEN_URL}?${qs}`)
+		if (response.status !== 200) {
+			throw Unauthorized('Invalid code');
+		}
+
+		return response.data
+
+	}
+
+	private async getUserInfo(accessToken: string) {
+		const response = await axios.get<GoogleUser>('https://www.googleapis.com/auth/userinfo.profile', {
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
+		});
+
+		if (response.status !== 200) {
+			throw Unauthorized('Failed to get user info');
+		}
+
+		return response.data;
+	}
+
+	private get clientSecret() {
+		return this.configService.envs.GOOGLE_CLIENT_SECRET;
+	}
+
+	private get redirectUrl() {
+		return `${this.configService.envs.BASE_URL}/auth/google/callback`;
+	}
+
+	private get clientId() {
+		return this.configService.envs.GOOGLE_CLIENT_ID;
+	}
+
 }

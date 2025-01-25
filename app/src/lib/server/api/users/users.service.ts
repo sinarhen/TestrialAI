@@ -2,6 +2,7 @@ import { inject, injectable } from '@needle-di/core';
 import { UsersRepository } from './users.repository';
 import type { UpdateUserDto } from './dtos/update-user.dto';
 import type { CreateUserDto } from './dtos/create-user.dto';
+import type { Provider } from './tables/users.table';
 // import { StorageService } from '../storage/storage.service';
 
 @injectable()
@@ -21,5 +22,9 @@ export class UsersService {
 
 	async create(user: CreateUserDto) {
 		return this.usersRepository.create(user);
+	}
+
+	async getUserByProviderId(provider: Provider, providerId: string) {
+		return this.usersRepository.findOneByProvider(provider, providerId);
 	}
 }
