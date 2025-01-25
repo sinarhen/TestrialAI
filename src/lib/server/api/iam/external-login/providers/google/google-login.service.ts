@@ -60,7 +60,7 @@ export class GoogleLoginService extends BaseExternalLoginService {
 		return `${this.GOOGLE_OAUTH_URL}?${qs}`;
 	}
 
-	async handleCallbackAndReturnUserId(code: string, state: string) {
+	async handleCallback(code: string, state: string) {
 		const storedState = await this.getStateCookie();
 
 		if (!storedState || state !== storedState) {

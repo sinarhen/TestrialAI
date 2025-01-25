@@ -24,12 +24,12 @@ export class IamController extends Controller {
 	routes() {
 		return this.controller
 			.post(
-				'/login/request',
+				'/register/request',
 				authState('none'),
 				zValidator('json', createLoginRequestDto),
 				async (c) => {
 					await this.loginRequestsService.sendVerificationCode(c.req.valid('json'));
-					return c.json({ message: 'welcome' });
+					return c.json({ message: 'Please check your email for the verification code' });
 				}
 			)
 			.post(
@@ -74,8 +74,7 @@ export class IamController extends Controller {
 					// Get required provider: Google, Github, etc... and handle the callback
 					const providerService = this.externalLoginService.getProviderService(provider);
 
-					const userId = await providerService.handleCallbackAndReturnUserId(code, state);
-					const session = await this.sessionsService.createSession(userId);
+					const session = await providerService.handleCallback(code, state);
 					await this.sessionsService.setSessionCookie(session);
 
 					return c.redirect('/');

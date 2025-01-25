@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Forbidden, InternalError, Unauthorized } from '@/server/api/common/utils/exceptions';
 import { UsersService } from '@/server/api/users/users.service';
 import { BaseExternalLoginService } from '../external-login-provider.service';
+import { SessionsService } from '../../../sessions/sessions.service';
 
 type GitHubAuthorizeQueryParams = {
 	client_id: string;
@@ -45,7 +46,10 @@ export class GitHubLoginService extends BaseExternalLoginService {
 	private SCOPE = 'user';
 	OAUTHSTATE_COOKIE_NAME = 'github_oauth_state';
 
-	constructor(private usersService = inject(UsersService)) {
+	constructor(
+		private usersService = inject(UsersService),
+		private sessionService = inject(SessionsService)
+	) {
 		super();
 	}
 
@@ -60,7 +64,7 @@ export class GitHubLoginService extends BaseExternalLoginService {
 		return `${this.OAUTH_URL}?${qs}`;
 	}
 
-	async handleCallbackAndReturnUserId(code: string, state: string) {
+	async handleCallback(code: string, state: string) {
 		const storedState = await this.getStateCookie();
 
 		if (!storedState || state !== storedState) {
@@ -71,7 +75,7 @@ export class GitHubLoginService extends BaseExternalLoginService {
 		const existingUser = await this.usersService.getUserByProviderId('github', githubUser.id);
 
 		if (existingUser) {
-			return existingUser.id;
+			return this.sessionService.createSession(existingUser.id);
 		} else {
 			const userGitHubEmails = await this.getUserEmails(access_token);
 
@@ -89,7 +93,7 @@ export class GitHubLoginService extends BaseExternalLoginService {
 				if (!createdUser) {
 					throw InternalError('Failed to create user');
 				}
-				return createdUser.id;
+				return this.sessionService.createSession(createdUser.id);
 			}
 		}
 		throw InternalError('Failed to create or find user');
