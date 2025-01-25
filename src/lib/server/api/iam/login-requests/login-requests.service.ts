@@ -73,7 +73,10 @@ export class LoginRequestsService {
 
 	private async authNewUser({ email }: { email: string }) {
 		// create a new user
-		const user = await this.usersService.create(email);
+		const user = await this.usersService.create({
+			email: email,
+			username: email
+		});
 
 		// send the welcome email
 		await this.mailer.send({
