@@ -11,7 +11,6 @@ export const userDto = z.object({
 	lastName: z.string().min(3).max(20).optional(),
 	provider: z.enum(['google', 'github']).optional(),
 	providerId: z.string().optional()
-
 	// avatar: z
 	// 	.instanceof(File)
 	// 	.optional()

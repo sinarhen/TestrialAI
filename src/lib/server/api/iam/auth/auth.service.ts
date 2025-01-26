@@ -4,13 +4,11 @@ import { LoginVerificationEmail } from '../../mail/templates/login-verification.
 import { BadRequest } from '../../common/utils/exceptions';
 import { WelcomeEmail } from '../../mail/templates/welcome.template';
 import { SessionsService } from '../sessions/sessions.service';
-import type { CreateRegisterRequestDto } from './dtos/register-requests/create-register-request.dto';
 import { UsersRepository } from '../../users/users.repository';
 import { VerificationCodesService } from '../../common/services/verification-codes.service';
 import { UsersService } from '../../users/users.service';
 import { MailerService } from '../../mail/mailer.service';
 import type { VerifyRegisterRequestDto } from './dtos/register-requests/verify-register-request.dto';
-import type { CreateUserDto } from '../../users/dtos/create-user.dto';
 import type { LoginDto } from './dtos/login/login.dto';
 import { HashingService } from '../../common/services/hashing.service';
 import type { SessionDto } from '../sessions/dtos/sessions.dto';
@@ -45,7 +43,7 @@ export class AuthService {
 
 	// TODO: handle suspicious login attempts
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async login(request: LoginDto, isSuspicious?: boolean): Promise<SessionDto> {
+	async login(request: LoginDto, isSuspicious: boolean): Promise<SessionDto> {
 		const user = await this.usersRepository.findOneByEmail(request.email);
 
 		if (!user) throw BadRequest('Invalid email or password');
@@ -88,7 +86,7 @@ export class AuthService {
 			: this.authNewUser(request);
 	}
 
-	async sendVerificationCode({ email }: CreateRegisterRequestDto) {
+	async sendVerificationCode(email: string) {
 		// remove any existing login requests
 		await this.registerRequestsRepository.delete(email);
 
@@ -109,9 +107,15 @@ export class AuthService {
 		});
 	}
 
-	private async authNewUser(user: CreateUserDto) {
+	private async authNewUser(user: VerifyRegisterRequestDto): Promise<SessionDto> {
 		// create a new user
-		const newUser = await this.usersService.create(user);
+		const newUser = await this.usersService.create({
+			email: user.email,
+			username: user.username,
+			passwordHash: await this.hashingService.hash(user.password),
+			firstName: user.firstName,
+			lastName: user.lastName
+		});
 
 		// send the welcome email
 		await this.mailer.send({
