@@ -3,9 +3,9 @@ import { getSignedCookie, setSignedCookie } from 'hono/cookie';
 import { dev } from '$app/environment';
 import { ConfigService } from '@/server/api/common/configs/config.service';
 import { RequestContextService } from '@/server/api/common/services/request-context.service';
-import type { SessionDto } from '../../sessions/dtos/sessions.dto';
+import type { SessionDto } from '../sessions/dtos/sessions.dto';
 
-export abstract class BaseExternalLoginService {
+export abstract class BaseExternalLoginProviderService {
 	abstract OAUTHSTATE_COOKIE_NAME: string;
 
 	constructor(

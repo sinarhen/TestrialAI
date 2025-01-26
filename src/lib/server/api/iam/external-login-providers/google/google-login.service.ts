@@ -2,7 +2,8 @@ import { inject, injectable } from '@needle-di/core';
 import { Unauthorized } from '@/server/api/common/utils/exceptions';
 import axios from 'axios';
 import { UsersService } from '@/server/api/users/users.service';
-import { BaseExternalLoginService } from '../external-login-provider.service';
+import { BaseExternalLoginProviderService } from '../external-login-provider.service';
+import { SessionsService } from '../../sessions/sessions.service';
 
 type GoogleAuthorizeQueryParams = {
 	client_id: string;
@@ -36,14 +37,17 @@ type GoogleUser = {
 };
 
 @injectable()
-export class GoogleLoginService extends BaseExternalLoginService {
+export class GoogleLoginService extends BaseExternalLoginProviderService {
 	private GOOGLE_OAUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 	private GET_ACCESS_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 	private SCOPE = 'openid profile email';
 
 	OAUTHSTATE_COOKIE_NAME = 'google_oauth_state';
 
-	constructor(private usersService = inject(UsersService)) {
+	constructor(
+		private usersService = inject(UsersService),
+		private sessionService = inject(SessionsService)
+	) {
 		super();
 	}
 
@@ -76,7 +80,7 @@ export class GoogleLoginService extends BaseExternalLoginService {
 		);
 
 		if (existingUser) {
-			return existingUser.id;
+			return this.sessionService.createSession(existingUser.id);
 		} else {
 			const createdUser = await this.usersService.create({
 				provider: 'google',
@@ -89,7 +93,7 @@ export class GoogleLoginService extends BaseExternalLoginService {
 			if (!createdUser) {
 				throw Unauthorized('Failed to create user');
 			}
-			return createdUser.id;
+			return this.sessionService.createSession(createdUser.id);
 		}
 	}
 

@@ -1,5 +1,5 @@
 import { injectable } from '@needle-di/core';
-import { RedisRepository } from '../../common/factories/redis-repository.factory';
+import { RedisRepository } from '../../../../common/factories/redis-repository.factory';
 
 type RegisterRequest = { email: string; hashedCode: string };
 

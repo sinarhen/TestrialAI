@@ -3,7 +3,6 @@ import { UsersRepository } from './users.repository';
 import type { UpdateUserDto } from './dtos/update-user.dto';
 import type { CreateUserDto } from './dtos/create-user.dto';
 import type { Provider } from './tables/users.table';
-// import { StorageService } from '../storage/storage.service';
 
 @injectable()
 export class UsersService {
@@ -22,6 +21,10 @@ export class UsersService {
 
 	async create(user: CreateUserDto) {
 		return this.usersRepository.create(user);
+	}
+
+	async findOneByEmail(email: string) {
+		return this.usersRepository.findOneByEmail(email);
 	}
 
 	async getUserByProviderId(provider: Provider, providerId: string) {

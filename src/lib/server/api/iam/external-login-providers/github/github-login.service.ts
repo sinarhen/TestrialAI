@@ -2,8 +2,8 @@ import { inject, injectable } from '@needle-di/core';
 import axios from 'axios';
 import { Forbidden, InternalError, Unauthorized } from '@/server/api/common/utils/exceptions';
 import { UsersService } from '@/server/api/users/users.service';
-import { BaseExternalLoginService } from '../external-login-provider.service';
-import { SessionsService } from '../../../sessions/sessions.service';
+import { BaseExternalLoginProviderService } from '../external-login-provider.service';
+import { SessionsService } from '../../sessions/sessions.service';
 
 type GitHubAuthorizeQueryParams = {
 	client_id: string;
@@ -41,7 +41,7 @@ type GitHubEmail = {
 };
 
 @injectable()
-export class GitHubLoginService extends BaseExternalLoginService {
+export class GitHubLoginService extends BaseExternalLoginProviderService {
 	private OAUTH_URL = 'https://github.com/login/oauth/authorize';
 	private SCOPE = 'user';
 	OAUTHSTATE_COOKIE_NAME = 'github_oauth_state';
