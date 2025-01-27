@@ -10,7 +10,7 @@ import type { CreateQuestionDto } from '../../routes/(app)/api/tests/[testId]/qu
 import type { CreateTestDto } from '../../routes/(app)/api/tests/+server';
 import { streamOpenAiResponse, type OpenAiStreamingOptions } from '@/utils/openai-stream';
 import type { QuestionModificationTool } from '@/types/openai';
-import type { CreateTestSessionDto } from '../../routes/(app)/api/tests/[testId]/sessions/+server';
+import type { CreateTestSessionDto } from '../../routes/(app)/api/sessions/+server';
 
 export const login = (username: string, password: string) => {
 	return axios.post<string>('/api/auth/login', { username, password });

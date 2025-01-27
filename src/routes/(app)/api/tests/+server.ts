@@ -3,8 +3,6 @@ import { type RequestHandler } from '@sveltejs/kit';
 import { db } from '@/server/db';
 import * as table from '@/server/db/schema';
 
-export type CreateTestDto = TestCompletion;
-
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user || !locals.session) {
 		return new Response('Unauthorized', { status: 401 });

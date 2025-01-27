@@ -1,12 +1,12 @@
 import { questionSchema } from '@/types/entities';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
-import type { CustomChatCompletionStreamParams } from '@/types/openai';
+import type { CustomChatCompletionParams } from '@/types/openai';
 import { openai } from '../..';
 import { getMessages } from './helpers';
 
 export const generateQuestion = (
 	parameters: GenerateQuestionCompletionParams,
-	customCreateCompletionParams: CustomChatCompletionStreamParams = {
+	customCreateCompletionParams: CustomChatCompletionParams = {
 		model: 'gpt-4o'
 	}
 ) =>

@@ -14,6 +14,7 @@ export const participantAnswersTable = sqliteTable('participant_answers', {
 		.references(() => testParticipantsTable.id, { onDelete: 'cascade' }),
 	questionId: text('question_id').notNull(),
 	// selectedOptionId: text('selected_option_id'),
+	score: integer('score').notNull().default(0),
 	typedAnswer: text('typed_answer'),
 	submittedAt: integer('submitted_at', { mode: 'timestamp' })
 });

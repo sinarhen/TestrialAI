@@ -1,12 +1,12 @@
 import { openai } from '@/server/openai';
 import { testSchema } from '@/types/entities';
 import { zodResponseFormat } from 'openai/helpers/zod.mjs';
-import type { CustomChatCompletionStreamParams } from '@/types/openai';
+import type { CustomChatCompletionParams } from '@/types/openai';
 import { getMessages } from './helpers';
 
 export const generateTest = (
 	parameters: GenerateTestCompletionParams,
-	customChatCompletionParams: CustomChatCompletionStreamParams = {
+	customChatCompletionParams: CustomChatCompletionParams = {
 		model: 'gpt-4o'
 	}
 ) =>
@@ -15,8 +15,3 @@ export const generateTest = (
 		messages: getMessages(parameters),
 		...customChatCompletionParams
 	});
-
-export interface GenerateTestCompletionParams {
-	topic: string;
-	numberOfQuestions: number;
-}

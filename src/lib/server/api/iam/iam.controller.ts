@@ -27,7 +27,7 @@ export class IamController extends Controller {
 				authState('none'),
 				zValidator('json', createRegisterRequestDto),
 				async (c) => {
-					await this.authService.sendVerificationCode(c.req.valid('json'));
+					await this.authService.sendVerificationCode(c.req.valid('json').email);
 					return c.json({ message: 'Please check your email for the verification code' });
 				}
 			)
@@ -56,11 +56,10 @@ export class IamController extends Controller {
 				authState('none'),
 				zValidator('param', userDto.pick({ provider: true }).required()),
 				(c) => {
-					const provider = c.req.valid('param').provider;
-
-					const providerService = this.authService.getExternalProviderService(provider);
+					const providerService = this.authService.getExternalProviderService(
+						c.req.valid('param').provider
+					);
 					const state = generateState();
-
 					providerService.setStateCookie(state);
 
 					return c.redirect(providerService.getAuthorizationUrl(state));
@@ -72,11 +71,11 @@ export class IamController extends Controller {
 				zValidator('param', userDto.pick({ provider: true }).required()),
 				zValidator('query', z.object({ code: z.string(), state: z.string() })),
 				async (c) => {
-					const provider = c.req.valid('param').provider;
+					const providerService = this.authService.getExternalProviderService(
+						c.req.valid('param').provider
+					);
+
 					const { code, state } = c.req.valid('query');
-
-					const providerService = this.authService.getExternalProviderService(provider);
-
 					const session = await providerService.handleCallback(code, state);
 					await this.sessionsService.setSessionCookie(session);
 

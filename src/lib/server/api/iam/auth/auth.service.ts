@@ -43,7 +43,7 @@ export class AuthService {
 
 	// TODO: handle suspicious login attempts
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	async login(request: LoginDto, isSuspicious: boolean): Promise<SessionDto> {
+	async login(request: LoginDto, isSuspicious?: boolean): Promise<SessionDto> {
 		const user = await this.usersRepository.findOneByEmail(request.email);
 
 		if (!user) throw BadRequest('Invalid email or password');

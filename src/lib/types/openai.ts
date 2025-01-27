@@ -1,13 +1,15 @@
-import type { ChatCompletionStreamParams } from 'openai/lib/ChatCompletionStream';
-import type { ChatModel } from 'openai/resources/chat/chat';
-
+import type { ChatModel } from 'openai/resources/index.mjs';
+import OpenAI from 'openai';
 type EnsureModelSupported<T extends ChatModel> = T;
 
 export type SupportedModel = EnsureModelSupported<'gpt-4o' | 'gpt-4o-mini'>;
 
-export interface CustomChatCompletionStreamParams
-	extends Omit<ChatCompletionStreamParams, 'messages' | 'response_format'> {
-	model: SupportedModel;
+export interface CustomChatCompletionParams
+	extends Omit<
+		OpenAI.ChatCompletionCreateParams,
+		'model' | 'max_tokens' | 'response_format' | 'max_completion_tokens'
+	> {
+	model?: SupportedModel;
 }
 
 export type QuestionModificationTool = 'simplify' | 'rephrase' | 'harder';
