@@ -11,9 +11,10 @@ interface GenerateQuestionParams {
 
 @injectable()
 export class QuestionsGenerationService extends OpenAiBaseService {
-	async generateQuestion(params: GenerateQuestionParams) {
-		return await this.generateWithStream(questionDto, {
-			messages: this.getMessages(params)
+	generateQuestion(params: GenerateQuestionParams) {
+		return this.createCompletion(questionDto, {
+			messages: this.getMessages(params),
+			stream: true
 		});
 	}
 

@@ -4,6 +4,8 @@ import { QuestionsRepository } from '@api/questions/questions.repository';
 import { QuestionsGenerationService } from '@api/questions/openai/questions-generation.service';
 import { TestsService } from '@api/tests/tests.service';
 import { NotFound } from '@api/common/utils/exceptions';
+import type { GenerateQuestionDto } from '@api/questions/dtos/generate-question.dto';
+import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
 
 @injectable()
 export class QuestionsService {
@@ -21,7 +23,8 @@ export class QuestionsService {
 		return this.questionsRepository.createMultiple(questions, testId);
 	}
 
-	async generateQuestion(testId: string) {
+	async updateQuestion(questions: UpdateQuestionDto) {}
+	async generateQuestion(testId: string, { topic }: GenerateQuestionDto) {
 		const test = await this.testsService.findTest(testId);
 		if (!test) {
 			throw NotFound('Test not found');
@@ -29,7 +32,7 @@ export class QuestionsService {
 		const existingQuestions = test.questions.map((q) => q.question);
 		const testTitle = test.title;
 		return this.generationService.generateQuestion({
-			topic: 'test',
+			topic,
 			existingQuestions,
 			testTitle
 		});

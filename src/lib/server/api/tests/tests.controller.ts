@@ -5,6 +5,7 @@ import { testDto } from './dtos/test.dto';
 import { zValidator } from '@hono/zod-validator';
 import { TestsService } from '@api/tests/tests.service';
 import { generateTestDto } from '@api/tests/dtos/generate-test.dto';
+import { stream } from 'hono/streaming';
 
 @injectable()
 export class TestsController extends Controller {
@@ -23,15 +24,27 @@ export class TestsController extends Controller {
 			})
 			.post('/generate', zValidator('json', generateTestDto), async (c) => {
 				const body = c.req.valid('json');
-				const stream = await this.testsService.generateTestStream(body);
+				const openAiStream = await this.testsService.generateTestStream(body);
+				return stream(c, async (stream) => {
+					for await (const message of openAiStream) {
+						await stream.write(message.choices[0]?.delta.content ?? '');
+					}
+				});
 			})
 			.delete('/:testId', (c) => {
-				await this.testsService.deleteTest(c.req.params.testId);
+				const testId = c.req.param('testId');
+				this.testsService.deleteTest(testId);
 				return c.json({ message: 'Test!' });
 			})
-			.get('/:testId/pdf', (c) => {
-				await this.testsService.generatePdf(c.req.params.testId);
-				return c.json({ message: 'Test!' });
+			.get('/:testId/pdf', async (c) => {
+				const testId = c.req.param('testId');
+				const pdf = await this.testsService.generatePdf(testId);
+				return c.body(Buffer.from(pdf).buffer, {
+					headers: {
+						'Content-Type': 'application/pdf',
+						'Content-Disposition': `attachment; filename=test-${testId}.pdf`
+					}
+				});
 			});
 		// .post('/:testId/questions', (c) => {
 		// 	await

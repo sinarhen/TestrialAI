@@ -1,11 +1,10 @@
 import { inject, injectable } from '@needle-di/core';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
-import { testDto } from './dtos/test.dto';
 import { zValidator } from '@hono/zod-validator';
-import { TestsService } from '@api/tests/tests.service';
 import { QuestionsService } from '@api/questions/questions.service';
 import { createQuestionDto } from '@api/questions/dtos/create-question.dto';
+import { generateQuestionDto } from '@api/questions/dtos/generate-question.dto';
 
 @injectable()
 export class QuestionsController extends Controller {
@@ -22,9 +21,12 @@ export class QuestionsController extends Controller {
 				await this.questionsService.createQuestion(question, testId);
 				return c.json({ message: 'Test!' });
 			})
-			.post('/:testId/questions/generate', async (c) => {
-				await this.questionsService.generateQuestion(c.req.params.testId);
-				return c.json({ message: 'Test!' });
+			.post('/:testId/questions/generate', zValidator('json', generateQuestionDto), async (c) => {
+				const testId = c.req.param('testId');
+				const dto = c.req.valid('json');
+
+				const question = await this.questionsService.generateQuestion(testId, dto);
+				return c.json(question);
 			})
 			.post('/:testId/questions/:questionId', async (c) => {
 				// await this.questionsService.updateQuestion(

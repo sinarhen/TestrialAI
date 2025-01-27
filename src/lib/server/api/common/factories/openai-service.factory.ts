@@ -27,7 +27,8 @@ export class OpenAiBaseService {
 			...customChatCompletionParams,
 			model: customChatCompletionParams.model || this.defaultModel,
 			max_completion_tokens: this.configService.envs.OPENAI_COMPLETION_TOKEN_LIMIT,
-			stream_options: customChatCompletionParams.stream ? { include_usage: true } : undefined
+			stream_options: customChatCompletionParams.stream ? { include_usage: true } : undefined,
+			stream: true
 		});
 	};
 

@@ -1,11 +1,15 @@
 import { DrizzleRepository } from '@api/common/factories/drizzle-repository.factory';
 import { testsTable } from '@api/tests/tables';
-import { takeFirst, takeFirstOrThrow } from '@api/common/utils/drizzle';
+import { type Client, takeFirstOrThrow, type Transaction } from '@api/common/utils/drizzle';
 import { eq } from 'drizzle-orm';
 import type { CreateTestDto } from '@api/tests/dtos/test.dto';
 
 export class TestsRepository extends DrizzleRepository {
-	async createTest(test: CreateTestDto, userId: string, db = this.drizzle.db) {
+	async createTest(
+		test: CreateTestDto,
+		userId: string,
+		db: Transaction | Client = this.drizzle.db
+	) {
 		return db
 			.insert(testsTable)
 			.values({ ...test, userId })
@@ -13,15 +17,15 @@ export class TestsRepository extends DrizzleRepository {
 			.then(takeFirstOrThrow);
 	}
 
-	async findOneById(id: string, db = this.drizzle.db) {
+	async findOneById(id: string, db: Transaction | Client = this.drizzle.db) {
 		return db.select().from(testsTable).where(eq(testsTable.id, id));
 	}
 
-	async findOneByIdOrThrow(id: string, db = this.drizzle.db) {
+	async findOneByIdOrThrow(id: string, db: Transaction | Client = this.drizzle.db) {
 		return await this.findOneById(id, db).then(takeFirstOrThrow);
 	}
 
-	async findOneByIdIncludeQuestions(id: string, db = this.drizzle.db) {
+	async findOneByIdIncludeQuestions(id: string, db: Transaction | Client = this.drizzle.db) {
 		return db.query.testsTable.findFirst({
 			where: eq(testsTable.id, id),
 			with: {
@@ -30,7 +34,7 @@ export class TestsRepository extends DrizzleRepository {
 		});
 	}
 
-	async update(id: string, data: CreateTestDto, db = this.drizzle.db) {
+	async update(id: string, data: CreateTestDto, db: Transaction | Client = this.drizzle.db) {
 		return db
 			.update(testsTable)
 			.set(data)
