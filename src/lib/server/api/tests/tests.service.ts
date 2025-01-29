@@ -18,12 +18,11 @@ export class TestsService {
 	) {}
 
 	async saveTest(test: CreateTestDto, userId: string) {
-		const id = await this.drizzleTransactionService.runTransaction(async (tx) => {
+		return await this.drizzleTransactionService.runTransaction(async (tx) => {
 			const createdTest = await this.testsRepository.createTest(test, userId, tx);
 			await this.questionsRepository.createMultiple(test.questions, createdTest.id, tx);
 			return createdTest.id;
 		});
-		return id;
 	}
 
 	async findTest(testId: string) {

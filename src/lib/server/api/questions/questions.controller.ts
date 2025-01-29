@@ -5,6 +5,10 @@ import { zValidator } from '@hono/zod-validator';
 import { QuestionsService } from '@api/questions/questions.service';
 import { createQuestionDto } from '@api/questions/dtos/create-question.dto';
 import { generateQuestionDto } from '@api/questions/dtos/generate-question.dto';
+import { updateQuestionDto } from '@api/questions/dtos/update-question.dto';
+import { validator } from 'hono/validator';
+import { modifyQuestionToolDto } from '@api/questions/dtos/modify-question-tool.dto';
+import { streamOpenAiResponse } from '@api/common/utils/hono';
 
 @injectable()
 export class QuestionsController extends Controller {
@@ -13,44 +17,90 @@ export class QuestionsController extends Controller {
 	}
 
 	routes() {
-		return this.controller
-			.use(authState('session'))
-			.post('/:testId/questions', zValidator('json', createQuestionDto), async (c) => {
-				const question = c.req.valid('json');
-				const testId = c.req.param('testId');
-				await this.questionsService.createQuestion(question, testId);
-				return c.json({ message: 'Test!' });
-			})
-			.post('/:testId/questions/generate', zValidator('json', generateQuestionDto), async (c) => {
-				const testId = c.req.param('testId');
-				const dto = c.req.valid('json');
+		return (
+			this.controller
+				// .use(authState('session'))
+				.post(
+					'/:testId/questions',
+					authState('session'),
+					zValidator('json', createQuestionDto),
+					async (c) => {
+						const question = c.req.valid('json');
+						const testId = c.req.param('testId');
+						await this.questionsService.createQuestion(question, testId);
+						return c.json({ message: 'Test!' });
+					}
+				)
+				.post(
+					'/:testId/questions/generate',
+					authState('session'),
 
-				const question = await this.questionsService.generateQuestion(testId, dto);
-				return c.json(question);
-			})
-			.post('/:testId/questions/:questionId', async (c) => {
-				// await this.questionsService.updateQuestion(
-				// 	c.req.body,
-				// 	c.req.params.testId,
-				// 	c.req.params.questionId
-				// );
-				return c.json({ message: 'Test!' });
-			})
-			.post('/:testId/questions/:questionId/:tool', async (c) => {
-				// await this.questionsService.regenerateQuestion(
-				// 	c.req.params.testId,
-				// 	c.req.params.questionId
-				// );
-				return c.json({ message: 'Test!' });
-			})
-			.post('/:testId/questions/:questionId/generate-code-block', async (c) => {
-				// await this.questionsService.generateCodeBlock(c.req.body, c.req.params.testId, c.req.params.questionId);
+					zValidator('json', generateQuestionDto),
+					async (c) => {
+						const testId = c.req.param('testId');
+						const dto = c.req.valid('json');
 
-				return c.json({ message: 'Test!' });
-			})
-			.post('/:testId/questions/:questionId/generate-answer-explanation', async (c) => {
-				// await this.questionsService.generateAnswerExplanation(c.req.body, c.req.params.testId, c.req.params.questionId);
-				return c.json({ message: 'Test!' });
-			});
+						const openAiStream = await this.questionsService.generateQuestion(testId, dto);
+						return streamOpenAiResponse(c, openAiStream);
+					}
+				)
+				.post(
+					'/:testId/questions/:questionId',
+					authState('session'),
+
+					zValidator('json', updateQuestionDto),
+					async (c) => {
+						const questionId = c.req.param('questionId');
+						const questionDto = c.req.valid('json');
+						await this.questionsService.updateQuestion(questionId, questionDto);
+						return c.json({ message: 'Test!' });
+					}
+				)
+				.post(
+					'/:testId/questions/:questionId/:tool',
+					authState('session'),
+
+					validator('param', (_, c) => {
+						const tool = c.req.param('tool');
+						const parsed = modifyQuestionToolDto.safeParse({
+							tool
+						});
+						if (!parsed.success) {
+							return c.json({ message: 'Invalid tool' }, 400);
+						}
+						return parsed.data;
+					}),
+					async (c) => {
+						const { questionId, testId } = c.req.param();
+
+						const tool = c.req.valid('param').tool;
+
+						const openAiStream = await this.questionsService.regenerateQuestion(
+							testId,
+							questionId,
+							tool
+						);
+						return streamOpenAiResponse(c, openAiStream);
+					}
+				)
+				.post(
+					'/:testId/questions/:questionId/generate-code-block',
+					authState('session'),
+					async (c) => {
+						const questionId = c.req.param('questionId');
+						const openAiStream = await this.questionsService.generateCodeBlock(questionId);
+
+						return streamOpenAiResponse(c, openAiStream);
+					}
+				)
+			// .post('/:testId/questions/:questionId/generate-answer-explanation', async (c) => {
+			// 	const openAiStream = await this.questionsService.generateAnswerExplanation(
+			// 		c.req.body,
+			// 		c.req.params.testId,
+			// 		c.req.params.questionId
+			// 	);
+			// 	return streamOpenAiResponse(c, openAiStream);
+			// })
+		);
 	}
 }

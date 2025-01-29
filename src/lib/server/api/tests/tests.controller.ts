@@ -5,7 +5,7 @@ import { testDto } from './dtos/test.dto';
 import { zValidator } from '@hono/zod-validator';
 import { TestsService } from '@api/tests/tests.service';
 import { generateTestDto } from '@api/tests/dtos/generate-test.dto';
-import { stream } from 'hono/streaming';
+import { streamOpenAiResponse } from '@api/common/utils/hono';
 
 @injectable()
 export class TestsController extends Controller {
@@ -15,28 +15,23 @@ export class TestsController extends Controller {
 
 	routes() {
 		return this.controller
-			.use(authState('session'))
-			.post('/', zValidator('json', testDto), async (c) => {
+			.post('/', authState('session'), zValidator('json', testDto), async (c) => {
 				const { session } = c.var;
 				const parsed = c.req.valid('json');
-				const testId = await this.testsService.saveTest(parsed, session.user.id);
+				const testId = await this.testsService.saveTest(parsed, session.id);
 				return c.json({ testId });
 			})
-			.post('/generate', zValidator('json', generateTestDto), async (c) => {
+			.post('/generate', authState('session'), zValidator('json', generateTestDto), async (c) => {
 				const body = c.req.valid('json');
 				const openAiStream = await this.testsService.generateTestStream(body);
-				return stream(c, async (stream) => {
-					for await (const message of openAiStream) {
-						await stream.write(message.choices[0]?.delta.content ?? '');
-					}
-				});
+				return streamOpenAiResponse(c, openAiStream);
 			})
-			.delete('/:testId', (c) => {
+			.delete('/:testId', authState('session'), (c) => {
 				const testId = c.req.param('testId');
 				this.testsService.deleteTest(testId);
 				return c.json({ message: 'Test!' });
 			})
-			.get('/:testId/pdf', async (c) => {
+			.get('/:testId/pdf', authState('session'), async (c) => {
 				const testId = c.req.param('testId');
 				const pdf = await this.testsService.generatePdf(testId);
 				return c.body(Buffer.from(pdf).buffer, {

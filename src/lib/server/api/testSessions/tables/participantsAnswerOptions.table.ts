@@ -1,5 +1,5 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { generateId } from '../../common/utils/crypto';
+import { generateId } from '@api/common/utils/crypto';
 import { participantAnswersTable } from './participantsAnswers.table';
 
 export const participantAnswerOptionsTable = sqliteTable('participant_answer_options', {

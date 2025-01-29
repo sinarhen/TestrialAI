@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { generateId } from '../../common/utils/crypto';
-import { usersTable } from '../../users/tables/users.table';
+import { generateId } from '@api/common/utils/crypto';
+import { usersTable } from '@api/users/tables';
 import { testSessionsTable } from './testSessions.table';
 import { relations } from 'drizzle-orm';
 import type { InferResultType } from '@/server/api/common/utils/drizzle';
