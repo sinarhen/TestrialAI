@@ -1,5 +1,5 @@
 import type { InferRequestType } from 'hono';
-import { TanstackRequestOptions } from '../request-options';
+import { RequestOptions } from '../request-options';
 import type { Api, ApiMutation } from '@/utils/types';
 import { parseClientResponse } from '@/utils/api';
 
@@ -12,7 +12,7 @@ export type RegenerateQuestionWithToolRequest =
 export type GenerateQuestionCodeBlockRequest =
 	Api['questions'][':testId']['questions'][':questionId']['generate-code-block']['$post'];
 
-export class QuestionsModule extends TanstackRequestOptions {
+export class QuestionsModule extends RequestOptions {
 	namespace = 'questions';
 
 	createQuestion(): ApiMutation<CreateQuestionRequest> {

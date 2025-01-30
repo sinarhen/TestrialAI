@@ -1,4 +1,6 @@
-import type { DeepPartial } from '@/types/utils';
+import type { DeepPartial } from '@/server/api/common/utils/deep-partial';
+import { api } from '@/tanstack-query';
+import { createMutation } from '@tanstack/svelte-query';
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';
 
@@ -21,14 +23,7 @@ export async function streamOpenAiResponse<TFinal>({
 	onPartial,
 	onComplete
 }: OpenAiStreamingOptions<TFinal>) {
-	const res = await fetch(endpoint, {
-		method,
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: body ? JSON.stringify(body) : undefined,
-		signal
-	});
+	const res = createMutation(api().tests.generateTest());
 
 	if (!res.ok) {
 		throw new Error(`Network error: ${res.status} ${res.statusText}`);

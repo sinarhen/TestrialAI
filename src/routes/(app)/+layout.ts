@@ -5,12 +5,10 @@ export const load = async ({ parent, fetch }) => {
 
 	const _api = api({ fetch });
 
-	await queryClient.prefetchQuery({
-		..._api.users.me()
-	});
-	await queryClient.prefetchQuery({
-		..._api.tests.getTestsHistory()
-	});
-
-	return {};
+	const user = await queryClient.fetchQuery(api({ fetch }).users.me());
+	if (user) {
+		await queryClient.prefetchQuery({
+			..._api.tests.getTestsHistory()
+		});
+	}
 };

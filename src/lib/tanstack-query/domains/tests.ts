@@ -1,5 +1,5 @@
 import type { InferRequestType } from 'hono';
-import { TanstackRequestOptions } from '../request-options';
+import { RequestOptions } from '../request-options';
 import type { Api, ApiMutation, ApiQuery } from '@/utils/types';
 import { parseClientResponse } from '@/utils/api';
 
@@ -9,10 +9,10 @@ export type DeleteTestRequest = Api['tests'][':testId']['$delete'];
 export type ExportTestPdfRequest = Api['tests'][':testId']['pdf']['$get'];
 export type GetTestsHistoryRequest = Api['tests']['history']['$get'];
 
-export class TestsModule extends TanstackRequestOptions {
+export class TestsModule extends RequestOptions {
 	namespace = 'tests';
 
-	createTest(): ApiMutation<CreateTestRequest> {
+	createTest() {
 		return {
 			mutationFn: async (args: InferRequestType<CreateTestRequest>) =>
 				await this.api.tests.$post(args).then(parseClientResponse)
@@ -29,8 +29,12 @@ export class TestsModule extends TanstackRequestOptions {
 	generateTest(): ApiMutation<GenerateTestRequest> {
 		return {
 			mutationFn: async (args: InferRequestType<GenerateTestRequest>) =>
-				await this.api.tests.generate.$post(args).then(parseClientResponse)
+				await this.api.tests.generate.$post(args)
 		};
+	}
+
+	getGenerateTestUrl(): string {
+		return this.api.tests.generate.$url().pathname;
 	}
 
 	deleteTest(): ApiMutation<DeleteTestRequest> {

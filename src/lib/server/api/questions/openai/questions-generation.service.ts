@@ -28,14 +28,14 @@ interface GenerateCodeBlockParams {
 export class QuestionsGenerationService extends OpenAiBaseService {
 	/* --------------------- Public API Methods ----------------------- */
 	streamGenerateQuestion(params: GenerateQuestionParams) {
-		return this.createCompletion(questionDto, {
+		return this.createCompletionStream(questionDto, {
 			messages: this.buildGenerateQuestionMessages(params),
 			stream: true
 		});
 	}
 
 	streamRegenerateQuestion(params: RegenerateQuestionParams) {
-		return this.createCompletion(questionDto, {
+		return this.createCompletionStream(questionDto, {
 			messages: this.buildRegenerateQuestionMessages(params),
 			stream: true
 		});
@@ -43,7 +43,7 @@ export class QuestionsGenerationService extends OpenAiBaseService {
 
 	streamGenerateCodeBlock(params: GenerateCodeBlockParams) {
 		const messages = this.buildGenerateCodeBlockMessages(params);
-		return this.createCompletion(codeBlockDto, {
+		return this.createCompletionStream(codeBlockDto, {
 			messages,
 			stream: true
 		});

@@ -14,11 +14,11 @@ export class OpenAiBaseService {
 		});
 	}
 
-	protected createCompletion = <T extends ZodType>(
+	protected createCompletionStream = <T extends ZodType>(
 		responseSchema: T,
 		customChatCompletionParams: CustomChatCompletionParams
 	) => {
-		return this.client.chat.completions.create({
+		return this.client.beta.chat.completions.stream({
 			response_format: zodResponseFormat(
 				responseSchema,
 				// TODO: Awful hack to get the name of the schema
@@ -27,8 +27,7 @@ export class OpenAiBaseService {
 			...customChatCompletionParams,
 			model: customChatCompletionParams.model || this.defaultModel,
 			max_completion_tokens: this.configService.envs.OPENAI_COMPLETION_TOKEN_LIMIT,
-			stream_options: customChatCompletionParams.stream ? { include_usage: true } : undefined,
-			stream: true
+			stream_options: customChatCompletionParams.stream ? { include_usage: true } : undefined
 		});
 	};
 

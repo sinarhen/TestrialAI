@@ -1,5 +1,5 @@
 import type { InferRequestType } from 'hono';
-import { TanstackRequestOptions } from '../request-options';
+import { RequestOptions } from '../request-options';
 import type { Api, ApiMutation, ApiQuery } from '@/utils/types';
 import { parseClientResponse } from '@/utils/api';
 
@@ -8,7 +8,7 @@ export type UpdateEmailRequest = Api['users']['me']['email']['request']['$post']
 export type VerifyEmailRequest = Api['users']['me']['email']['verify']['$post'];
 export type UpdateUser = Api['users']['me']['$patch'];
 
-export class UsersModule extends TanstackRequestOptions {
+export class UsersModule extends RequestOptions {
 	namespace = 'users';
 
 	me(): ApiQuery<Me> {

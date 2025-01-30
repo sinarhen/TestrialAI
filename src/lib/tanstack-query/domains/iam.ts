@@ -1,5 +1,5 @@
 import type { InferRequestType } from 'hono';
-import { TanstackRequestOptions } from '../request-options';
+import { RequestOptions } from '../request-options';
 import type { Api, ApiMutation } from '@/utils/types';
 import { parseClientResponse } from '@/utils/api';
 import type { Provider } from '@/server/api/users/tables';
@@ -9,7 +9,7 @@ export type VerifyLogin = Api['iam']['login']['verify']['$post'];
 export type Logout = Api['iam']['logout']['$post'];
 export type ExternalLogin = Api['iam']['login'][':provider']['$get'];
 
-export class IamModule extends TanstackRequestOptions {
+export class IamModule extends RequestOptions {
 	namespace = 'iam';
 
 	logout(): ApiMutation<Logout> {

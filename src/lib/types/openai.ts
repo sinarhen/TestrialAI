@@ -7,7 +7,7 @@ export type SupportedModel = EnsureModelSupported<'gpt-4o' | 'gpt-4o-mini'>;
 export interface CustomChatCompletionParams
 	extends Omit<
 		OpenAI.ChatCompletionCreateParams,
-		'model' | 'max_tokens' | 'response_format' | 'max_completion_tokens'
+		'model' | 'max_tokens' | 'response_format' | 'max_completion_tokens' | 'stream'
 	> {
 	model?: SupportedModel;
 }

@@ -13,7 +13,8 @@
 		isSheetOpen = false;
 	};
 
-	const data = createQuery(api().tests.getTestsHistory());
+	const user = createQuery(api().users.me());
+	const data = user ? createQuery(api().tests.getTestsHistory()) : null;
 	const history = $data;
 </script>
 
@@ -27,7 +28,7 @@
 			<Sheet.Description>View all your past tests</Sheet.Description>
 		</Sheet.Header>
 		<div class="mt-6 flex flex-col gap-y-4">
-			{#if history.data}
+			{#if history?.data}
 				{#each history.data as test}
 					<Card onclick={() => onClick(test.id)} class="cursor-pointer">
 						<CardHeader>

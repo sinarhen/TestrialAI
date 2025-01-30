@@ -9,6 +9,8 @@
 	import { Button } from '@/components/ui/button';
 	import type { GenerateTestDto } from '../../../api/tests/generate/+server';
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
+	import { streamOpenAiResponse } from '@/utils/openai-stream';
+	import { api } from '@/tanstack-query';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, model } = data.generationParams;
@@ -25,7 +27,8 @@
 	const generate = async () => {
 		abortController = new AbortController();
 		try {
-			await streamTestGeneration({
+			await streamOpenAiResponse({
+				endpoint: api().tests.generateTestUrl()
 				body: {
 					topic,
 					numberOfQuestions,

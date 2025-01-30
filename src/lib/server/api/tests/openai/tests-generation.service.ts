@@ -8,7 +8,7 @@ import type { GenerateTestDto } from '@api/tests/dtos/generate-test.dto';
 @injectable()
 export class TestsGenerationService extends OpenAiBaseService {
 	streamTestGeneration(params: GenerateTestDto) {
-		return this.createCompletion(testDto, {
+		return this.createCompletionStream(testDto, {
 			messages: this.getMessages(params),
 			stream: true
 		});
