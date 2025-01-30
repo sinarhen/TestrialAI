@@ -1,9 +1,9 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { generateId } from '@api/common/utils/crypto';
-import { usersTable } from '@api/users/tables';
+import { generateId } from '../../common/utils/crypto';
+import { usersTable } from '../../users/tables';
 import { testSessionsTable } from './testSessions.table';
 import { relations } from 'drizzle-orm';
-import type { InferResultType } from '@/server/api/common/utils/drizzle';
+import type { InferResultType } from '../../common/utils/drizzle';
 
 export const testParticipantsTable = sqliteTable('test_participant', {
 	id: text('id')

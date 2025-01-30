@@ -9,13 +9,17 @@ import { browserSessions } from './common/middleware/browser-session.middleware'
 import { IamController } from './iam/iam.controller';
 import { sessionManagement } from './common/middleware/session-management.middleware';
 import { TestsController } from '@/server/api/tests/tests.controller';
+import { QuestionsController } from './questions/questions.controller';
+import { TestSessionsController } from './testSessions/test-sessions.controller';
 
 @injectable()
 export class ApplicationController extends RootController {
 	constructor(
 		private iamController = inject(IamController),
 		private usersController = inject(UsersController),
-		private testsController = inject(TestsController)
+		private testsController = inject(TestsController),
+		private questionsController = inject(QuestionsController),
+		private testSessionsController = inject(TestSessionsController)
 	) {
 		super();
 	}
@@ -43,6 +47,8 @@ export class ApplicationController extends RootController {
 			.route('/', this.routes())
 			.route('/iam', this.iamController.routes())
 			.route('/users', this.usersController.routes())
-			.route('/tests', this.testsController.routes());
+			.route('/tests', this.testsController.routes())
+			.route('/questions', this.questionsController.routes())
+			.route('/test-sessions', this.testSessionsController.routes());
 	}
 }

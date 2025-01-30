@@ -1,3 +1,3 @@
-export * from './options.table';
-export * from '@api/questions/tables/questions.table';
+export * from '../../questions/tables/questions.table';
+// export * from './options.table';
 export * from './tests.table';

@@ -2,6 +2,7 @@ import type { InferRequestType } from 'hono';
 import { TanstackRequestOptions } from '../request-options';
 import type { Api, ApiMutation } from '@/utils/types';
 import { parseClientResponse } from '@/utils/api';
+import type { Provider } from '@/server/api/users/tables';
 
 export type RequestLogin = Api['iam']['login']['request']['$post'];
 export type VerifyLogin = Api['iam']['login']['verify']['$post'];
@@ -28,10 +29,7 @@ export class IamModule extends TanstackRequestOptions {
 				await this.api.iam.login.verify.$post(data).then(parseClientResponse)
 		};
 	}
-	loginWithExternalProvider(): ApiMutation<ExternalLogin> {
-		return {
-			mutationFn: async (data: InferRequestType<ExternalLogin>) =>
-				await this.api.iam.login[':provider'].$get(data).then(parseClientResponse)
-		};
+	getExternalProviderLoginLink(provider: Provider) {
+		return this.api.iam.login[':provider'].$url({ param: { provider } }).pathname;
 	}
 }

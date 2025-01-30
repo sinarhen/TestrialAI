@@ -17,17 +17,9 @@
 	import { applyAction } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import type { ActionData } from '../../../auth/$types';
+	import { api } from '@/tanstack-query';
 
-	let {
-		form,
-		isInitiallyOpen
-	}: {
-		form: ActionData;
-		isInitiallyOpen?: boolean;
-	} = $props();
-
-	let isAuthDialogOpen = $state<boolean | undefined>(!!form?.message || isInitiallyOpen);
+	let isAuthDialogOpen = $state<boolean | undefined>();
 	let isLoginMode = $state<boolean>(true);
 	let isSigningIn = $state<boolean>(false);
 
@@ -87,10 +79,6 @@
 			<div class="col-span-1">
 				<Label for="email-input" id="email-input-label">Email</Label>
 				<Input required type="email" name="email" class="sm:max-w-[270px]" id="email-input" />
-
-				{#if form?.email}
-					<p class="text-sm text-red-500">{form.email}</p>
-				{/if}
 			</div>
 			{#if !isLoginMode}
 				<div class="col-span-1">
@@ -102,9 +90,9 @@
 						class="sm:max-w-[270px]"
 						id="username-input"
 					/>
-					{#if form?.username}
+					<!-- {#if form?.username}
 						<p class="text-sm text-red-500">{form.username}</p>
-					{/if}
+					{/if} -->
 				</div>
 				<div class="col-span-1">
 					<Label for="first-name-input" id="first-name-input-label">First Name</Label>
@@ -136,13 +124,13 @@
 					class="sm:max-w-[270px]"
 					id="password-input"
 				/>
-				{#if form?.password}
+				<!-- {#if form?.password}
 					<p class="text-sm text-red-500">{form.password}</p>
-				{/if}
+				{/if} -->
 			</div>
-			{#if form?.message}
+			<!-- {#if form?.message}
 				<p class="text-sm text-red-500">{form?.message}</p>
-			{/if}
+			{/if} -->
 			<Button disabled={isSigningIn} type="submit" class="w-full sm:w-auto"
 				>{isLoginMode ? 'Login' : 'Register'}</Button
 			>
@@ -150,7 +138,7 @@
 		<div>
 			<Separator class="mb-4" />
 			<div class="flex flex-col items-center gap-x-2 gap-y-1 text-sm">
-				<a class="w-full" href="/auth/github">
+				<a class="w-full" href={api().iam.loginWithExternalProvider()}>
 					<Button disabled={isSigningIn} class="w-full" variant="outline">Github</Button>
 				</a>
 				<a class="w-full" href="/auth/google">

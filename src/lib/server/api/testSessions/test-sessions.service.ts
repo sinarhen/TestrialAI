@@ -1,3 +1,6 @@
+import { injectable } from '@needle-di/core';
+
+@injectable()
 export class TestSessionsService {
 	constructor() {}
 

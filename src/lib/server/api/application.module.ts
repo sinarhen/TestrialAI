@@ -1,7 +1,6 @@
 import { inject, injectable } from '@needle-di/core';
 import { ConfigService } from './common/configs/config.service';
 import { ApplicationController } from './application.controller';
-// import { StorageService } from './storage/storage.service';
 
 @injectable()
 export class ApplicationModule {

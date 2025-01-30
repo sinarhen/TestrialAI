@@ -1,11 +1,10 @@
 <script lang="ts">
 	import * as Sheet from '@/components/ui/sheet';
-	import { History, CircleHelp, Timer, Gauge } from 'lucide-svelte';
+	import { History, Timer, Gauge } from 'lucide-svelte';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-	import type { Test } from '@/types/entities';
 	import { goto } from '$app/navigation';
-
-	const { history }: { history: Test[] | null } = $props();
+	import { createQuery } from '@tanstack/svelte-query';
+	import { api } from '@/tanstack-query';
 
 	let isSheetOpen = $state(false);
 
@@ -13,6 +12,9 @@
 		goto(`/test/${testId}`);
 		isSheetOpen = false;
 	};
+
+	const data = createQuery(api().tests.getTestsHistory());
+	const history = $data;
 </script>
 
 <Sheet.Root open={isSheetOpen} onOpenChange={(val) => (isSheetOpen = val)}>
@@ -25,16 +27,12 @@
 			<Sheet.Description>View all your past tests</Sheet.Description>
 		</Sheet.Header>
 		<div class="mt-6 flex flex-col gap-y-4">
-			{#if history}
-				{#each history as test}
+			{#if history.data}
+				{#each history.data as test}
 					<Card onclick={() => onClick(test.id)} class="cursor-pointer">
 						<CardHeader>
 							<CardTitle tag="h6">{test.title}</CardTitle>
 							<CardDescription class="flex w-full gap-x-2">
-								<span class="flex items-center gap-x-1">
-									<CircleHelp size="12" />
-									{test.questions.length} Questions
-								</span>
 								<span class="flex items-center gap-x-1">
 									<Timer size="12" /> 10 Minutes
 								</span>

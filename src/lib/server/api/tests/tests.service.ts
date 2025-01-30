@@ -17,6 +17,10 @@ export class TestsService {
 		private pdfService = inject(PdfService)
 	) {}
 
+	getTestsHistoryForUsers(userId: string) {
+		return this.testsRepository.findAllByUserId(userId);
+	}
+
 	async saveTest(test: CreateTestDto, userId: string) {
 		return await this.drizzleTransactionService.runTransaction(async (tx) => {
 			const createdTest = await this.testsRepository.createTest(test, userId, tx);

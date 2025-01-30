@@ -5,7 +5,7 @@ export const envsDto = z.object({
 	REDIS_URL: z.string(),
 	OPENAI_API_KEY: z.string(),
 	OPENAI_DEFAULT_MODEL: z.string(),
-	OPENAI_COMPLETION_TOKEN_LIMIT: z.number(),
+	OPENAI_COMPLETION_TOKEN_LIMIT: z.number({ coerce: true }),
 	GITHUB_CLIENT_SECRET: z.string(),
 	GITHUB_CLIENT_ID: z.string(),
 	GOOGLE_CLIENT_ID: z.string({ coerce: true }),
@@ -13,8 +13,8 @@ export const envsDto = z.object({
 	SIGNING_SECRET: z.string(),
 	ENV: z.enum(['dev', 'prod']),
 	PORT: z.number({ coerce: true }),
-	PUBLIC_DEV_BASE_URL: z.string(),
-	PUBLIC_PROD_BASE_URL: z.string()
+	DEV_BASE_URL: z.string(),
+	PROD_BASE_URL: z.string()
 });
 
 export type EnvsDto = z.infer<typeof envsDto>;

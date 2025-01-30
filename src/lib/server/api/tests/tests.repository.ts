@@ -3,7 +3,9 @@ import { testsTable } from '@api/tests/tables';
 import { type Client, takeFirstOrThrow, type Transaction } from '@api/common/utils/drizzle';
 import { eq } from 'drizzle-orm';
 import type { CreateTestDto } from '@api/tests/dtos/test.dto';
+import { injectable } from '@needle-di/core';
 
+@injectable()
 export class TestsRepository extends DrizzleRepository {
 	async createTest(
 		test: CreateTestDto,
@@ -15,6 +17,10 @@ export class TestsRepository extends DrizzleRepository {
 			.values({ ...test, userId })
 			.returning()
 			.then(takeFirstOrThrow);
+	}
+
+	async findAllByUserId(userId: string, db: Transaction | Client = this.drizzle.db) {
+		return db.select().from(testsTable).where(eq(testsTable.userId, userId));
 	}
 
 	async findOneById(id: string, db: Transaction | Client = this.drizzle.db) {

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { ChevronRight, DoorOpen, Home, Sparkles } from 'lucide-svelte';
-	import type { ActionData } from '../../(root)/$types';
 	import AuthDialog from './AuthDialog.svelte';
 	import TestHistorySheet from './TestHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';
@@ -10,20 +9,19 @@
 	import { goto } from '$app/navigation';
 	import { Separator } from '@/components/ui/separator';
 	import LogoutButton from './LogoutButton.svelte';
-	const {
-		data,
-		form
-	}: {
-		data: LayoutData;
-		form: ActionData;
-	} = $props();
+	import { createQuery } from '@tanstack/svelte-query';
+	import { api } from '@/tanstack-query';
+	const { form } = $props();
 
 	let isUpgradePlanPopoverOpen = $state(false);
+
+	const userQuery = createQuery(api().users.me());
+	const user = $userQuery.data;
 </script>
 
 <header class="flex h-12 w-full items-center justify-between pt-4">
 	<div class="flex w-full items-center gap-x-2 text-sm">
-		<TestHistorySheet history={data.history} />
+		<TestHistorySheet />
 		<NotificationsSheet />
 		<div class="relative flex cursor-pointer items-center">
 			<Popover.Root
@@ -82,9 +80,9 @@
 	</div>
 
 	<div class="flex w-full justify-end">
-		{#if data?.user}
+		{#if user}
 			<div class="flex items-center gap-x-2 text-sm">
-				{data.user.username}
+				{user.username}
 				<Separator orientation="vertical" />
 				<LogoutButton>
 					<button type="submit">
@@ -93,7 +91,7 @@
 				</LogoutButton>
 			</div>
 		{:else}
-			<AuthDialog isInitiallyOpen={data.authRequired} {form} />
+			<AuthDialog {form} />
 		{/if}
 	</div>
 </header>

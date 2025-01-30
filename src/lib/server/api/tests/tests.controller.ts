@@ -21,6 +21,11 @@ export class TestsController extends Controller {
 				const testId = await this.testsService.saveTest(parsed, session.id);
 				return c.json({ testId });
 			})
+			.get('/history', authState('session'), async (c) => {
+				const userId = c.var.session.userId;
+				const tests = await this.testsService.getTestsHistoryForUsers(userId);
+				return c.json(tests);
+			})
 			.post('/generate', authState('session'), zValidator('json', generateTestDto), async (c) => {
 				const body = c.req.valid('json');
 				const openAiStream = await this.testsService.generateTestStream(body);
@@ -32,12 +37,12 @@ export class TestsController extends Controller {
 				return c.json({ message: 'Test!' });
 			})
 			.get('/:testId/pdf', authState('session'), async (c) => {
-				const testId = c.req.param('testId');
-				const pdf = await this.testsService.generatePdf(testId);
+				// const testId = c.req.param('testId');
+				const pdf = await this.testsService.generatePdf('123123');
 				return c.body(Buffer.from(pdf).buffer, {
 					headers: {
 						'Content-Type': 'application/pdf',
-						'Content-Disposition': `attachment; filename=test-${testId}.pdf`
+						'Content-Disposition': `attachment; filename=test-${'12312'}.pdf`
 					}
 				});
 			});

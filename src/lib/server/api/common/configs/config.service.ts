@@ -13,15 +13,13 @@ export class ConfigService {
 		this.envs = this.initEnvs();
 
 		// TODO: Find a better way to set the base url
-		this.envs.BASE_URL =
-			this.envs.ENV === 'dev' ? this.envs.PUBLIC_DEV_BASE_URL : this.envs.PUBLIC_PROD_BASE_URL;
+		this.envs.BASE_URL = this.envs.ENV === 'dev' ? this.envs.DEV_BASE_URL : this.envs.PROD_BASE_URL;
 	}
 
 	private initEnvs() {
 		const parsedEnvs = envsDto.parse(envs);
 
-		const baseUrl =
-			parsedEnvs.ENV === 'dev' ? parsedEnvs.PUBLIC_DEV_BASE_URL : parsedEnvs.PUBLIC_PROD_BASE_URL;
+		const baseUrl = parsedEnvs.ENV === 'dev' ? parsedEnvs.DEV_BASE_URL : parsedEnvs.PROD_BASE_URL;
 
 		return { ...parsedEnvs, BASE_URL: baseUrl };
 	}

@@ -9,7 +9,9 @@ import {
 } from '@api/common/utils/drizzle';
 import { eq } from 'drizzle-orm';
 import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
+import { injectable } from '@needle-di/core';
 
+@injectable()
 export class QuestionsRepository extends DrizzleRepository {
 	create(value: CreateQuestionDto, testId: string, db: Transaction | Client = this.drizzle.db) {
 		return db

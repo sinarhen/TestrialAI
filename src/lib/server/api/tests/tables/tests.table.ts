@@ -2,8 +2,8 @@ import { sql, relations } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
 import { usersTable } from '../../users/tables/users.table';
-import { questionsTable } from '@api/questions/tables/questions.table';
-import type { InferResultType } from '@/server/api/common/utils/drizzle';
+import { questionsTable } from '../../questions/tables/questions.table';
+import type { InferResultType } from '../../common/utils/drizzle';
 
 export const testsTable = sqliteTable('tests', {
 	id: text('id')
