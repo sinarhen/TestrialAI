@@ -9,14 +9,16 @@
 	import { goto } from '$app/navigation';
 	import { Separator } from '@/components/ui/separator';
 	import LogoutButton from './LogoutButton.svelte';
-	import { createQuery } from '@tanstack/svelte-query';
-	import { api } from '@/tanstack-query';
-	const { form } = $props();
+	import { api } from '@/client-api';
+	import type { UserDto } from '@/server/api/users/dtos/user.dto';
+
+	const {
+		user
+	}: {
+		user: UserDto;
+	} = $props();
 
 	let isUpgradePlanPopoverOpen = $state(false);
-
-	const userQuery = createQuery(api().users.me());
-	const user = $userQuery.data;
 </script>
 
 <header class="flex h-12 w-full items-center justify-between pt-4">
@@ -91,7 +93,7 @@
 				</LogoutButton>
 			</div>
 		{:else}
-			<AuthDialog {form} />
+			<AuthDialog />
 		{/if}
 	</div>
 </header>

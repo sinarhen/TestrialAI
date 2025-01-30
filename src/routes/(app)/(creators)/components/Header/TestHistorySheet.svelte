@@ -4,7 +4,7 @@
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 	import { goto } from '$app/navigation';
 	import { createQuery } from '@tanstack/svelte-query';
-	import { api } from '@/tanstack-query';
+	import { api } from '@/client-api';
 
 	let isSheetOpen = $state(false);
 

@@ -55,8 +55,6 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"@pilcrowjs/object-parser": "^0.0.4",
-		"@tanstack/svelte-query": "^5.64.2",
-		"@tanstack/svelte-query-devtools": "^5.64.2",
 		"axios": "^1.7.9",
 		"dayjs": "^1.11.13",
 		"drizzle-orm": "^0.38.2",

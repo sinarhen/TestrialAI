@@ -17,7 +17,7 @@
 	import { applyAction } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import { api } from '@/tanstack-query';
+	import { api } from '@/client-api';
 
 	let isAuthDialogOpen = $state<boolean | undefined>();
 	let isLoginMode = $state<boolean>(true);
@@ -46,6 +46,14 @@
 			isSigningIn = false;
 		};
 	};
+
+	const _getAuthLink = api().iam.login[':provider'].$url;
+	const googleAuthLink = _getAuthLink({
+		param: {
+			provider: 'google'
+		}
+	}).pathname;
+	const githubAuthLink = _getAuthLink({ param: { provider: 'github' } }).pathname;
 </script>
 
 <Dialog
@@ -138,10 +146,10 @@
 		<div>
 			<Separator class="mb-4" />
 			<div class="flex flex-col items-center gap-x-2 gap-y-1 text-sm">
-				<a class="w-full" href={api().iam.loginWithExternalProvider()}>
+				<a class="w-full" href={githubAuthLink}>
 					<Button disabled={isSigningIn} class="w-full" variant="outline">Github</Button>
 				</a>
-				<a class="w-full" href="/auth/google">
+				<a class="w-full" href={googleAuthLink}>
 					<Button disabled={isSigningIn} class="w-full" variant="outline">Google</Button>
 				</a>
 			</div>

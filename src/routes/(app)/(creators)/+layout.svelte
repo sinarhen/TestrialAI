@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Header from './components/Header/Header.svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
 </script>
 
-<Header form={null} />
+<Header user={data.user} form={null} />
 <div class="h-full w-full py-20 pb-12">
 	{@render children()}
 </div>

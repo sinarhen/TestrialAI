@@ -10,5 +10,4 @@ export function startServer() {
 }
 
 export const routes = applicationController.registerControllers();
-
 export type ApiRoutes = typeof routes;

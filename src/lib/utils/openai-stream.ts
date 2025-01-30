@@ -1,5 +1,5 @@
 import type { DeepPartial } from '@/server/api/common/utils/deep-partial';
-import { api } from '@/tanstack-query';
+import { api } from '@/client-api';
 import { createMutation } from '@tanstack/svelte-query';
 import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';

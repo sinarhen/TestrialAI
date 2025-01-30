@@ -10,7 +10,7 @@
 	import type { GenerateTestDto } from '../../../api/tests/generate/+server';
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
-	import { api } from '@/tanstack-query';
+	import { api } from '@/client-api';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, model } = data.generationParams;
