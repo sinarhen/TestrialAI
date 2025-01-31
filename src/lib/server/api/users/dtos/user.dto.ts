@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 export const userDto = z.object({
 	id: z.string(),
-	email: z.string().email(),
+	email: z.string().email().nullable(),
 	username: z.string().min(3).max(20),
 	firstName: z.string().min(3).max(20).optional(),
 	lastName: z.string().min(3).max(20).optional(),

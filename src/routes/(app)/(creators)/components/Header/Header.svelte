@@ -9,13 +9,12 @@
 	import { goto } from '$app/navigation';
 	import { Separator } from '@/components/ui/separator';
 	import LogoutButton from './LogoutButton.svelte';
-	import { api } from '@/client-api';
 	import type { UserDto } from '@/server/api/users/dtos/user.dto';
 
 	const {
 		user
 	}: {
-		user: UserDto;
+		user: UserDto | null;
 	} = $props();
 
 	let isUpgradePlanPopoverOpen = $state(false);

@@ -2,23 +2,22 @@
 	import { Check, CircleHelp, Gauge, Trash, X } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import type { GeneratingTestCompletion, TestCompletion } from '@/types/entities';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { createTest, streamTestGeneration } from '@/services/handlers';
 	import { Button } from '@/components/ui/button';
-	import type { GenerateTestDto } from '../../../api/tests/generate/+server';
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
-	import { streamOpenAiResponse } from '@/utils/openai-stream';
 	import { api } from '@/client-api';
+	import type { GeneratingTestDto, TestDto } from '@/server/api/tests/dtos/test.dto';
+	import type { GenerateTestDto } from '@/server/api/tests/dtos/generate-test.dto';
+	import { streamOpenAiResponse } from '@/utils/openai-stream';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, model } = data.generationParams;
 
 	type TestGenerationState =
 		| { status: 'idle' }
-		| { status: 'generating'; data: GeneratingTestCompletion }
-		| { status: 'finished'; data: TestCompletion };
+		| { status: 'generating'; data: GeneratingTestDto }
+		| { status: 'finished'; data: TestDto };
 
 	let abortController = $state<AbortController | null>(null);
 
@@ -28,7 +27,7 @@
 		abortController = new AbortController();
 		try {
 			await streamOpenAiResponse({
-				endpoint: api().tests.generateTestUrl()
+				endpoint: api().tests.generate.$url().toString(),
 				body: {
 					topic,
 					numberOfQuestions,
