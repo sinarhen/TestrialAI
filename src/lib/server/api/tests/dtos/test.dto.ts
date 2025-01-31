@@ -3,6 +3,7 @@ import { questionDto } from '@api/questions/dtos/question.dto';
 import type { DeepPartial } from '../../common/utils/deep-partial';
 
 export const testDto = z.object({
+	id: z.string(),
 	title: z.string(),
 	description: z.string(),
 	questions: z.array(questionDto)

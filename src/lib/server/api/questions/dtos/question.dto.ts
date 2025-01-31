@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { optionDto } from './option/option.dto';
 import type { DeepPartial } from '@api/common/utils/deep-partial';
-import { supportedLangs } from '@api/common/constants/supported-codeblock-langs';
+import { supportedLangs } from '@/server/api/common/constants/supported-codeblock-langs';
 
 export const questionDto = z.object({
 	answerType: z.enum(['single', 'multiple', 'text']),

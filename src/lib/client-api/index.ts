@@ -18,5 +18,8 @@
 
 import type { ClientRequestOptions } from 'hono';
 import { honoClient } from '@/utils/api';
+import { PUBLIC_DEV_BASE_URL, PUBLIC_PROD_BASE_URL } from '$env/static/public';
+import { dev } from '$app/environment';
 
-export const api = (opts?: ClientRequestOptions) => honoClient(opts);
+const baseUrl = dev ? PUBLIC_DEV_BASE_URL : PUBLIC_PROD_BASE_URL;
+export const api = (opts?: ClientRequestOptions) => honoClient(baseUrl, opts);

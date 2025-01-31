@@ -1,8 +1,8 @@
 import type { ApiRoutes } from '$lib/server/api';
 import type { ClientRequestOptions } from 'hono';
 import { hc, type ClientResponse } from 'hono/client';
-
-export const honoClient = (options?: ClientRequestOptions) => hc<ApiRoutes>('/', options).api;
+export const honoClient = (baseUrl: string, options?: ClientRequestOptions) =>
+	hc<ApiRoutes>(baseUrl, options).api;
 
 export async function parseClientResponse<T>(response: ClientResponse<T>) {
 	if (response.ok) {

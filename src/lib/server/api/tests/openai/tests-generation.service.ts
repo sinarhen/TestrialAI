@@ -2,7 +2,7 @@ import { injectable } from '@needle-di/core';
 import { OpenAiBaseService } from '@api/common/factories/openai-service.factory';
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 import { testDto } from '@api/tests/dtos/test.dto';
-import { supportedLangs } from '@api/common/constants/supported-codeblock-langs';
+import { supportedLangs } from '@/server/api/common/constants/supported-codeblock-langs';
 import type { GenerateTestDto } from '@api/tests/dtos/generate-test.dto';
 
 @injectable()

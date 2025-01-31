@@ -3,8 +3,7 @@
 	import { History, Timer, Gauge } from 'lucide-svelte';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 	import { goto } from '$app/navigation';
-	import { createQuery } from '@tanstack/svelte-query';
-	import { api } from '@/client-api';
+	import type { TestDto } from '@/server/api/tests/dtos/test.dto';
 
 	let isSheetOpen = $state(false);
 
@@ -13,9 +12,11 @@
 		isSheetOpen = false;
 	};
 
-	const user = createQuery(api().users.me());
-	const data = user ? createQuery(api().tests.getTestsHistory()) : null;
-	const history = $data;
+	const {
+		history
+	}: {
+		history: TestDto[];
+	} = $props();
 </script>
 
 <Sheet.Root open={isSheetOpen} onOpenChange={(val) => (isSheetOpen = val)}>
@@ -28,8 +29,8 @@
 			<Sheet.Description>View all your past tests</Sheet.Description>
 		</Sheet.Header>
 		<div class="mt-6 flex flex-col gap-y-4">
-			{#if history?.data}
-				{#each history.data as test}
+			{#if history}
+				{#each history as test}
 					<Card onclick={() => onClick(test.id)} class="cursor-pointer">
 						<CardHeader>
 							<CardTitle tag="h6">{test.title}</CardTitle>

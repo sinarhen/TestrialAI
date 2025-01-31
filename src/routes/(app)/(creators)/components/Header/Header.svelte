@@ -10,11 +10,14 @@
 	import { Separator } from '@/components/ui/separator';
 	import LogoutButton from './LogoutButton.svelte';
 	import type { UserDto } from '@/server/api/users/dtos/user.dto';
+	import type { TestDto } from '@/server/api/tests/dtos/test.dto';
 
 	const {
-		user
+		user,
+		history
 	}: {
 		user: UserDto | null;
+		history: TestDto[];
 	} = $props();
 
 	let isUpgradePlanPopoverOpen = $state(false);
@@ -22,7 +25,7 @@
 
 <header class="flex h-12 w-full items-center justify-between pt-4">
 	<div class="flex w-full items-center gap-x-2 text-sm">
-		<TestHistorySheet />
+		<TestHistorySheet {history} />
 		<NotificationsSheet />
 		<div class="relative flex cursor-pointer items-center">
 			<Popover.Root

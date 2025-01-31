@@ -60,6 +60,7 @@ export class IamController extends Controller {
 						c.req.valid('param').provider
 					);
 					const state = generateState();
+					console.log(state);
 					providerService.setStateCookie(state);
 
 					return c.redirect(providerService.getAuthorizationUrl(state));

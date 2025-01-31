@@ -3,7 +3,7 @@ import { generateId } from '../../common/utils/crypto';
 import { testsTable } from '../../tests/tables';
 import { relations, type InferSelectModel } from 'drizzle-orm';
 import type { InferResultType } from '@api/common/utils/drizzle';
-import type { SupportedLanguage } from '@api/common/constants/supported-codeblock-langs';
+import type { SupportedLanguage } from '@/server/api/common/constants/supported-codeblock-langs';
 import type { AnswerType } from '../../common/constants/question-answer-types';
 
 export const questionsTable = sqliteTable('questions', {

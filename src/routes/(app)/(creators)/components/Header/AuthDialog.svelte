@@ -18,6 +18,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import { api } from '@/client-api';
+	import type { Provider } from '@/server/api/users/tables';
 
 	let isAuthDialogOpen = $state<boolean | undefined>();
 	let isLoginMode = $state<boolean>(true);
@@ -47,13 +48,16 @@
 		};
 	};
 
-	const _getAuthLink = api().iam.login[':provider'].$url;
-	const googleAuthLink = _getAuthLink({
-		param: {
-			provider: 'google'
-		}
-	}).pathname;
-	const githubAuthLink = _getAuthLink({ param: { provider: 'github' } }).pathname;
+	const _getAuthLinkForProvider = (provider: Provider) =>
+		api()
+			.iam.login[':provider'].$url({
+				param: {
+					provider
+				}
+			})
+			.toString();
+	const googleAuthLink = _getAuthLinkForProvider('google');
+	const githubAuthLink = _getAuthLinkForProvider('github');
 </script>
 
 <Dialog

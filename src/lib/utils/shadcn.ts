@@ -2,8 +2,6 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
-import type { z } from 'zod';
-import type { ChatCompletion } from 'openai/resources/index.mjs';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));

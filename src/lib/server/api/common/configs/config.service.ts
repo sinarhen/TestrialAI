@@ -1,32 +1,41 @@
 import { injectable } from '@needle-di/core';
 import { z } from 'zod';
-import * as envs from '$env/static/private';
-import { envsDto, type EnvsDto } from './dtos/env.dto';
+import * as privateEnvs from '$env/static/private';
+import * as publicEnvs from '$env/static/public';
+import {
+	privateEnvsDto,
+	publicEnvsDto,
+	type PrivateEnvsDto,
+	type PublicEnvsDto
+} from './dtos/env.dto';
 
 @injectable()
 export class ConfigService {
-	envs: EnvsDto & {
-		BASE_URL: string;
-	};
+	envs: PrivateEnvsDto & PublicEnvsDto & { BASE_URL?: string };
 
 	constructor() {
 		this.envs = this.initEnvs();
 
 		// TODO: Find a better way to set the base url
-		this.envs.BASE_URL = this.envs.ENV === 'dev' ? this.envs.DEV_BASE_URL : this.envs.PROD_BASE_URL;
+		this.envs.BASE_URL =
+			this.envs.ENV === 'dev' ? this.envs.PUBLIC_DEV_BASE_URL : this.envs.PUBLIC_PROD_BASE_URL;
 	}
 
 	private initEnvs() {
-		const parsedEnvs = envsDto.parse(envs);
+		const parsedPrivateEnvs = privateEnvsDto.parse(privateEnvs);
+		const parsedPublicEnvs = publicEnvsDto.parse(publicEnvs);
 
-		const baseUrl = parsedEnvs.ENV === 'dev' ? parsedEnvs.DEV_BASE_URL : parsedEnvs.PROD_BASE_URL;
+		const baseUrl =
+			parsedPrivateEnvs.ENV === 'dev'
+				? parsedPublicEnvs.PUBLIC_DEV_BASE_URL
+				: parsedPublicEnvs.PUBLIC_PROD_BASE_URL;
 
-		return { ...parsedEnvs, BASE_URL: baseUrl };
+		return { ...parsedPrivateEnvs, ...parsedPublicEnvs, BASE_URL: baseUrl };
 	}
 
 	validateEnvs() {
 		try {
-			return envsDto.parse(envs);
+			return { ...privateEnvsDto.parse(privateEnvs), ...publicEnvsDto.parse(publicEnvs) };
 		} catch (err) {
 			if (err instanceof z.ZodError) {
 				const { fieldErrors } = err.flatten();

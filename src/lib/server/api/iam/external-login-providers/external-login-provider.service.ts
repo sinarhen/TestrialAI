@@ -6,7 +6,7 @@ import { RequestContextService } from '@/server/api/common/services/request-cont
 import type { SessionDto } from '../sessions/dtos/sessions.dto';
 
 export abstract class BaseExternalLoginProviderService {
-	abstract OAUTHSTATE_COOKIE_NAME: string;
+	private OAUTHSTATE_COOKIE_NAME = 'OAUTH_STATE';
 
 	constructor(
 		protected configService = inject(ConfigService),
@@ -26,26 +26,21 @@ export abstract class BaseExternalLoginProviderService {
 	}
 
 	public setStateCookie(state: string) {
-		this.setAuthorizationCookie(this.OAUTHSTATE_COOKIE_NAME, state);
+		setSignedCookie(
+			this.requestContextService.getContext(),
+			this.OAUTHSTATE_COOKIE_NAME,
+			state,
+			this.configService.envs.SIGNING_SECRET,
+			{
+				httpOnly: true,
+				secure: !dev,
+				sameSite: 'strict',
+				maxAge: 60 * 5
+			}
+		);
 	}
 
 	protected constructQs<T extends Record<string, string>>(params: T) {
 		return new URLSearchParams(params).toString();
-	}
-
-	private setAuthorizationCookie(name: string, value: string) {
-		setSignedCookie(
-			this.requestContextService.getContext(),
-			name,
-			value,
-			this.configService.envs.SIGNING_SECRET,
-			{
-				path: '/',
-				httpOnly: true,
-				secure: !dev,
-				maxAge: 60 * 5,
-				sameSite: 'lax'
-			}
-		);
 	}
 }

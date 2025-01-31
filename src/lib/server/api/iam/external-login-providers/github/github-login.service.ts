@@ -44,7 +44,6 @@ type GitHubEmail = {
 export class GitHubLoginService extends BaseExternalLoginProviderService {
 	private OAUTH_URL = 'https://github.com/login/oauth/authorize';
 	private SCOPE = 'user';
-	OAUTHSTATE_COOKIE_NAME = 'github_oauth_state';
 
 	constructor(
 		private usersService = inject(UsersService),
@@ -68,6 +67,10 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 		const storedState = await this.getStateCookie();
 
 		if (!storedState || state !== storedState) {
+			console.dir({
+				storedState,
+				state
+			});
 			throw Unauthorized('Invalid state');
 		}
 		const { access_token } = await this.validateAuthorizationCode(code);
@@ -155,7 +158,7 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 	}
 
 	private get callbackUrl() {
-		return `${this.configService.envs.BASE_URL}/auth/github/callback`;
+		return `${this.configService.envs.BASE_URL}/api/iam/login/github/callback`;
 	}
 
 	private get clientId() {
