@@ -42,8 +42,6 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 	private GET_ACCESS_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 	private SCOPE = 'openid profile email';
 
-	OAUTHSTATE_COOKIE_NAME = 'google_oauth_state';
-
 	constructor(
 		private usersService = inject(UsersService),
 		private sessionService = inject(SessionsService)

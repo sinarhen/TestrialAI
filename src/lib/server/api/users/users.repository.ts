@@ -22,7 +22,7 @@ export class UsersRepository extends DrizzleRepository {
 			.from(usersTable)
 			.where(and(eq(usersTable.providerId, providerId), eq(usersTable.provider, provider)))
 			.limit(1)
-			.then(takeFirstOrThrow);
+			.then(takeFirst);
 	}
 
 	async findOneByIdOrThrow(id: string, db = this.drizzle.db) {

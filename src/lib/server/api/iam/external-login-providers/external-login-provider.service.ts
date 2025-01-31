@@ -1,5 +1,5 @@
 import { inject } from '@needle-di/core';
-import { getSignedCookie, setSignedCookie } from 'hono/cookie';
+import { getCookie, setCookie } from 'hono/cookie';
 import { dev } from '$app/environment';
 import { ConfigService } from '@/server/api/common/configs/config.service';
 import { RequestContextService } from '@/server/api/common/services/request-context.service';
@@ -18,26 +18,16 @@ export abstract class BaseExternalLoginProviderService {
 	abstract handleCallback(code: string, state: string): Promise<SessionDto>;
 
 	public getStateCookie() {
-		return getSignedCookie(
-			this.requestContextService.getContext(),
-			this.OAUTHSTATE_COOKIE_NAME,
-			this.configService.envs.SIGNING_SECRET
-		);
+		return getCookie(this.requestContextService.getContext(), this.OAUTHSTATE_COOKIE_NAME);
 	}
 
 	public setStateCookie(state: string) {
-		setSignedCookie(
-			this.requestContextService.getContext(),
-			this.OAUTHSTATE_COOKIE_NAME,
-			state,
-			this.configService.envs.SIGNING_SECRET,
-			{
-				httpOnly: true,
-				secure: !dev,
-				sameSite: 'strict',
-				maxAge: 60 * 5
-			}
-		);
+		setCookie(this.requestContextService.getContext(), this.OAUTHSTATE_COOKIE_NAME, state, {
+			httpOnly: true,
+			secure: !dev,
+			sameSite: 'lax',
+			maxAge: 60 * 5
+		});
 	}
 
 	protected constructQs<T extends Record<string, string>>(params: T) {

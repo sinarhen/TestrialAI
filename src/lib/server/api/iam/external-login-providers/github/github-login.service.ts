@@ -43,7 +43,7 @@ type GitHubEmail = {
 @injectable()
 export class GitHubLoginService extends BaseExternalLoginProviderService {
 	private OAUTH_URL = 'https://github.com/login/oauth/authorize';
-	private SCOPE = 'user';
+	private SCOPE = 'read:user user:email';
 
 	constructor(
 		private usersService = inject(UsersService),
@@ -73,14 +73,14 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 			});
 			throw Unauthorized('Invalid state');
 		}
-		const { access_token } = await this.validateAuthorizationCode(code);
-		const githubUser = await this.getUserData(access_token);
+		const { accessToken } = await this.validateAuthorizationCode(code);
+		const githubUser = await this.getUserData(accessToken);
 		const existingUser = await this.usersService.getUserByProviderId('github', githubUser.id);
 
 		if (existingUser) {
 			return this.sessionService.createSession(existingUser.id);
 		} else {
-			const userGitHubEmails = await this.getUserEmails(access_token);
+			const userGitHubEmails = await this.getUserEmails(accessToken);
 
 			const primary = userGitHubEmails.find((email) => email.primary && email.verified);
 			if (primary) {
@@ -103,7 +103,7 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 	}
 
 	private async getUserEmails(accessToken: string) {
-		const githubEmailResponse = await axios.post('https://api.github.com/user/emails', {
+		const githubEmailResponse = await axios.get('https://api.github.com/user/emails', {
 			headers: {
 				Authorization: `Bearer ${accessToken}`
 			}
@@ -118,15 +118,16 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 	}
 
 	private async getUserData(accessToken: string) {
-		const githubUserResponse = await axios.post<GitHubUser>('https://api.github.com/user', {
+		const githubUserResponse = await axios.get<GitHubUser>('https://api.github.com/user', {
 			headers: {
 				Authorization: `Bearer ${accessToken}`
 			}
 		});
+
 		if (!githubUserResponse.data) {
 			throw Forbidden('Invalid token');
 		}
-		const githubUser: GitHubUser = await githubUserResponse.data;
+		const githubUser = githubUserResponse.data;
 		return githubUser;
 	}
 
@@ -135,10 +136,12 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 			code,
 			client_id: this.clientId,
 			client_secret: this.clientSecret,
-			redirect_uri: this.redirectUrl
+			redirect_uri: this.callbackUrl
 		});
+
 		const resp = await axios.post<GitHubAccessTokenResponse>(
 			`https://github.com/login/oauth/access_token?${qs}`,
+			{},
 			{
 				headers: {
 					Accept: 'application/json'
@@ -146,11 +149,14 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 			}
 		);
 
-		if (!resp.data || !resp.data.access_token) {
+		const accessToken = resp.data.access_token;
+
+		if (!resp.data || !accessToken) {
+			console.log(accessToken);
 			throw Forbidden('Invalid code');
 		}
 
-		return resp.data;
+		return { accessToken };
 	}
 
 	private get clientSecret() {
@@ -165,7 +171,7 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 		return this.configService.envs.GITHUB_CLIENT_ID;
 	}
 
-	private get redirectUrl() {
-		return `${this.configService.envs.BASE_URL}/auth/github/callback`;
-	}
+	// private get redirectUrl() {
+	// 	return `${this.configService.envs.BASE_URL}/api/iam/login/github/callback`;
+	// }
 }
