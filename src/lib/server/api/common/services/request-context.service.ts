@@ -1,5 +1,5 @@
 import { getContext } from 'hono/context-storage';
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import type { HonoEnv } from '../utils/hono';
 
 @injectable()

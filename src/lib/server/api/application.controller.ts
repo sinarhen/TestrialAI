@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { contextStorage } from 'hono/context-storage';
 import { rateLimit } from './common/middleware/rate-limit.middleware';
 import { RootController } from './common/factories/controllers.factory';
@@ -15,11 +15,11 @@ import { TestSessionsController } from './testSessions/test-sessions.controller'
 @injectable()
 export class ApplicationController extends RootController {
 	constructor(
-		private iamController = inject(IamController),
-		private usersController = inject(UsersController),
-		private testsController = inject(TestsController),
-		private questionsController = inject(QuestionsController),
-		private testSessionsController = inject(TestSessionsController)
+		private iamController = container.resolve(IamController),
+		private usersController = container.resolve(UsersController),
+		private testsController = container.resolve(TestsController),
+		private questionsController = container.resolve(QuestionsController),
+		private testSessionsController = container.resolve(TestSessionsController)
 	) {
 		super();
 	}

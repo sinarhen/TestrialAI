@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
 import { zValidator } from '@hono/zod-validator';
@@ -10,7 +10,7 @@ import { generatedTestDto } from './dtos/generated-test.dto';
 
 @injectable()
 export class TestsController extends Controller {
-	constructor(private testsService = inject(TestsService)) {
+	constructor(private testsService = container.resolve(TestsService)) {
 		super();
 	}
 

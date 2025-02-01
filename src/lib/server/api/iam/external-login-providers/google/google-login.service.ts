@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { Unauthorized } from '@/server/api/common/utils/exceptions';
 import axios from 'axios';
 import { UsersService } from '@/server/api/users/users.service';
@@ -43,8 +43,8 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 	private SCOPE = 'openid profile email';
 
 	constructor(
-		private usersService = inject(UsersService),
-		private sessionService = inject(SessionsService)
+		private usersService = container.resolve(UsersService),
+		private sessionService = container.resolve(SessionsService)
 	) {
 		super();
 	}

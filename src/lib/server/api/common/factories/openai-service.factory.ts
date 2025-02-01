@@ -1,4 +1,4 @@
-import { inject } from '@needle-di/core';
+import { container } from 'tsyringe';
 import { ConfigService } from '@api/common/configs/config.service';
 import OpenAI from 'openai';
 import type { CustomChatCompletionParams } from '@/types/openai';
@@ -6,7 +6,7 @@ import type { CustomChatCompletionParams } from '@/types/openai';
 export class OpenAiBaseService {
 	private client: OpenAI;
 
-	constructor(protected configService = inject(ConfigService)) {
+	constructor(protected configService = container.resolve(ConfigService)) {
 		this.client = new OpenAI({
 			apiKey: configService.envs.OPENAI_API_KEY
 		});

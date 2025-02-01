@@ -9,7 +9,7 @@ import {
 } from '@api/common/utils/drizzle';
 import { eq } from 'drizzle-orm';
 import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { generateId } from '../common/utils/crypto';
 
 @injectable()

@@ -1,12 +1,12 @@
 import { Controller } from '@api/common/factories/controllers.factory';
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { authState } from '@api/common/middleware/auth.middleware';
 import { TestSessionsService } from '@api/testSessions/test-sessions.service';
 
 // TODO
 @injectable()
 export class TestSessionsController extends Controller {
-	constructor(private testSessionsService = inject(TestSessionsService)) {
+	constructor(private testSessionsService = container.resolve(TestSessionsService)) {
 		super();
 	}
 

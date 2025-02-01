@@ -1,5 +1,5 @@
 import { deleteCookie, getSignedCookie, setSignedCookie } from 'hono/cookie';
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { SessionsRepository } from './sessions.repository';
 import dayjs from 'dayjs';
 import { RequestContextService } from '../../common/services/request-context.service';
@@ -13,9 +13,9 @@ export class SessionsService {
 	public readonly sessionCookieName = 'session';
 
 	constructor(
-		private sessionsRepository = inject(SessionsRepository),
-		private requestContextService = inject(RequestContextService),
-		private configService = inject(ConfigService)
+		private sessionsRepository = container.resolve(SessionsRepository),
+		private requestContextService = container.resolve(RequestContextService),
+		private configService = container.resolve(ConfigService)
 	) {}
 
 	setSessionCookie(session: SessionDto) {

@@ -1,10 +1,10 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import puppeteer from 'puppeteer';
 import { ConfigService } from '@api/common/configs/config.service';
 
 @injectable()
 export class PdfService {
-	constructor(private configService = inject(ConfigService)) {}
+	constructor(private configService = container.resolve(ConfigService)) {}
 
 	public async generateTestPdf(testId: string) {
 		const exportUrl = `${this.configService.envs.BASE_URL}/test/${testId}/pdf`;

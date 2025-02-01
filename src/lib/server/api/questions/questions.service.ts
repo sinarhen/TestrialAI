@@ -1,19 +1,19 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import type { CreateQuestionDto } from '@api/questions/dtos/create-question.dto';
 import { QuestionsRepository } from '@api/questions/questions.repository';
 import { QuestionsGenerationService } from '@api/questions/openai/questions-generation.service';
 import { NotFound } from '@api/common/utils/exceptions';
-import type { GenerateQuestionDto } from '@/server/api/questions/dtos/generate-question-params.dto';
 import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
 import type { ModifyQuestionTool } from '@api/questions/dtos/modify-question-tool.dto';
 import { TestsRepository } from '@api/tests/tests.repository';
+import type { GenerateQuestionParamsDto } from './dtos/generate-question-params.dto';
 
 @injectable()
 export class QuestionsService {
 	constructor(
-		private questionsRepository = inject(QuestionsRepository),
-		private generationService = inject(QuestionsGenerationService),
-		private testsRepository = inject(TestsRepository)
+		private questionsRepository = container.resolve(QuestionsRepository),
+		private generationService = container.resolve(QuestionsGenerationService),
+		private testsRepository = container.resolve(TestsRepository)
 	) {}
 
 	createQuestion(question: CreateQuestionDto, testId: string) {
@@ -28,7 +28,7 @@ export class QuestionsService {
 		return this.questionsRepository.updateQuestion(id, question);
 	}
 
-	async generateQuestion(testId: string, { topic }: GenerateQuestionDto) {
+	async generateQuestion(testId: string, { topic }: GenerateQuestionParamsDto) {
 		const test = await this.testsRepository.findOneByIdIncludeQuestions(testId);
 		if (!test) {
 			throw NotFound('Test not found');

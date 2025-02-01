@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { EmailChangeRequestsRepository } from './email-change-requests.repository';
 import { MailerService } from '../../mail/mailer.service';
 import { EmailChangeRequestEmail } from '../../mail/templates/email-change-request.template';
@@ -10,10 +10,10 @@ import { VerificationCodesService } from '../../common/services/verification-cod
 @injectable()
 export class EmailChangeRequestsService {
 	constructor(
-		private emailChangeRequetsRepository = inject(EmailChangeRequestsRepository),
-		private verificationCodesService = inject(VerificationCodesService),
-		private mailerService = inject(MailerService),
-		private usersRepository = inject(UsersRepository)
+		private emailChangeRequetsRepository = container.resolve(EmailChangeRequestsRepository),
+		private verificationCodesService = container.resolve(VerificationCodesService),
+		private mailerService = container.resolve(MailerService),
+		private usersRepository = container.resolve(UsersRepository)
 	) {}
 
 	async requestEmailChange(userId: string, requestedEmail: string) {

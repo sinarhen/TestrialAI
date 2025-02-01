@@ -1,11 +1,10 @@
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
-import { Container } from '@needle-di/core';
 import { SessionsService } from '../../iam/sessions/sessions.service';
+import { container } from 'tsyringe';
 
 export const sessionManagement: MiddlewareHandler = createMiddleware(async (c, next) => {
-	const container = new Container();
-	const sessionService = container.get(SessionsService);
+	const sessionService = container.resolve(SessionsService);
 	const sessionId = await sessionService.getSessionCookie();
 
 	if (!sessionId) {

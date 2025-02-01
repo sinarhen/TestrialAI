@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { OpenAiBaseService } from '@api/common/factories/openai-service.factory';
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 import { supportedLangs } from '@/server/api/common/constants/supported-codeblock-langs';

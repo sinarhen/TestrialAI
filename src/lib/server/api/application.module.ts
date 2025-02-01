@@ -1,13 +1,13 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { ConfigService } from './common/configs/config.service';
 import { ApplicationController } from './application.controller';
 
 @injectable()
 export class ApplicationModule {
 	constructor(
-		private applicationController = inject(ApplicationController),
-		private configService = inject(ConfigService)
-		// private storageService = inject(StorageService)
+		private applicationController = container.resolve(ApplicationController),
+		private configService = container.resolve(ConfigService)
+		// private storageService = container.resolve(StorageService)
 	) {}
 
 	async app() {

@@ -2,7 +2,7 @@ import { DrizzleRepository } from '@api/common/factories/drizzle-repository.fact
 import { testsTable } from '@api/tests/tables';
 import { type Client, takeFirstOrThrow, type Transaction } from '@api/common/utils/drizzle';
 import { eq } from 'drizzle-orm';
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import type { CreateTestDto } from './dtos/create-test-dto';
 
 @injectable()

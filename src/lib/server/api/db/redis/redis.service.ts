@@ -1,13 +1,12 @@
 import { Redis } from 'ioredis';
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { ConfigService } from '../../common/configs/config.service';
 
 @injectable()
 export class RedisService {
 	public redis: Redis;
 
-	constructor(private configService = inject(ConfigService)) {
-		console.log('Initialized RedisService');
+	constructor(private configService = container.resolve(ConfigService)) {
 		this.redis = new Redis(this.configService.envs.REDIS_URL);
 	}
 

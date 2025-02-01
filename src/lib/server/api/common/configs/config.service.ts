@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { z } from 'zod';
 import * as privateEnvs from '$env/static/private';
 import * as publicEnvs from '$env/static/public';

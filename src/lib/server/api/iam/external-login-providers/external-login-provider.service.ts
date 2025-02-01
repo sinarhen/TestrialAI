@@ -1,4 +1,4 @@
-import { inject } from '@needle-di/core';
+import { container } from 'tsyringe';
 import { getCookie, setCookie } from 'hono/cookie';
 import { dev } from '$app/environment';
 import { ConfigService } from '@/server/api/common/configs/config.service';
@@ -9,8 +9,8 @@ export abstract class BaseExternalLoginProviderService {
 	private OAUTHSTATE_COOKIE_NAME = 'OAUTH_STATE';
 
 	constructor(
-		protected configService = inject(ConfigService),
-		private requestContextService = inject(RequestContextService)
+		protected configService = container.resolve(ConfigService),
+		private requestContextService = container.resolve(RequestContextService)
 	) {}
 
 	abstract getAuthorizationUrl(state: string): string;

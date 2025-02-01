@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import type { Mailer, SendProps } from './interfaces/mailer.interface';
 
 @injectable()

@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
 import { zValidator } from '@hono/zod-validator';
@@ -12,7 +12,7 @@ import { streamOpenAiResponse } from '@api/common/utils/hono';
 
 @injectable()
 export class QuestionsController extends Controller {
-	constructor(private questionsService = inject(QuestionsService)) {
+	constructor(private questionsService = container.resolve(QuestionsService)) {
 		super();
 	}
 

@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 
 @injectable()
 export class TestSessionsService {

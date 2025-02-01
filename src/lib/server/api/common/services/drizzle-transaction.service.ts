@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { DrizzleRepository } from '@api/common/factories/drizzle-repository.factory';
 
 @injectable()

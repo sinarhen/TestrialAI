@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import axios from 'axios';
 import { Forbidden, InternalError, Unauthorized } from '@/server/api/common/utils/exceptions';
 import { UsersService } from '@/server/api/users/users.service';
@@ -46,8 +46,8 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 	private SCOPE = 'read:user user:email';
 
 	constructor(
-		private usersService = inject(UsersService),
-		private sessionService = inject(SessionsService)
+		private usersService = container.resolve(UsersService),
+		private sessionService = container.resolve(SessionsService)
 	) {
 		super();
 	}

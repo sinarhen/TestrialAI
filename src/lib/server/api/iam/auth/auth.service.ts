@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { RegisterRequestsRepository } from './dtos/register-requests/register-requests.repository';
 import { LoginVerificationEmail } from '../../mail/templates/login-verification.template';
 import { BadRequest } from '../../common/utils/exceptions';
@@ -20,15 +20,15 @@ import { GoogleLoginService } from '../external-login-providers/google/google-lo
 @injectable()
 export class AuthService {
 	constructor(
-		private registerRequestsRepository = inject(RegisterRequestsRepository),
-		private usersRepository = inject(UsersRepository),
-		private verificationCodesService = inject(VerificationCodesService),
-		private usersService = inject(UsersService),
-		private sessionsService = inject(SessionsService),
-		private mailer = inject(MailerService),
-		private hashingService = inject(HashingService),
-		private gitHubLoginService = inject(GitHubLoginService),
-		private googleLoginService = inject(GoogleLoginService)
+		private registerRequestsRepository = container.resolve(RegisterRequestsRepository),
+		private usersRepository = container.resolve(UsersRepository),
+		private verificationCodesService = container.resolve(VerificationCodesService),
+		private usersService = container.resolve(UsersService),
+		private sessionsService = container.resolve(SessionsService),
+		private mailer = container.resolve(MailerService),
+		private hashingService = container.resolve(HashingService),
+		private gitHubLoginService = container.resolve(GitHubLoginService),
+		private googleLoginService = container.resolve(GoogleLoginService)
 	) {}
 
 	public getExternalProviderService(provider: Provider): BaseExternalLoginProviderService {

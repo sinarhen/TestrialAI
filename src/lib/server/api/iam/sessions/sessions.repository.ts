@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { createSessionDto, type CreateSessionDto } from './dtos/create-session-dto';
 import { RedisRepository } from '../../common/factories/redis-repository.factory';
 

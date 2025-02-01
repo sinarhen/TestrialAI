@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { zValidator } from '@hono/zod-validator';
 import { createRegisterRequestDto } from './auth/dtos/register-requests/create-register-request.dto';
 import { AuthService } from './auth/auth.service';
@@ -14,8 +14,8 @@ import { loginDto } from './auth/dtos/login/login.dto';
 @injectable()
 export class IamController extends Controller {
 	constructor(
-		private authService = inject(AuthService),
-		private sessionsService = inject(SessionsService)
+		private authService = container.resolve(AuthService),
+		private sessionsService = container.resolve(SessionsService)
 	) {
 		super();
 	}

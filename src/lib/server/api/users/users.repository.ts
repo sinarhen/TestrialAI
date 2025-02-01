@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { usersTable, type Provider } from './tables/users.table';
 import { eq, and } from 'drizzle-orm';
 import { DrizzleRepository } from '../common/factories/drizzle-repository.factory';

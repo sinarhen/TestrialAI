@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { OpenAiBaseService } from '@api/common/factories/openai-service.factory';
 import { generatedQuestionDto } from '@api/questions/dtos/question.dto';
 import { codeBlockDto } from '@api/questions/dtos/code-block/code-block.dto';

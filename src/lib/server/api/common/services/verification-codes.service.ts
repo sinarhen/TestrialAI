@@ -1,10 +1,10 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { generateId } from '../utils/crypto';
 import { HashingService } from './hashing.service';
 
 @injectable()
 export class VerificationCodesService {
-	constructor(private hashingService = inject(HashingService)) {}
+	constructor(private hashingService = container.resolve(HashingService)) {}
 
 	async generateCodeWithHash() {
 		const verificationCode = this.generateCode();

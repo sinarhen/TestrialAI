@@ -1,4 +1,4 @@
-import { inject, injectable } from '@needle-di/core';
+import { container, injectable } from 'tsyringe';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
 import { zValidator } from '@hono/zod-validator';
@@ -13,9 +13,9 @@ import { verifyEmailDto } from './dtos/verify-email.dto';
 @injectable()
 export class UsersController extends Controller {
 	constructor(
-		private usersService = inject(UsersService),
-		private emailChangeRequestsService = inject(EmailChangeRequestsService),
-		private usersRepository = inject(UsersRepository)
+		private usersService = container.resolve(UsersService),
+		private emailChangeRequestsService = container.resolve(EmailChangeRequestsService),
+		private usersRepository = container.resolve(UsersRepository)
 	) {
 		super();
 	}

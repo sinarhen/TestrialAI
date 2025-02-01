@@ -1,4 +1,4 @@
-import { injectable } from '@needle-di/core';
+import { injectable } from 'tsyringe';
 import { hash, verify } from '@node-rs/argon2';
 
 @injectable()

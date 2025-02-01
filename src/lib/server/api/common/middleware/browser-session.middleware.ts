@@ -1,14 +1,13 @@
 import type { MiddlewareHandler } from 'hono';
 import { getSignedCookie, setSignedCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
-import { Container } from '@needle-di/core';
+import { container } from 'tsyringe';
 import { ConfigService } from '../configs/config.service';
 import { generateId } from '../utils/crypto';
 
 export const browserSessions: MiddlewareHandler = createMiddleware(async (c, next) => {
 	const BROWSER_SESSION_COOKIE_NAME = '_id';
-	const container = new Container();
-	const configService = container.get(ConfigService);
+	const configService = container.resolve(ConfigService);
 	const browserSessionCookie = await getSignedCookie(
 		c,
 		configService.envs.SIGNING_SECRET,

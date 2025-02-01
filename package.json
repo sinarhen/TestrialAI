@@ -67,6 +67,7 @@
 		"pdfmake": "^0.2.18",
 		"puppeteer": "^24.0.0",
 		"rate-limit-redis": "^4.2.0",
+		"reflect-metadata": "^0.2.2",
 		"tailwindcss-animate": "^1.0.7",
 		"tsyringe": "^4.8.0",
 		"uuid": "^11.0.3",

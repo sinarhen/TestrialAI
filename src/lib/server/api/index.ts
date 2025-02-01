@@ -1,9 +1,9 @@
-import { Container } from '@needle-di/core';
+import { container } from 'tsyringe';
 import { ApplicationModule } from './application.module';
 import { ApplicationController } from './application.controller';
 
-const applicationController = new Container().get(ApplicationController);
-const applicationModule = new Container().get(ApplicationModule);
+const applicationController = container.resolve(ApplicationController);
+const applicationModule = container.resolve(ApplicationModule);
 
 export function startServer() {
 	return applicationModule.start();
