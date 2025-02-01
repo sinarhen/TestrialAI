@@ -1,58 +1,43 @@
 import { injectable } from '@needle-di/core';
 import { OpenAiBaseService } from '@api/common/factories/openai-service.factory';
-import { questionDto } from '@api/questions/dtos/question.dto';
+import { generatedQuestionDto } from '@api/questions/dtos/question.dto';
 import { codeBlockDto } from '@api/questions/dtos/code-block/code-block.dto';
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 import type { ModifyQuestionTool } from '@api/questions/dtos/modify-question-tool.dto';
-
-interface GenerateQuestionParams {
-	topic: string;
-	existingQuestions: string[];
-	testTitle: string;
-}
-
-interface RegenerateQuestionParams {
-	tool: ModifyQuestionTool;
-	questionTopic: string;
-	existingQuestions: string[];
-	testTitle: string;
-}
-
-interface GenerateCodeBlockParams {
-	question: string;
-	testTitle: string;
-	previousCodeBlock?: string;
-}
+import type { GenerateQuestionParamsDto } from '../dtos/generate-question-params.dto';
+import { zodResponseFormat } from 'openai/helpers/zod.mjs';
+import type { GenerateCodeBlockParams } from '../dtos/code-block/generate-code-block-params.dto';
+import type { RegenerateQuestionParams } from '../dtos/regenerate-question.dto';
 
 @injectable()
 export class QuestionsGenerationService extends OpenAiBaseService {
 	/* --------------------- Public API Methods ----------------------- */
-	streamGenerateQuestion(params: GenerateQuestionParams) {
-		return this.createCompletionStream(questionDto, {
-			messages: this.buildGenerateQuestionMessages(params),
-			stream: true
+	streamGenerateQuestion(params: GenerateQuestionParamsDto) {
+		return this.createCompletionStream({
+			response_format: zodResponseFormat(generatedQuestionDto, 'generate-question-schema'),
+			messages: this.buildGenerateQuestionMessages(params)
 		});
 	}
 
 	streamRegenerateQuestion(params: RegenerateQuestionParams) {
-		return this.createCompletionStream(questionDto, {
-			messages: this.buildRegenerateQuestionMessages(params),
-			stream: true
+		return this.createCompletionStream({
+			response_format: zodResponseFormat(generatedQuestionDto, 'generate-question-schema'),
+			messages: this.buildRegenerateQuestionMessages(params)
 		});
 	}
 
 	streamGenerateCodeBlock(params: GenerateCodeBlockParams) {
 		const messages = this.buildGenerateCodeBlockMessages(params);
-		return this.createCompletionStream(codeBlockDto, {
-			messages,
-			stream: true
+		return this.createCompletionStream({
+			response_format: zodResponseFormat(codeBlockDto, 'generate-code-block-schema'),
+			messages
 		});
 	}
 
 	/* --------------------- Private Builders ----------------------- */
 
 	private buildGenerateQuestionMessages(
-		params: GenerateQuestionParams
+		params: GenerateQuestionParamsDto
 	): ChatCompletionMessageParam[] {
 		return [
 			{
@@ -105,7 +90,7 @@ export class QuestionsGenerationService extends OpenAiBaseService {
 		topic,
 		existingQuestions,
 		testTitle
-	}: GenerateQuestionParams): string {
+	}: GenerateQuestionParamsDto): string {
 		return `
 Generate a new question about "${topic}" for the test titled "${testTitle}".
 Avoid repeating any existing questions:

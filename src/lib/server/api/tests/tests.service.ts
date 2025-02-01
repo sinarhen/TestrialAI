@@ -1,11 +1,11 @@
 import { inject, injectable } from '@needle-di/core';
 import { TestsRepository } from '@api/tests/tests.repository';
-import type { CreateTestDto } from '@api/tests/dtos/test.dto';
 import { TestsGenerationService } from './openai/tests-generation.service';
 import type { GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { DrizzleTransactionService } from '@api/common/services/drizzle-transaction.service';
 import { QuestionsRepository } from '@api/questions/questions.repository';
 import { PdfService } from '@api/common/services/pdf.service';
+import type { CreateTestDto } from './dtos/create-test-dto';
 
 @injectable()
 export class TestsService {
@@ -22,7 +22,8 @@ export class TestsService {
 	}
 
 	async saveTest(test: CreateTestDto, userId: string) {
-		return await this.drizzleTransactionService.runTransaction(async (tx) => {
+		console.log(this.testsRepository.drizzle);
+		return await this.drizzleTransactionService.drizzle.db.transaction(async (tx) => {
 			const createdTest = await this.testsRepository.createTest(test, userId, tx);
 			await this.questionsRepository.createMultiple(test.questions, createdTest.id, tx);
 			return createdTest.id;

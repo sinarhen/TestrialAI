@@ -7,6 +7,7 @@ export class RedisService {
 	public redis: Redis;
 
 	constructor(private configService = inject(ConfigService)) {
+		console.log('Initialized RedisService');
 		this.redis = new Redis(this.configService.envs.REDIS_URL);
 	}
 

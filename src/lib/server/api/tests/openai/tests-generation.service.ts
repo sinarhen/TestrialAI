@@ -5,10 +5,18 @@ import { supportedLangs } from '@/server/api/common/constants/supported-codebloc
 import { type GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { generatedTestDto } from '../dtos/generated-test.dto';
+import { dev } from '$app/environment';
 
 @injectable()
 export class TestsGenerationService extends OpenAiBaseService {
+	constructor() {
+		super();
+	}
+
 	streamTestGeneration(params: GenerateTestParamsDto) {
+		if (dev) {
+			params.numberOfQuestions = 1;
+		}
 		return this.createCompletionStream({
 			response_format: zodResponseFormat(generatedTestDto, 'generate-test-schema'),
 			messages: this.getMessages(params)

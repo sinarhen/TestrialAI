@@ -2,8 +2,8 @@ import { DrizzleRepository } from '@api/common/factories/drizzle-repository.fact
 import { testsTable } from '@api/tests/tables';
 import { type Client, takeFirstOrThrow, type Transaction } from '@api/common/utils/drizzle';
 import { eq } from 'drizzle-orm';
-import type { CreateTestDto } from '@api/tests/dtos/test.dto';
 import { injectable } from '@needle-di/core';
+import type { CreateTestDto } from './dtos/create-test-dto';
 
 @injectable()
 export class TestsRepository extends DrizzleRepository {

@@ -10,6 +10,7 @@ import {
 import { eq } from 'drizzle-orm';
 import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
 import { injectable } from '@needle-di/core';
+import { generateId } from '../common/utils/crypto';
 
 @injectable()
 export class QuestionsRepository extends DrizzleRepository {
@@ -49,7 +50,8 @@ export class QuestionsRepository extends DrizzleRepository {
 		return db.insert(questionsTable).values(
 			questions.map((q) => ({
 				...q,
-				testId
+				testId,
+				options: q.options.map((o) => ({ ...o, id: generateId() }))
 			}))
 		);
 	}

@@ -15,9 +15,6 @@ export const questionDto = z.object({
 	answerExplanation: z.string().nullable()
 });
 
-export const generatedQuestionDto = questionDto.omit({ id: true, options: true }).extend({
-	options: z.array(generatedOptionDto)
-});
 // .refine(
 // 	(data) => {
 // 		if (data.answerType === 'text') {
@@ -31,4 +28,9 @@ export const generatedQuestionDto = questionDto.omit({ id: true, options: true }
 // 	}
 // );
 export type QuestionDto = z.infer<typeof questionDto>;
+
+export const generatedQuestionDto = questionDto.omit({ id: true, options: true }).extend({
+	options: z.array(generatedOptionDto)
+});
+export type GeneratedQuestionDto = z.infer<typeof generatedQuestionDto>;
 export type GeneratingQuestionDto = DeepPartial<QuestionDto>;

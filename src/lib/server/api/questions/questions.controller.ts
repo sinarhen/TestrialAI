@@ -4,7 +4,7 @@ import { authState } from '../common/middleware/auth.middleware';
 import { zValidator } from '@hono/zod-validator';
 import { QuestionsService } from '@api/questions/questions.service';
 import { createQuestionDto } from '@api/questions/dtos/create-question.dto';
-import { generateQuestionDto } from '@/server/api/questions/dtos/generated-question.dto';
+import { generateQuestionParamsDto } from '@/server/api/questions/dtos/generate-question-params.dto';
 import { updateQuestionDto } from '@api/questions/dtos/update-question.dto';
 import { validator } from 'hono/validator';
 import { modifyQuestionToolDto } from '@api/questions/dtos/modify-question-tool.dto';
@@ -35,7 +35,7 @@ export class QuestionsController extends Controller {
 					'/:testId/questions/generate',
 					authState('session'),
 
-					zValidator('json', generateQuestionDto),
+					zValidator('json', generateQuestionParamsDto),
 					async (c) => {
 						const testId = c.req.param('testId');
 						const dto = c.req.valid('json');

@@ -1,12 +1,12 @@
 import { inject, injectable } from '@needle-di/core';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
-import { testDto } from './dtos/test.dto';
 import { zValidator } from '@hono/zod-validator';
 import { TestsService } from '@api/tests/tests.service';
 import { generateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { streamOpenAiResponse } from '@api/common/utils/hono';
 import { rateLimit } from '../common/middleware/rate-limit.middleware';
+import { generatedTestDto } from './dtos/generated-test.dto';
 
 @injectable()
 export class TestsController extends Controller {
@@ -16,7 +16,7 @@ export class TestsController extends Controller {
 
 	routes() {
 		return this.controller
-			.post('/', authState('session'), zValidator('json', testDto), async (c) => {
+			.post('/', authState('session'), zValidator('json', generatedTestDto), async (c) => {
 				const { session } = c.var;
 				const parsed = c.req.valid('json');
 				const testId = await this.testsService.saveTest(parsed, session.id);
