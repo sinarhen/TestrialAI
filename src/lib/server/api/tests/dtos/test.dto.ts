@@ -11,5 +11,4 @@ export const testDto = z.object({
 
 export type TestDto = z.infer<typeof testDto>;
 export type CreateTestDto = TestDto;
-
 export type GeneratingTestDto = DeepPartial<TestDto>;

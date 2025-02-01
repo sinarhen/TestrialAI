@@ -1,6 +1,5 @@
-import type { DeepPartial } from '@/server/api/common/utils/deep-partial';
-import { ChatCompletionStream } from 'openai/lib/ChatCompletionStream';
 import { parse } from 'partial-json';
+import type { DeepPartial } from '@/server/api/common/utils/deep-partial';
 
 export interface OpenAiStreamingOptions<TFinal> {
 	endpoint: string;
@@ -10,7 +9,6 @@ export interface OpenAiStreamingOptions<TFinal> {
 	onPartial?: (partialData: DeepPartial<TFinal>) => void;
 	onComplete?: (finalData: TFinal) => void;
 	onError?: (error: unknown) => void;
-	onFinish?: () => void;
 }
 
 export async function streamOpenAiResponse<TFinal>({
@@ -19,48 +17,61 @@ export async function streamOpenAiResponse<TFinal>({
 	body,
 	signal,
 	onPartial,
-	onComplete
+	onComplete,
+	onError
 }: OpenAiStreamingOptions<TFinal>) {
-	const res = await fetch(endpoint, {
-		method,
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: body ? JSON.stringify(body) : undefined,
-		signal
-	});
-	if (!res.ok) {
-		throw new Error(`Network error: ${res.status} ${res.statusText}`);
-	}
-	if (!res.body) {
-		throw new Error('Response body is empty');
-	}
+	try {
+		const res = await fetch(endpoint, {
+			method,
+			headers: { 'Content-Type': 'application/json' },
+			body: body ? JSON.stringify(body) : undefined,
+			signal
+		});
 
-	const runner = ChatCompletionStream.fromReadableStream(res.body);
+		if (!res.ok) {
+			throw new Error(`Network error: ${res.status} ${res.statusText}`);
+		}
 
-	runner.on('content.delta', ({ snapshot }) => {
-		if (onPartial) {
+		if (!res.body) {
+			throw new Error('Response body is empty');
+		}
+
+		const reader = res.body.getReader();
+		const decoder = new TextDecoder('utf-8');
+		let buffer = '';
+
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) break;
+
+			buffer += decoder.decode(value, { stream: true });
+
 			try {
-				const partialData = parse(snapshot) as DeepPartial<TFinal>;
-				onPartial(partialData);
+				const partialData = parse(buffer) as DeepPartial<TFinal>;
+				onPartial?.(partialData);
 			} catch (err) {
-				console.error('Partial parse error:', err);
+				console.debug('Chunk incomplete, waiting for more data...');
+				onError?.(err);
 			}
 		}
-	});
 
-	runner.on('content.done', ({ content }) => {
-		if (onComplete) {
-			try {
-				const finalData = parse(content) as TFinal;
-				onComplete(finalData);
-			} catch (err) {
+		buffer += decoder.decode();
+
+		try {
+			const finalData = parse(buffer) as TFinal;
+			onComplete?.(finalData);
+		} catch (err) {
+			if (onError) {
+				onError(err);
+			} else {
 				console.error('Final parse error:', err);
 			}
 		}
-	});
-
-	runner.on('abort', () => {
-		console.log('Stream aborted');
-	});
+	} catch (error) {
+		if (onError) {
+			onError(error);
+		} else {
+			console.error('Streaming error:', error);
+		}
+	}
 }

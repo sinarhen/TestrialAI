@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Check, CircleHelp, Gauge, Trash, X } from 'lucide-svelte';
+	import { Check, Trash, X } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -8,7 +8,7 @@
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
 	import { api } from '@/client-api';
 	import type { GeneratingTestDto, TestDto } from '@/server/api/tests/dtos/test.dto';
-	import type { GenerateTestDto } from '@/server/api/tests/dtos/generate-test.dto';
+	import type { GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
 
 	const { data }: { data: PageData } = $props();
@@ -26,13 +26,13 @@
 	const generate = async () => {
 		abortController = new AbortController();
 		try {
-			await streamOpenAiResponse({
+			await streamOpenAiResponse<TestDto>({
 				endpoint: api().tests.generate.$url().toString(),
 				body: {
 					topic,
 					numberOfQuestions,
 					model
-				} as GenerateTestDto,
+				} as GenerateTestParamsDto,
 				signal: abortController.signal,
 				onPartial: (partialData) => {
 					generatingTest = {
@@ -70,19 +70,24 @@
 	const onConfirm = async () => {
 		if (!generatingTest || generatingTest.status !== 'finished') return;
 
-		toast.promise(createTest(generatingTest.data), {
-			loading: 'Saving test...',
-			success: (resp) => {
-				console.log(resp);
-				const id = resp.data;
-				goto(`/test/${id}`);
-				return 'Test is generated and saved successfully';
-			},
-			error: (err) => {
-				console.error(err);
-				return 'Test is failed to save';
+		toast.promise(
+			api().tests.$post({
+				json: generatingTest.data
+			}),
+			{
+				loading: 'Saving test...',
+				success: (resp) => {
+					console.log(resp);
+					const id = resp.json().then((data) => data.testId);
+					goto(`/test/${id}`);
+					return 'Test is generated and saved successfully';
+				},
+				error: (err) => {
+					console.error(err);
+					return 'Test is failed to save';
+				}
 			}
-		});
+		);
 	};
 </script>
 

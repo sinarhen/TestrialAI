@@ -1,8 +1,7 @@
 import { type Context, Hono } from 'hono';
 import { stream } from 'hono/streaming';
 import type { SessionDto } from '@api/iam/sessions/dtos/sessions.dto';
-import type { Stream } from 'openai/streaming';
-import type { ChatCompletionChunk } from 'openai/resources/index.mjs';
+import type { ChatCompletionStream } from 'openai/lib/ChatCompletionStream.mjs';
 
 export type HonoEnv = {
 	Variables: {
@@ -16,9 +15,10 @@ export function createHono() {
 	return new Hono<HonoEnv>();
 }
 
-export function streamOpenAiResponse(c: Context, openAiStream: Stream<ChatCompletionChunk>) {
+export function streamOpenAiResponse<T>(c: Context, openAiStream: ChatCompletionStream<T>) {
 	return stream(c, async (stream) => {
 		for await (const message of openAiStream) {
+			console.dir(message, { depth: null });
 			await stream.write(message.choices[0]?.delta.content ?? '');
 		}
 	});

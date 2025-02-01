@@ -2,8 +2,10 @@ import { z } from 'zod';
 import { optionDto } from './option/option.dto';
 import type { DeepPartial } from '@api/common/utils/deep-partial';
 import { supportedLangs } from '@/server/api/common/constants/supported-codeblock-langs';
+import { generatedOptionDto } from './option/generated-option.dto';
 
 export const questionDto = z.object({
+	id: z.string(),
 	answerType: z.enum(['single', 'multiple', 'text']),
 	correctAnswer: z.string().nullable(),
 	question: z.string(),
@@ -13,6 +15,9 @@ export const questionDto = z.object({
 	answerExplanation: z.string().nullable()
 });
 
+export const generatedQuestionDto = questionDto.omit({ id: true, options: true }).extend({
+	options: z.array(generatedOptionDto)
+});
 // .refine(
 // 	(data) => {
 // 		if (data.answerType === 'text') {

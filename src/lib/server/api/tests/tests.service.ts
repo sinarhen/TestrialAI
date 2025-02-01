@@ -2,7 +2,7 @@ import { inject, injectable } from '@needle-di/core';
 import { TestsRepository } from '@api/tests/tests.repository';
 import type { CreateTestDto } from '@api/tests/dtos/test.dto';
 import { TestsGenerationService } from './openai/tests-generation.service';
-import type { GenerateTestDto } from '@api/tests/dtos/generate-test.dto';
+import type { GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { DrizzleTransactionService } from '@api/common/services/drizzle-transaction.service';
 import { QuestionsRepository } from '@api/questions/questions.repository';
 import { PdfService } from '@api/common/services/pdf.service';
@@ -33,7 +33,7 @@ export class TestsService {
 		return this.testsRepository.findOneByIdIncludeQuestions(testId);
 	}
 
-	generateTestStream(params: GenerateTestDto) {
+	generateTestStream(params: GenerateTestParamsDto) {
 		return this.testsGenerationService.streamTestGeneration(params);
 	}
 

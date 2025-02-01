@@ -4,8 +4,9 @@ import { authState } from '../common/middleware/auth.middleware';
 import { testDto } from './dtos/test.dto';
 import { zValidator } from '@hono/zod-validator';
 import { TestsService } from '@api/tests/tests.service';
-import { generateTestDto } from '@api/tests/dtos/generate-test.dto';
+import { generateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { streamOpenAiResponse } from '@api/common/utils/hono';
+import { rateLimit } from '../common/middleware/rate-limit.middleware';
 
 @injectable()
 export class TestsController extends Controller {
@@ -21,16 +22,25 @@ export class TestsController extends Controller {
 				const testId = await this.testsService.saveTest(parsed, session.id);
 				return c.json({ testId });
 			})
-			.get('/history', authState('session'), async (c) => {
+			.get('/history', rateLimit({ limit: 1, minutes: 1 }), authState('session'), async (c) => {
 				const userId = c.var.session.userId;
 				const tests = await this.testsService.getTestsHistoryForUsers(userId);
 				return c.json(tests);
 			})
-			.post('/generate', authState('session'), zValidator('json', generateTestDto), async (c) => {
-				const body = c.req.valid('json');
-				const openAiStream = await this.testsService.generateTestStream(body);
-				return streamOpenAiResponse(c, openAiStream);
-			})
+			.post(
+				'/generate',
+				rateLimit({
+					limit: 5,
+					minutes: 1
+				}),
+				authState('session'),
+				zValidator('json', generateTestParamsDto),
+				async (c) => {
+					const body = c.req.valid('json');
+					const openAiStream = await this.testsService.generateTestStream(body);
+					return streamOpenAiResponse(c, openAiStream);
+				}
+			)
 			.delete('/:testId', authState('session'), (c) => {
 				const testId = c.req.param('testId');
 				this.testsService.deleteTest(testId);

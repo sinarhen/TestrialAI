@@ -3,7 +3,7 @@ import type { CreateQuestionDto } from '@api/questions/dtos/create-question.dto'
 import { QuestionsRepository } from '@api/questions/questions.repository';
 import { QuestionsGenerationService } from '@api/questions/openai/questions-generation.service';
 import { NotFound } from '@api/common/utils/exceptions';
-import type { GenerateQuestionDto } from '@api/questions/dtos/generate-question.dto';
+import type { GenerateQuestionDto } from '@/server/api/questions/dtos/generated-question.dto';
 import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
 import type { ModifyQuestionTool } from '@api/questions/dtos/modify-question-tool.dto';
 import { TestsRepository } from '@api/tests/tests.repository';

@@ -1,20 +1,21 @@
 import { injectable } from '@needle-di/core';
 import { OpenAiBaseService } from '@api/common/factories/openai-service.factory';
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
-import { testDto } from '@api/tests/dtos/test.dto';
 import { supportedLangs } from '@/server/api/common/constants/supported-codeblock-langs';
-import type { GenerateTestDto } from '@api/tests/dtos/generate-test.dto';
+import { type GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
+import { zodResponseFormat } from 'openai/helpers/zod';
+import { generatedTestDto } from '../dtos/generated-test.dto';
 
 @injectable()
 export class TestsGenerationService extends OpenAiBaseService {
-	streamTestGeneration(params: GenerateTestDto) {
-		return this.createCompletionStream(testDto, {
-			messages: this.getMessages(params),
-			stream: true
+	streamTestGeneration(params: GenerateTestParamsDto) {
+		return this.createCompletionStream({
+			response_format: zodResponseFormat(generatedTestDto, 'generate-test-schema'),
+			messages: this.getMessages(params)
 		});
 	}
 
-	getMessages: (parameters: GenerateTestDto) => ChatCompletionMessageParam[] = ({
+	getMessages: (parameters: GenerateTestParamsDto) => ChatCompletionMessageParam[] = ({
 		topic,
 		numberOfQuestions
 	}) => [
