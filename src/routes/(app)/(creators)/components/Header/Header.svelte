@@ -16,7 +16,7 @@
 		history
 	}: {
 		user: UserDto | null;
-		history: TestDto[];
+		history: TestDto[] | null;
 	} = $props();
 
 	let isUpgradePlanPopoverOpen = $state(false);

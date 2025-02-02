@@ -20,12 +20,11 @@ export class DevMailerService implements Mailer {
 	}
 
 	async send({ to, template }: SendProps) {
-		const info = await this.transporter.sendMail({
+		await this.transporter.sendMail({
 			from: process.env.EMAIL,
 			to: to,
 			subject: template.subject(),
 			html: template.html()
 		});
-		console.dir(info);
 	}
 }

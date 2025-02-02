@@ -15,7 +15,7 @@
 	const {
 		history
 	}: {
-		history: TestDto[];
+		history: TestDto[] | null;
 	} = $props();
 </script>
 

@@ -6,7 +6,7 @@ import { TestsService } from '@api/tests/tests.service';
 import { generateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { streamOpenAiResponse } from '@api/common/utils/hono';
 import { rateLimit } from '../common/middleware/rate-limit.middleware';
-import { generatedTestDto } from './dtos/generated-test.dto';
+import { createTestDto } from './dtos/create-test-dto';
 
 @injectable()
 export class TestsController extends Controller {
@@ -16,15 +16,16 @@ export class TestsController extends Controller {
 
 	routes() {
 		return this.controller
-			.post('/', authState('session'), zValidator('json', generatedTestDto), async (c) => {
+			.post('/', authState('session'), zValidator('json', createTestDto), async (c) => {
 				const { session } = c.var;
 				const parsed = c.req.valid('json');
-				const testId = await this.testsService.saveTest(parsed, session.id);
+
+				const testId = await this.testsService.saveTest(parsed, session.userId);
 				return c.json({ testId });
 			})
-			.get('/history', rateLimit({ limit: 1, minutes: 1 }), authState('session'), async (c) => {
+			.get('/history', authState('session'), async (c) => {
 				const userId = c.var.session.userId;
-				const tests = await this.testsService.getTestsHistoryForUsers(userId);
+				const tests = await this.testsService.getTestsHistoryForUser(userId);
 				return c.json(tests);
 			})
 			.post(

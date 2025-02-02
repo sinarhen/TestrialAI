@@ -9,9 +9,9 @@ export const questionDto = z.object({
 	answerType: z.enum(['single', 'multiple', 'text']),
 	correctAnswer: z.string().nullable(),
 	question: z.string(),
-	codeBlock: z.string().optional(),
-	codeLang: z.enum(supportedLangs).optional(),
-	options: z.array(optionDto),
+	codeBlock: z.string().nullable(),
+	codeLang: z.enum(supportedLangs).nullable(),
+	options: z.array(optionDto).nullable(),
 	answerExplanation: z.string().nullable()
 });
 

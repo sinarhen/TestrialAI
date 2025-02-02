@@ -20,7 +20,12 @@ export class TestsRepository extends DrizzleRepository {
 	}
 
 	async findAllByUserId(userId: string, db: Transaction | Client = this.drizzle.db) {
-		return db.select().from(testsTable).where(eq(testsTable.userId, userId));
+		return db.query.testsTable.findMany({
+			where: eq(testsTable.userId, userId),
+			with: {
+				questions: true
+			}
+		});
 	}
 
 	async findOneById(id: string, db: Transaction | Client = this.drizzle.db) {
