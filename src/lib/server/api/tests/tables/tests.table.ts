@@ -2,8 +2,7 @@ import { sql, relations } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
 import { usersTable } from '../../users/tables/users.table';
-import { questionsTable } from '../../questions/tables/questions.table';
-import type { InferResultType } from '../../common/utils/drizzle';
+import { questionsTable, type Question } from '../../questions/tables/questions.table';
 
 export const testsTable = sqliteTable('tests', {
 	id: text('id')
@@ -20,7 +19,7 @@ export const testsTable = sqliteTable('tests', {
 		.$type<Date>(),
 
 	title: text('title').notNull(),
-	description: text('description').notNull(),
+	description: text('description'),
 	userId: text('user_id')
 		.notNull()
 		.references(() => usersTable.id, { onDelete: 'cascade' })
@@ -37,10 +36,6 @@ export const testRelations = relations(testsTable, ({ one, many }) => ({
 export type Test = typeof testsTable.$inferSelect;
 export type InsertTest = typeof testsTable.$inferInsert;
 
-export type TestWithRelations = InferResultType<
-	'testsTable',
-	{
-		user: true;
-		questions: true;
-	}
->;
+export type TestWithRelations = Test & {
+	questions: Question[];
+};

@@ -9,11 +9,15 @@ import { takeFirst, takeFirstOrThrow } from '../common/utils/drizzle';
 @injectable()
 export class UsersRepository extends DrizzleRepository {
 	async findOneById(id: string, db = this.drizzle.db) {
-		return db.select().from(usersTable).where(eq(usersTable.id, id));
+		return db.select().from(usersTable).where(eq(usersTable.id, id)).then(takeFirst);
 	}
 
 	async findOneByEmail(email: string, db = this.drizzle.db) {
 		return db.select().from(usersTable).where(eq(usersTable.email, email)).then(takeFirst);
+	}
+
+	async findOneByUsername(username: string, db = this.drizzle.db) {
+		return db.select().from(usersTable).where(eq(usersTable.username, username)).then(takeFirst);
 	}
 
 	async findOneByProvider(provider: Provider, providerId: string, db = this.drizzle.db) {
@@ -26,8 +30,7 @@ export class UsersRepository extends DrizzleRepository {
 	}
 
 	async findOneByIdOrThrow(id: string, db = this.drizzle.db) {
-		const user = await this.findOneById(id, db).then(takeFirstOrThrow);
-		return user;
+		return db.select().from(usersTable).where(eq(usersTable.id, id)).then(takeFirstOrThrow);
 	}
 
 	async update(id: string, data: UpdateUserDto, db = this.drizzle.db) {

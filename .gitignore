@@ -12,9 +12,6 @@ Thumbs.db
 
 # Env
 .env
-.env
-!.env
-!.env.test
 
 # Vite
 vite.config.js.timestamp-*
@@ -26,3 +23,5 @@ vite.config.ts.timestamp-*
 /.idea/dataSources.local.xml
 /.idea/dataSources.xml
 /.idea/dataSources/b2995e76-481c-45c6-b717-2c60715f22e0/storage_v2/_src_/schema/main.uQUzAA.meta
+.env
+.env

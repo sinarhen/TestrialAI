@@ -1,6 +1,11 @@
 import { container, injectable } from 'tsyringe';
 import axios from 'axios';
-import { Forbidden, InternalError, Unauthorized } from '@/server/api/common/utils/exceptions';
+import {
+	BadRequest,
+	Forbidden,
+	InternalError,
+	Unauthorized
+} from '@/server/api/common/utils/exceptions';
 import { UsersService } from '@/server/api/users/users.service';
 import { BaseExternalLoginProviderService } from '../external-login-provider.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -75,11 +80,18 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 		}
 		const { accessToken } = await this.validateAuthorizationCode(code);
 		const githubUser = await this.getUserData(accessToken);
-		const existingUser = await this.usersService.getUserByProviderId('github', githubUser.id);
-
+		const existingUser = await this.usersService.findUserByProviderId('github', githubUser.id);
 		if (existingUser) {
 			return this.sessionService.createSession(existingUser.id);
 		} else {
+			const existingUserByUsername = await this.usersService.getUserByUsername(githubUser.login);
+			if (existingUserByUsername) {
+				throw BadRequest('User with this username already exists');
+			}
+			const existingUserByEmail = await this.usersService.findUserByEmail(githubUser.email);
+			if (existingUserByEmail) {
+				throw BadRequest('User with this email already exists');
+			}
 			const userGitHubEmails = await this.getUserEmails(accessToken);
 
 			const primary = userGitHubEmails.find((email) => email.primary && email.verified);

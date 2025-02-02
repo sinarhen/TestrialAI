@@ -4,7 +4,7 @@
 	let { children, data } = $props();
 </script>
 
-<Header user={data.user} form={null} />
+<Header user={data.user} />
 <div class="h-full w-full py-20 pb-12">
 	{@render children()}
 </div>

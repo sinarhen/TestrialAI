@@ -7,10 +7,10 @@ export const userDto = z.object({
 	id: z.string(),
 	email: z.string().email().nullable(),
 	username: z.string().min(3).max(20),
-	firstName: z.string().min(3).max(20).optional(),
-	lastName: z.string().min(3).max(20).optional(),
-	provider: z.enum(['google', 'github']).optional(),
-	providerId: z.string().optional()
+	firstName: z.string().min(3).max(20).nullable(),
+	lastName: z.string().min(3).max(20).nullable(),
+	provider: z.enum(['google', 'github']).nullable(),
+	providerId: z.string().nullable()
 	// avatar: z
 	// 	.instanceof(File)
 	// 	.optional()

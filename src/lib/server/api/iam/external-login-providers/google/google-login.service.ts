@@ -72,7 +72,7 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 		const { access_token } = await this.validateAuthorizationCode(code);
 
 		const googleUserResponse = await this.getUserInfo(access_token);
-		const existingUser = await this.usersService.getUserByProviderId(
+		const existingUser = await this.usersService.findUserByProviderId(
 			'google',
 			googleUserResponse.sub
 		);

@@ -1,28 +1,31 @@
-import { injectable } from 'tsyringe';
+import { container, injectable } from 'tsyringe';
 import type { Mailer, SendProps } from './interfaces/mailer.interface';
+import { ConfigService } from '../common/configs/config.service';
+import nodemailer from 'nodemailer';
 
 @injectable()
 export class DevMailerService implements Mailer {
-	async send({ to, template }: SendProps) {
-		const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				Attachments: [],
-				From: { Email: 'noreply@tofustack.com', Name: 'TofuStack' },
-				HTML: template.html(),
-				Subject: template.subject(),
-				Text: template.html(),
-				To: Array.isArray(to)
-					? to.map((to) => ({ Email: to, Name: to }))
-					: [{ Email: to, Name: to }]
-			})
-		};
+	private readonly transporter;
+	constructor(private configService = container.resolve(ConfigService)) {
+		this.transporter = nodemailer.createTransport({
+			service: 'gmail',
+			host: 'smtp.gmail.com',
+			port: 587,
+			secure: false,
+			auth: {
+				user: this.configService.envs.GOOGLE_APP_EMAIL,
+				pass: this.configService.envs.GOOGLE_APP_PASSWORD
+			}
+		});
+	}
 
-		const response = await fetch('http://localhost:8025/api/v1/send', options);
-		const data = await response.json();
-		console.log(`http://localhost:8025/view/${data.ID}`, `color: blue;`);
+	async send({ to, template }: SendProps) {
+		const info = await this.transporter.sendMail({
+			from: process.env.EMAIL,
+			to: to,
+			subject: template.subject(),
+			html: template.html()
+		});
+		console.dir(info);
 	}
 }

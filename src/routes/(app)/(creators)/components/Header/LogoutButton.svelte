@@ -3,38 +3,21 @@
 	import { toast } from 'svelte-sonner';
 	import { invalidateAll } from '$app/navigation';
 	import type { SubmitFunction } from '@sveltejs/kit';
+	import { api } from '@/client-api';
 
-	let isLoggingOutInProgress = $state(false);
+	const onLogout = async () => {
+		try {
+			const resp = await api().iam.logout.$post();
 
-	const onLogout: SubmitFunction = () => {
-		isLoggingOutInProgress = true;
-		return async ({ result }) => {
-			switch (result.type) {
-				case 'success':
-					toast.success('Successfully logged out');
-					await applyAction(result);
-					await invalidateAll();
-					break;
-				case 'error':
-					toast.error(result.error);
-					break;
-				case 'failure':
-					if (result.data && typeof result.data === 'object') {
-						toast.error(
-							Object.entries(result.data)
-								.map(([key, value]) => `${key}: ${value}`)
-								.join('\n')
-						);
-					} else {
-						toast.error('An unknown error occurred');
-					}
-					break;
-				default:
-					toast.warning('Something went wrong. Please try reloading the page.');
-					break;
+			if (resp.ok) {
+				toast.success('Logged out successfully');
+				invalidateAll();
+			} else {
+				toast.error('Failed to log out');
 			}
-			isLoggingOutInProgress = false;
-		};
+		} catch (err) {
+			toast.error('Something went wrong');
+		}
 	};
 
 	const {
@@ -44,8 +27,8 @@
 	} = $props();
 </script>
 
-<form use:enhance={onLogout} method="POST" action="/auth?/logout">
+<button onclick={onLogout}>
 	{#if children}
 		{@render children()}
 	{/if}
-</form>
+</button>

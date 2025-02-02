@@ -1,11 +1,11 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
-import { testsTable } from '../../tests/tables';
 import { relations, type InferSelectModel } from 'drizzle-orm';
 import type { InferResultType } from '@api/common/utils/drizzle';
 import type { SupportedLanguage } from '@/server/api/common/constants/supported-codeblock-langs';
 import type { AnswerType } from '../../common/constants/question-answer-types';
 import type { OptionDto } from '../dtos/option/option.dto';
+import { testsTable } from '../../tests/tables/tests.table';
 
 export const questionsTable = sqliteTable('questions', {
 	id: text('id')

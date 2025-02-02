@@ -1,9 +1,10 @@
 import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
-import { testsTable } from '../../tests/tables';
+import { testsTable, type TestWithRelations } from '../../tests/tables';
 import { relations } from 'drizzle-orm';
 import { testParticipantsTable } from './testSessionParticipants.table';
 import type { InferResultType } from '../../common/utils/drizzle';
+import { displayModes } from '../../common/constants/display-modes';
 
 export const testSessionsTable = sqliteTable(
 	'test_sessions',
@@ -24,26 +25,19 @@ export const testSessionsTable = sqliteTable(
 		testStateJson: text('test_state_json', {
 			mode: 'json'
 		})
-			// .$type<Test>()
+			.$type<TestWithRelations>()
 			.notNull(),
-		displayMode: text(
-			'display_mode'
-			//     {
-			// 	enum: entities.displayModes
-			// }
-		).notNull()
+		displayMode: text('display_mode', {
+			enum: displayModes
+		}).notNull()
 	},
 	(table) => ({
 		codeIdx: uniqueIndex('code_idx').on(table.code)
 	})
 );
 
-export const testSessionRelations = relations(testSessionsTable, ({ one, many }) => ({
+export const testSessionRelations = relations(testSessionsTable, ({ many }) => ({
 	participants: many(testParticipantsTable)
-	// test: one(testsTable, {
-	// 	fields: [testSessionsTable.testId],
-	// 	references: [testsTable.id]
-	// })
 }));
 
 export type TestSession = typeof testSessionsTable.$inferSelect;

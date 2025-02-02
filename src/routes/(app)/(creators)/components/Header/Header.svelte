@@ -3,7 +3,6 @@
 	import AuthDialog from './AuthDialog.svelte';
 	import TestHistorySheet from './TestHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';
-	import type { LayoutData } from '../../$types';
 	import * as Popover from '@/components/ui/popover';
 	import { Button } from '@/components/ui/button';
 	import { goto } from '$app/navigation';

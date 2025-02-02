@@ -78,7 +78,7 @@ export class AuthService {
 		await this.registerRequestsRepository.delete(request.email);
 
 		// check if the user already exists
-		const existingUser = await this.usersService.findOneByEmail(request.email);
+		const existingUser = await this.usersService.findUserByEmail(request.email);
 
 		// if the user exists, log them in, otherwise create a new user and log them in
 		return existingUser
@@ -114,7 +114,9 @@ export class AuthService {
 			username: user.username,
 			passwordHash: await this.hashingService.hash(user.password),
 			firstName: user.firstName,
-			lastName: user.lastName
+			lastName: user.lastName,
+			provider: null,
+			providerId: null
 		});
 
 		// send the welcome email

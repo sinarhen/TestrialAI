@@ -24,7 +24,7 @@ export class UsersController extends Controller {
 		return this.controller
 			.get('/me', async (c) => {
 				const session = c.var.session;
-				const user = session ? await this.usersRepository.findOneByIdOrThrow(session.userId) : null;
+				const user = session ? await this.usersRepository.findOneById(session.userId) : null;
 				return c.json(user);
 			})
 			.patch('/me', authState('session'), zValidator('form', updateUserDto), async (c) => {

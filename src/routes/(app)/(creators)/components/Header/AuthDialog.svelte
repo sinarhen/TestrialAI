@@ -12,50 +12,148 @@
 	import { Separator } from '@/components/ui/separator';
 	import { Button } from '@/components/ui/button';
 	import { LogIn } from 'lucide-svelte';
-	import type { SubmitFunction } from '@sveltejs/kit';
-	import { toast } from 'svelte-sonner';
-	import { applyAction } from '$app/forms';
-	import { invalidateAll } from '$app/navigation';
-	import { enhance } from '$app/forms';
 	import { api } from '@/client-api';
 	import type { Provider } from '@/server/api/users/tables';
+	import { toast } from 'svelte-sonner';
+	import { invalidate, invalidateAll } from '$app/navigation';
 
+	// state variables for the dialog and form mode
 	let isAuthDialogOpen = $state<boolean | undefined>();
 	let isLoginMode = $state<boolean>(true);
 	let isSigningIn = $state<boolean>(false);
 
+	// input states
+	let email = $state<string | null>(null);
+	let password = $state<string | null>(null);
+	let username = $state<string | null>(null);
+	let firstName = $state<string | null>(null);
+	let lastName = $state<string | null>(null);
+	let verificationCode = $state<string | null>(null);
+
+	// track whether we have sent the verification code
+	let isVerificationCodeSent = $state<boolean>(false);
+
 	function toggleAuthMode() {
+		// flip between "Login" and "Register"
 		isLoginMode = !isLoginMode;
+		isVerificationCodeSent = false;
+
+		// clear out fields if switching
+		email = null;
+		password = null;
+		username = null;
+		firstName = null;
+		lastName = null;
+		verificationCode = null;
 	}
-	const onLogin: SubmitFunction = () => {
-		isSigningIn = true;
-		return async ({ result }) => {
-			switch (result.type) {
-				case 'success':
-					toast.success('Successfully logged in');
-					isAuthDialogOpen = false;
-					break;
-				case 'error':
-					toast.error(result.error);
-					break;
-				default:
-					break;
+
+	// Send verification code for registration
+	const onSendVerificationCode = async () => {
+		try {
+			if (!email) {
+				toast.error('Please enter your email');
+				return;
+			}
+			if (!password) {
+				toast.error('Please enter your password');
+				return;
+			}
+			if (!username) {
+				toast.error('Please enter a username');
+				return;
 			}
 
-			await applyAction(result);
-			await invalidateAll();
+			isSigningIn = true;
+			const resp = await api().iam.register.request.$post({
+				json: { email }
+			});
+			if (!resp.ok) {
+				toast.error('Failed to send verification code');
+			} else {
+				toast.success('Verification code sent!');
+				isVerificationCodeSent = true;
+			}
+		} catch (err) {
+			toast.error('Something went wrong');
+		} finally {
 			isSigningIn = false;
-		};
+		}
+	};
+
+	// Verify the code to finalize registration
+	const onVerifyEmail = async () => {
+		try {
+			if (!email || !password || !username) {
+				toast.error('Missing required fields');
+				return;
+			}
+			if (!verificationCode) {
+				toast.error('Please enter the verification code');
+				return;
+			}
+
+			isSigningIn = true;
+			const resp = await api().iam.register.verify.$post({
+				json: {
+					email,
+					password,
+					username,
+					firstName,
+					lastName,
+					verificationCode
+				}
+			});
+			if (resp.ok) {
+				toast.success('Account created successfully');
+				isAuthDialogOpen = false;
+				// invalidate current page to refresh the user state
+				invalidateAll();
+			} else {
+				toast.error('Failed to create account');
+			}
+		} catch (err) {
+			toast.error('Something went wrong');
+		} finally {
+			isSigningIn = false;
+		}
+	};
+
+	// Login flow
+	const onLogin = async () => {
+		try {
+			if (!email) {
+				toast.error('Please enter your email address');
+				return;
+			}
+			if (!password) {
+				toast.error('Please enter your password');
+				return;
+			}
+
+			isSigningIn = true;
+			const resp = await api().iam.login.$post({
+				json: { email, password }
+			});
+			if (resp.ok) {
+				toast.success('Logged in successfully');
+				isAuthDialogOpen = false;
+			} else {
+				toast.error('Failed to login');
+			}
+		} catch (err) {
+			toast.error('Something went wrong');
+		} finally {
+			isSigningIn = false;
+		}
 	};
 
 	const _getAuthLinkForProvider = (provider: Provider) =>
 		api()
 			.iam.login[':provider'].$url({
-				param: {
-					provider
-				}
+				param: { provider }
 			})
 			.toString();
+
 	const googleAuthLink = _getAuthLinkForProvider('google');
 	const githubAuthLink = _getAuthLinkForProvider('github');
 </script>
@@ -76,82 +174,125 @@
 		<DialogHeader>
 			<DialogTitle>{isLoginMode ? 'Login' : 'Register'}</DialogTitle>
 			<DialogDescription>
-				{isLoginMode ? 'Please login to continue.' : 'Create an account to get started.'}
+				{#if isLoginMode}
+					Please login to continue.
+				{:else}
+					Create an account to get started.
+				{/if}
 				<button class="underline" onclick={toggleAuthMode}>
 					{isLoginMode ? 'Register?' : 'Already have an account? Login'}
 				</button>
 			</DialogDescription>
 		</DialogHeader>
-		<form
-			method="POST"
-			use:enhance={onLogin}
-			action={isLoginMode ? '/auth?/login' : 'auth?/register'}
-			class="flex flex-col gap-x-4 gap-y-2"
-		>
-			<div class="col-span-1">
-				<Label for="email-input" id="email-input-label">Email</Label>
-				<Input required type="email" name="email" class="sm:max-w-[270px]" id="email-input" />
-			</div>
-			{#if !isLoginMode}
-				<div class="col-span-1">
-					<Label for="username-input" id="username-input-label">Username</Label>
+
+		<!-- If we're in Login Mode, show the login fields -->
+		{#if isLoginMode}
+			<div class="flex flex-col gap-x-4 gap-y-2">
+				<div>
+					<Label for="email-input" id="email-input-label">Email</Label>
 					<Input
 						required
-						type="text"
-						name="username"
+						type="email"
+						bind:value={email}
 						class="sm:max-w-[270px]"
-						id="username-input"
-					/>
-					<!-- {#if form?.username}
-						<p class="text-sm text-red-500">{form.username}</p>
-					{/if} -->
-				</div>
-				<div class="col-span-1">
-					<Label for="first-name-input" id="first-name-input-label">First Name</Label>
-					<Input
-						placeholder="Optional(but preferable)"
-						type="text"
-						name="first_name"
-						class="sm:max-w-[270px]"
-						id="first-name-input"
+						id="email-input"
 					/>
 				</div>
-				<div class="col-span-1">
-					<Label for="last-name-input" id="last-name-input-label">Last Name</Label>
+				<div>
+					<Label for="password-input" id="password-input-label">Password</Label>
 					<Input
-						placeholder="Optional(but preferable)"
-						type="text"
-						name="last_name"
+						required
+						type="password"
+						bind:value={password}
 						class="sm:max-w-[270px]"
-						id="last-name-input"
+						id="password-input"
 					/>
+				</div>
+				<Button disabled={isSigningIn} on:click={onLogin}>Login</Button>
+			</div>
+		{:else}
+			<!-- Register Mode -->
+			{#if isVerificationCodeSent}
+				<!-- If verification code was sent, only show the code input + verify button -->
+				<div class="flex flex-col gap-x-4 gap-y-2">
+					<div>
+						<Label for="code-input" id="code-input-label">Verification Code</Label>
+						<Input
+							required
+							type="text"
+							bind:value={verificationCode}
+							class="sm:max-w-[270px]"
+							id="code-input"
+						/>
+					</div>
+					<Button disabled={isSigningIn} on:click={onVerifyEmail}>Verify</Button>
+				</div>
+			{:else}
+				<!-- Show fields needed before sending verification code -->
+				<div class="flex flex-col gap-x-4 gap-y-2">
+					<div>
+						<Label for="email-input" id="email-input-label">Email</Label>
+						<Input
+							required
+							type="email"
+							bind:value={email}
+							class="sm:max-w-[270px]"
+							id="email-input"
+						/>
+					</div>
+					<div>
+						<Label for="username-input" id="username-input-label">Username</Label>
+						<Input
+							required
+							type="text"
+							bind:value={username}
+							class="sm:max-w-[270px]"
+							id="username-input"
+						/>
+					</div>
+					<div>
+						<Label for="first-name-input" id="first-name-input-label">First Name</Label>
+						<Input
+							type="text"
+							bind:value={firstName}
+							class="sm:max-w-[270px]"
+							id="first-name-input"
+							placeholder="Optional"
+						/>
+					</div>
+					<div>
+						<Label for="last-name-input" id="last-name-input-label">Last Name</Label>
+						<Input
+							type="text"
+							bind:value={lastName}
+							class="sm:max-w-[270px]"
+							id="last-name-input"
+							placeholder="Optional"
+						/>
+					</div>
+					<div>
+						<Label for="password-input" id="password-input-label">Password</Label>
+						<Input
+							required
+							type="password"
+							bind:value={password}
+							class="sm:max-w-[270px]"
+							id="password-input"
+						/>
+					</div>
+					<Button disabled={isSigningIn} on:click={onSendVerificationCode}>
+						Send Verification Code
+					</Button>
 				</div>
 			{/if}
-			<div class="col-span-1">
-				<Label for="password-input" id="password-input-label">Password</Label>
-				<Input
-					required
-					type="password"
-					name="password"
-					class="sm:max-w-[270px]"
-					id="password-input"
-				/>
-				<!-- {#if form?.password}
-					<p class="text-sm text-red-500">{form.password}</p>
-				{/if} -->
-			</div>
-			<!-- {#if form?.message}
-				<p class="text-sm text-red-500">{form?.message}</p>
-			{/if} -->
-			<Button disabled={isSigningIn} type="submit" class="w-full sm:w-auto"
-				>{isLoginMode ? 'Login' : 'Register'}</Button
-			>
-		</form>
-		<div>
+		{/if}
+
+		<!-- Divider + OAuth Buttons -->
+		<div class="mt-4">
 			<Separator class="mb-4" />
 			<div class="flex flex-col items-center gap-x-2 gap-y-1 text-sm">
 				<a class="w-full" href={githubAuthLink}>
-					<Button disabled={isSigningIn} class="w-full" variant="outline">Github</Button>
+					<Button disabled={isSigningIn} class="w-full" variant="outline">GitHub</Button>
 				</a>
 				<a class="w-full" href={googleAuthLink}>
 					<Button disabled={isSigningIn} class="w-full" variant="outline">Google</Button>

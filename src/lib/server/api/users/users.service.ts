@@ -23,11 +23,15 @@ export class UsersService {
 		return this.usersRepository.create(user);
 	}
 
-	async findOneByEmail(email: string) {
+	async findUserByEmail(email: string) {
 		return this.usersRepository.findOneByEmail(email);
 	}
 
-	async getUserByProviderId(provider: Provider, providerId: string) {
+	async findUserByProviderId(provider: Provider, providerId: string) {
 		return this.usersRepository.findOneByProvider(provider, providerId);
+	}
+
+	async getUserByUsername(username: string) {
+		return this.usersRepository.findOneByUsername(username);
 	}
 }

@@ -11,6 +11,7 @@ import { sessionManagement } from './common/middleware/session-management.middle
 import { TestsController } from '@/server/api/tests/tests.controller';
 import { QuestionsController } from './questions/questions.controller';
 import { TestSessionsController } from './testSessions/test-sessions.controller';
+import { CustomErrorHandler } from './common/middleware/exceptions-handler.middleware';
 
 @injectable()
 export class ApplicationController extends RootController {
@@ -19,7 +20,8 @@ export class ApplicationController extends RootController {
 		private usersController = container.resolve(UsersController),
 		private testsController = container.resolve(TestsController),
 		private questionsController = container.resolve(QuestionsController),
-		private testSessionsController = container.resolve(TestSessionsController)
+		private testSessionsController = container.resolve(TestSessionsController),
+		private customErrorHandler = container.resolve(CustomErrorHandler)
 	) {
 		super();
 	}
@@ -49,6 +51,7 @@ export class ApplicationController extends RootController {
 			.route('/users', this.usersController.routes())
 			.route('/tests', this.testsController.routes())
 			.route('/questions', this.questionsController.routes())
-			.route('/test-sessions', this.testSessionsController.routes());
+			.route('/test-sessions', this.testSessionsController.routes())
+			.onError(this.customErrorHandler.handle);
 	}
 }

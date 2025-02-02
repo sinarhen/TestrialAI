@@ -5,10 +5,10 @@ import type { LibSQLDatabase } from 'drizzle-orm/libsql';
 
 type Schema = typeof schema;
 
-type TSchema = ExtractTablesWithRelations<Schema>;
-
 export type Transaction = Parameters<Parameters<LibSQLDatabase<Schema>['transaction']>[0]>[0];
 export type Client = LibSQLDatabase<Schema>;
+
+type TSchema = ExtractTablesWithRelations<Schema>;
 
 export type IncludeRelation<TableName extends keyof TSchema> = DBQueryConfig<
 	'one' | 'many',
