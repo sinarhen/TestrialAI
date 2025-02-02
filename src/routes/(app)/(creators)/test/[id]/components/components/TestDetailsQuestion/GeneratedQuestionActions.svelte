@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { createQuestion, updateQuestion } from '@/services/handlers';
 	import { Button } from '@/components/ui/button/index.js';
 	import { Sparkles, Trash2 } from 'lucide-svelte';
-	import type { Question } from '@/types/entities';
 	import { questionState, type QuestionState } from '../../../types';
+	import { api } from '@/client-api';
 
 	const {
 		testId,
@@ -22,23 +21,22 @@
 		if (!questionState.isGenerated(question)) {
 			throw new Error('Invalid question status');
 		}
-		const action =
-			question.status === 'generated'
-				? createQuestion(testId, question)
-				: updateQuestion(testId, question);
-		toast.promise(action, {
-			loading: 'Saving question...',
-			success: ({ data }) => {
-				updateQuestionInStore({ ...data, status: 'saved', isJustGenerated: true });
-				return 'Question saved successfully';
-			},
-			error: (error) => {
-				console.error('Failed to save generated question:', error);
-				toast.error('Failed to save generated question');
-				deleteQuestionInStore();
-				return 'Failed to save generated question';
+
+		try {
+			if (question.status === 'generated') {
+				api().questions[':testId'].questions.$post({
+					param: { testId },
+					json: question
+				});
+			} else if (question.status === 'regenerated') {
+				api().questions[':testId'].questions[':questionId'].$put({
+					param: { testId, questionId: question.id },
+					json: question
+				});
 			}
-		});
+		} catch (err) {
+			console.error('Failed to approve question:', err);
+		}
 	};
 
 	const onQuestionReject = async () => {

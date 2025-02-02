@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { optionDto } from './option/option.dto';
 import type { DeepPartial } from '@api/common/utils/deep-partial';
-import { supportedLangs } from '@/server/api/common/constants/supported-codeblock-langs';
+import { supportedLangs } from '@/constants/supported-codeblock-langs';
 import { generatedOptionDto } from './option/generated-option.dto';
 
 export const questionDto = z.object({

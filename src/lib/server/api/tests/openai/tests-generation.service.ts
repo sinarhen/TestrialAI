@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe';
 import { OpenAiBaseService } from '@api/common/factories/openai-service.factory';
 import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
-import { supportedLangs } from '@/server/api/common/constants/supported-codeblock-langs';
+import { supportedLangs } from '@/constants/supported-codeblock-langs';
 import { type GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { generatedTestDto } from '../dtos/generated-test.dto';

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto, invalidate } from '$app/navigation';
+	import { api } from '@/client-api';
 	import * as AlertDialog from '@/components/ui/alert-dialog';
 	import { Button } from '@/components/ui/button';
-	import { deleteTest } from '@/services/handlers';
 	import { Trash2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 
@@ -38,7 +38,12 @@
 			<AlertDialog.Action
 				onclick={() => {
 					if (testId) {
-						deleteTest(testId)
+						api()
+							.tests[':testId'].$delete({
+								param: {
+									testId
+								}
+							})
 							.then((res) => {
 								if (res.status < 300 && res.status >= 200) {
 									toast.success('Test is deleted successfully');

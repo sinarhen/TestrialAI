@@ -2,8 +2,7 @@
 	import { Trash2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 	import { type QuestionState, questionState } from '../../../../../types';
-	import { deleteQuestion } from '@/services/handlers';
-
+	import { api } from '@/client-api';
 	const {
 		question,
 		testId,
@@ -26,7 +25,9 @@
 				throw new Error('Invalid question status');
 			}
 
-			await deleteQuestion(testId, question.id);
+			await api().questions[':testId'].questions[':questionId'].$delete({
+				param: { testId, questionId: question.id }
+			});
 			deleteQuestionInStore();
 			toast.success('Question deleted successfully');
 		} catch (error) {

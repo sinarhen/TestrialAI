@@ -16,6 +16,10 @@ export class QuestionsService {
 		private testsRepository = container.resolve(TestsRepository)
 	) {}
 
+	deleteQuestion(id: string) {
+		return this.questionsRepository.deleteQuestion(id);
+	}
+
 	createQuestion(question: CreateQuestionDto, testId: string) {
 		return this.questionsRepository.create(question, testId);
 	}

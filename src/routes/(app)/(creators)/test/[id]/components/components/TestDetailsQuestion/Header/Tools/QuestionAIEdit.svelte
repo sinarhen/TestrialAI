@@ -1,11 +1,13 @@
 <script lang="ts">
 	import * as DropdownMenu from '@/components/ui/dropdown-menu';
-	import { streamQuestionModification } from '@/services/handlers';
 	import type { QuestionModificationTool } from '@/types/openai';
 	import { Brain, CaseLower, Globe, RotateCw, Sparkles, ChevronDown, Icon } from 'lucide-svelte';
 	import { questionState, type QuestionState } from '../../../../../types';
 	import { toast } from 'svelte-sonner';
 	import lodash from 'lodash';
+	import { streamOpenAiResponse } from '@/utils/openai-stream';
+	import { api } from '@/client-api';
+	import type { GeneratedQuestionDto } from '@/server/api/questions/dtos/question.dto';
 
 	let isActionMenuOpen = $state(false);
 
@@ -26,33 +28,37 @@
 		}
 		toast.info(`Applying '${tool}' tool to question...`);
 		const questionStatePreserved = lodash.cloneDeep(question);
-		await streamQuestionModification(
-			{
-				testId,
-				questionId: question.id,
-				tool
-			},
-			{
-				onPartial: (partialData) => {
-					updateQuestionInStore({
-						id: question.id,
-						...partialData,
-						status: 'regenerating'
-					});
-				},
-				onComplete: (finalData) => {
-					updateQuestionInStore({
-						id: question.id,
-						...finalData,
-						status: 'regenerated',
-						initialState: questionStatePreserved
-					});
-					console.log(finalData);
 
-					toast.success(`Question updated with '${tool}' tool.`);
+		const questionModifyEndpointUrl = api()
+			.questions[':testId'].questions[':questionId'][':tool'].$url({
+				param: {
+					tool,
+					testId,
+					questionId: question.id
 				}
+			})
+			.toString();
+		await streamOpenAiResponse<GeneratedQuestionDto>({
+			endpoint: questionModifyEndpointUrl,
+			onPartial: (partialData) => {
+				updateQuestionInStore({
+					id: question.id,
+					...partialData,
+					status: 'regenerating'
+				});
+			},
+			onComplete: (finalData) => {
+				updateQuestionInStore({
+					id: question.id,
+					...finalData,
+					status: 'regenerated',
+					initialState: questionStatePreserved
+				});
+				console.log(finalData);
+
+				toast.success(`Question updated with '${tool}' tool.`);
 			}
-		);
+		});
 	};
 
 	const tools: {

@@ -4,7 +4,7 @@ import { testsTable, type TestWithRelations } from '../../tests/tables';
 import { relations } from 'drizzle-orm';
 import { testParticipantsTable } from './testSessionParticipants.table';
 import type { InferResultType } from '../../common/utils/drizzle';
-import { displayModes } from '../../common/constants/display-modes';
+import { displayModes } from '../../../../constants/display-modes';
 
 export const testSessionsTable = sqliteTable(
 	'test_sessions',

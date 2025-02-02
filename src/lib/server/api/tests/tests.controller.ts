@@ -42,6 +42,11 @@ export class TestsController extends Controller {
 					return streamOpenAiResponse(c, openAiStream);
 				}
 			)
+			.get('/:testId', authState('session'), async (c) => {
+				const testId = c.req.param('testId');
+				const test = await this.testsService.findTest(testId);
+				return c.json(test);
+			})
 			.delete('/:testId', authState('session'), (c) => {
 				const testId = c.req.param('testId');
 				this.testsService.deleteTest(testId);

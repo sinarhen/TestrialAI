@@ -6,8 +6,10 @@
 	import { Label } from '@/components/ui/label';
 	import { toast } from 'svelte-sonner';
 	import type { TestState } from '../types';
-	import { streamQuestionGeneration } from '@/services/handlers';
-	import type { GenerateQuestionDto } from '../../../../api/tests/[testId]/questions/generate/+server';
+	import type { GenerateQuestionParamsDto } from '@/server/api/questions/dtos/generate-question-params.dto';
+	import { streamOpenAiResponse } from '@/utils/openai-stream';
+	import { api } from '@/client-api';
+	import { type GeneratedQuestionDto } from '@/server/api/questions/dtos/question.dto';
 
 	let isPopoverOpen = $state(false);
 	let questionTopic = $state('');
@@ -28,11 +30,6 @@
 	let generatingQuestionIndex: number | null = $state(null);
 
 	async function onGenerate() {
-		const body: GenerateQuestionDto = {
-			topic: questionTopic
-		};
-
-		// Create a fresh AbortController for this generation
 		abortController = new AbortController();
 
 		test?.questions?.push({
@@ -41,10 +38,22 @@
 		generatingQuestionIndex = test?.questions.length - 1;
 
 		resetPopover();
+		const generateEndpoint = api().questions[':testId'].questions.generate;
+		const generateEndpointUrl = generateEndpoint
+			.$url({
+				param: {
+					testId: test.id
+				}
+			})
+			.toString();
 
+		type GenerateEndpointBody = Parameters<(typeof generateEndpoint)['$post']>['0']['json'];
 		try {
-			await streamQuestionGeneration(test.id, {
-				body,
+			await streamOpenAiResponse<GeneratedQuestionDto>({
+				endpoint: generateEndpointUrl,
+				body: {
+					topic: questionTopic
+				} as GenerateEndpointBody,
 				signal: abortController.signal,
 				onPartial: (partialData) => {
 					if (!generatingQuestionIndex) return;

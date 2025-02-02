@@ -25,6 +25,12 @@
 				status: 'created';
 				code: string;
 		  };
+	export type DialogStateStatus = DialogState['status'];
+
+	export const testSettings = {
+		displayMode: null as DisplayMode | null,
+		durationInMinutes: null as number | null
+	};
 </script>
 
 <script lang="ts">
@@ -35,18 +41,17 @@
 	import * as Accordion from '@/components/ui/accordion';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
-	import type { DisplayMode } from '@/types/entities';
 	import { Copy, Layers, Play, Settings, Share, Timer } from 'lucide-svelte';
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import { Input } from '@/components/ui/input';
 	import { copy } from '@/utils/copy';
 	import { toast } from 'svelte-sonner';
-	import { createTestSession } from '@/services/handlers';
 	import { goto } from '$app/navigation';
 	import QR from '@svelte-put/qr/svg/QR.svelte';
 	import StepCardSelector from './StepCardSelector.svelte';
 	import ConfigureSession from './DialogStates/SessionConfiguringSteps/index.svelte';
 	import ConfirmingState from './DialogStates/ConfirmingState.svelte';
+	import type { DisplayMode } from '@/constants/display-modes';
 
 	const {
 		testId,
@@ -78,10 +83,8 @@
 		status: 'configuring'
 	});
 
-	const setDialogState = (status: DialogState['status']) => {
-		dialogState = {
-			status
-		};
+	const setDialogState = (state: DialogState) => {
+		dialogState = state;
 	};
 
 	const getSessionLink = (code: string) => {
@@ -176,7 +179,7 @@
 			<Separator />
 
 			{#if dialogState.status === 'confirming'}
-				<ConfirmingState />
+				<ConfirmingState {setDialogState} {testId} />
 			{:else if dialogState.status === 'creating'}
 				<div
 					class="flex h-48 flex-col items-center justify-center px-24 -motion-translate-y-in-[10%] motion-opacity-in-0"

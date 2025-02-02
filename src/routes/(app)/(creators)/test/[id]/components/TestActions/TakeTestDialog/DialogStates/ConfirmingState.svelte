@@ -1,20 +1,16 @@
 <script lang="ts">
 	import Button from '@/components/ui/button/button.svelte';
-	import { createTestSession } from '@/services/handlers';
-	import type { DisplayMode } from '@/types/entities';
 	import { toast } from 'svelte-sonner';
+	import { testSettings, type DialogState } from '../index.svelte';
 
 	const {
 		setDialogState,
-		displayMode,
-		durationInMinutes,
 		testId
 	}: {
-		setDialogState: (status: string) => void;
+		setDialogState: (state: DialogState) => void;
 		testId: string;
-		displayMode: DisplayMode;
-		durationInMinutes: number;
 	} = $props();
+	const { durationInMinutes, displayMode } = testSettings;
 
 	const onConfirm = async () => {
 		if (!durationInMinutes || !displayMode) {
@@ -26,23 +22,25 @@
 				status: 'creating'
 			});
 
-			const { data: code } = await createTestSession(testId, {
-				displayMode: testSettings.displayMode,
-				durationInMinutes: testSettings.durationInMinutes
-			});
+			// const { data: code } = await createTestSession(testId, {
+			// 	displayMode: testSettings.displayMode,
+			// 	durationInMinutes: testSettings.durationInMinutes
+			// });
 
 			setDialogState({
 				status: 'created',
-				code
+				code: 'asdasd'
 			});
 		} catch (error) {
-			setDialogState('configuring');
+			setDialogState({
+				status: 'configuring'
+			});
 			toast.error('Failed to create test session.');
 			console.error(error);
 		}
 	};
 
-	const onCancel = () => setDialogState('configuring');
+	const onCancel = () => setDialogState({ status: 'configuring' });
 </script>
 
 <div

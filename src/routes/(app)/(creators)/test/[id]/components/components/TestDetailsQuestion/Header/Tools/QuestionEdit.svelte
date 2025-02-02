@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { type QuestionState, questionState } from '../../../../../types';
+	import { parseClientResponse } from '@/utils/api.js';
+	import { type QuestionState, questionState, type SavedQuestion } from '../../../../../types';
 	import { toast } from 'svelte-sonner';
-	import { createQuestion, streamCodeBlockGeneration, updateQuestion } from '@/services/handlers';
 	import {
 		Dialog,
 		DialogContent,
@@ -13,7 +13,6 @@
 	} from '@/components/ui/dialog';
 	import * as RadioGroup from '@/components/ui/radio-group';
 	import * as Accordion from '@/components/ui/accordion';
-	import { AnswerTypes, supportedLangs, type SupportedLanguage } from '@/types/entities';
 	import lodash from 'lodash';
 	import { Info, Pencil, Plus, Sparkles, Trash2 } from 'lucide-svelte';
 	import { Label } from '@/components/ui/label';
@@ -23,6 +22,11 @@
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import * as Select from '@/components/ui/select';
 	import QuestionCodeBlock from '../../../../QuestionCodeBlock.svelte';
+	import { streamOpenAiResponse } from '@/utils/openai-stream';
+	import { api } from '@/client-api';
+	import type { GeneratedQuestionDto } from '@/server/api/questions/dtos/question.dto';
+	import { AnswerTypes } from '@/constants/question-answer-types';
+	import { supportedLangs, type SupportedLanguage } from '@/constants/supported-codeblock-langs';
 
 	const {
 		testId,
@@ -70,8 +74,21 @@
 
 		toast.info('Generating code block...');
 		try {
-			await streamCodeBlockGeneration(testId, updatedQuestion.id, {
+			const generateCodeBlockEndpointUrl = api()
+				.questions[':testId'].questions[':questionId']['generate-code-block'].$url({
+					param: {
+						testId: testId,
+						questionId: updatedQuestion.id
+					}
+				})
+				.toString();
+
+			await streamOpenAiResponse<GeneratedQuestionDto>({
+				endpoint: generateCodeBlockEndpointUrl,
 				onPartial: (partialData) => {
+					if (!partialData.codeBlock) return;
+					if (!partialData.codeLang) return;
+
 					updatedQuestion.codeBlock = partialData.codeBlock;
 					updatedQuestion.codeLang = partialData.codeLang;
 				},
@@ -101,22 +118,37 @@
 			return;
 		}
 
-		const resp = questionState.isNew(updatedQuestion)
-			? createQuestion(testId, updatedQuestion)
-			: updateQuestion(testId, updatedQuestion);
-
-		toast.promise(resp, {
-			loading: 'Saving question...',
-			success: ({ data }) => {
-				updateQuestionInStore({ ...data, status: 'saved' });
-				isDialogOpen = false;
-				return 'Question saved successfully';
-			},
-			error: (e) => {
-				console.error(e);
-				return 'Failed to save question';
+		let resp;
+		try {
+			if (questionState.isNew(updatedQuestion))
+				resp = await api()
+					.questions[':testId'].questions.$post({
+						param: {
+							testId
+						},
+						json: updatedQuestion
+					})
+					.then(parseClientResponse);
+			else {
+				resp = await api()
+					.questions[':testId'].questions[':questionId'].$put({
+						param: {
+							testId,
+							questionId: updatedQuestion.id
+						},
+						json: updatedQuestion
+					})
+					.then(parseClientResponse);
 			}
-		});
+		} catch (e) {
+			console.error(e);
+			toast.error('Failed to save question');
+			return;
+		}
+
+		updateQuestionInStore({ ...resp, status: 'saved' });
+		isDialogOpen = false;
+		toast.success('Question saved successfully');
 	};
 
 	const languagesAvailable = supportedLangs.map((lang) => ({

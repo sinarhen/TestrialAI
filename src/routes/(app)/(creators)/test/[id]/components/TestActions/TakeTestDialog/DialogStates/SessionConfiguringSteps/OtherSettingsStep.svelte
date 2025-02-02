@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { steps } from '../../index.svelte';
 	import AccordionStep from './AccordionStep.svelte';
-	import { steps } from '../index.svelte';
 
 	const {
 		disabled

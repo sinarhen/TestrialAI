@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { type DisplayMode } from '@/types/entities';
-	import { Button } from '@/components/ui/button';
-
 	import AccordionStep from './AccordionStep.svelte';
 	import { Layers, List } from 'lucide-svelte';
-	import { steps, type Step } from '../index.svelte';
 	import StepCardSelector from '../../StepCardSelector.svelte';
+	import type { DisplayMode } from '@/constants/display-modes';
+	import { steps, type Step } from '../../index.svelte';
 
 	const displayModes: {
 		icon: any;

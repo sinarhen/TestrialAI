@@ -1,12 +1,11 @@
+import type { PartialBy } from '@/server/api/common/utils/deep-partial';
+import type { Question } from '@/server/api/db/libsql/drizzle-schema';
+import type { OptionDto } from '@/server/api/questions/dtos/option/option.dto';
 import type {
-	GeneratingQuestionCompletion,
-	Option,
-	Question,
-	QuestionCompletion,
-	Test
-} from '@/types/entities';
-import type { PartialBy } from '@/types/utils';
-
+	GeneratedQuestionDto,
+	GeneratingQuestionDto
+} from '@/server/api/questions/dtos/question.dto';
+import type { TestDto } from '@/server/api/tests/dtos/test.dto';
 interface BaseQuestionState {
 	status: Status;
 }
@@ -25,29 +24,29 @@ export interface SavedQuestion extends Question, BaseQuestionState {
 	isJustGenerated?: boolean;
 }
 
-interface GeneratingQuestion extends GeneratingQuestionCompletion, BaseQuestionState {
+interface GeneratingQuestion extends GeneratingQuestionDto, BaseQuestionState {
 	status: 'generating';
 }
 
-interface NewQuestion extends QuestionCompletion, BaseQuestionState {
+interface NewQuestion extends GeneratedQuestionDto, BaseQuestionState {
 	status: 'new';
 }
 
 interface ModifiedQuestion extends Omit<Question, 'options'>, BaseQuestionState {
-	options: PartialBy<Option, 'id'>[];
+	options: PartialBy<OptionDto, 'id'>[];
 	status: 'modified';
 }
 
-interface GeneratedQuestion extends QuestionCompletion, BaseQuestionState {
+interface GeneratedQuestion extends GeneratedQuestionDto, BaseQuestionState {
 	status: 'generated';
 }
 
-interface RegeneratingQuestion extends GeneratingQuestionCompletion, BaseQuestionState {
+interface RegeneratingQuestion extends GeneratingQuestionDto, BaseQuestionState {
 	status: 'regenerating';
 	id: string;
 }
 
-interface RegeneratedQuestion extends QuestionCompletion, BaseQuestionState {
+interface RegeneratedQuestion extends GeneratedQuestionDto, BaseQuestionState {
 	status: 'regenerated';
 	id: string;
 	initialState: SavedQuestion;
@@ -106,6 +105,6 @@ export const questionState = {
 	isGenerated
 };
 
-export type TestState = Omit<Test, 'questions'> & {
+export type TestState = Omit<TestDto, 'questions'> & {
 	questions: QuestionState[];
 };

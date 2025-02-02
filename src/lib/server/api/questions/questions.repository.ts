@@ -68,4 +68,8 @@ export class QuestionsRepository extends DrizzleRepository {
 			.returning()
 			.then(takeFirst);
 	}
+
+	deleteQuestion(id: string, db: Transaction | Client = this.drizzle.db) {
+		return db.delete(questionsTable).where(eq(questionsTable.id, id));
+	}
 }
