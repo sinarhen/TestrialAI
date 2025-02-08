@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type SupportedLanguage } from '../../../../../lib/types/entities';
+	import type { SupportedLanguage } from '@/constants/supported-codeblock-langs';
 	import { getHljsStyles, getHljsWithLanguage } from '@/utils/code-parser';
 
 	let {
@@ -8,6 +8,7 @@
 	}: {
 		codeBlock?: string | null;
 		codeLanguage?: SupportedLanguage | null;
+		isGenerating: boolean;
 	} = $props();
 
 	let parsed = $state<string | null>(null);

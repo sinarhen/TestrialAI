@@ -75,7 +75,7 @@
 		toast.info('Generating code block...');
 		try {
 			const generateCodeBlockEndpointUrl = api()
-				.questions[':testId'].questions[':questionId']['generate-code-block'].$url({
+				.questions[':testId'].questions[':questionId']['сode-block'].generate.$url({
 					param: {
 						testId: testId,
 						questionId: updatedQuestion.id
@@ -96,6 +96,10 @@
 					updatedQuestion.codeBlock = finalData.codeBlock;
 					updatedQuestion.codeLang = finalData.codeLang;
 					toast.success('Code block generated successfully');
+				},
+				onError: (error) => {
+					console.error(error);
+					toast.error('Failed to generate code block');
 				}
 			});
 		} catch (e) {
@@ -299,6 +303,7 @@
 											</div>
 
 											<QuestionCodeBlock
+												isGenerating={questionState.isGenerating(updatedQuestion)}
 												codeBlock={updatedQuestion.codeBlock}
 												codeLanguage={updatedQuestion.codeLang}
 											/>

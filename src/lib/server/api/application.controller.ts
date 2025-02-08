@@ -12,6 +12,7 @@ import { TestsController } from '@/server/api/tests/tests.controller';
 import { QuestionsController } from './questions/questions.controller';
 import { TestSessionsController } from './testSessions/test-sessions.controller';
 import { CustomErrorHandler } from './common/middleware/exceptions-handler.middleware';
+import { logger } from 'hono/logger';
 
 @injectable()
 export class ApplicationController extends RootController {
@@ -46,6 +47,7 @@ export class ApplicationController extends RootController {
 			.use(contextStorage())
 			.use(browserSessions)
 			.use(sessionManagement)
+			.use(logger())
 			.route('/', this.routes())
 			.route('/iam', this.iamController.routes())
 			.route('/users', this.usersController.routes())

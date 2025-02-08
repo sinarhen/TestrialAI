@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { parseClientResponse } from '@/utils/api.js';
 	import { Check, Trash, X } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
@@ -7,9 +8,13 @@
 	import { Button } from '@/components/ui/button';
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
 	import { api } from '@/client-api';
-	import type { GeneratingTestDto, TestDto } from '@/server/api/tests/dtos/test.dto';
 	import type { GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 	import { streamOpenAiResponse } from '@/utils/openai-stream';
+	import type {
+		GeneratedTestDto,
+		GeneratingTestDto
+	} from '@/server/api/tests/dtos/generated-test.dto';
+	import { HTTPException } from 'hono/http-exception';
 
 	const { data }: { data: PageData } = $props();
 	const { topic, numberOfQuestions, model } = data.generationParams;
@@ -17,7 +22,7 @@
 	type TestGenerationState =
 		| { status: 'idle' }
 		| { status: 'generating'; data: GeneratingTestDto }
-		| { status: 'finished'; data: TestDto };
+		| { status: 'finished'; data: GeneratedTestDto };
 
 	let abortController = $state<AbortController | null>(null);
 
@@ -26,7 +31,7 @@
 	const generate = async () => {
 		abortController = new AbortController();
 		try {
-			await streamOpenAiResponse<TestDto>({
+			await streamOpenAiResponse<GeneratedTestDto>({
 				endpoint: api().tests.generate.$url().toString(),
 				body: {
 					topic,
@@ -71,19 +76,25 @@
 		if (!generatingTest || generatingTest.status !== 'finished') return;
 
 		toast.promise(
-			api().tests.$post({
-				json: generatingTest.data
-			}),
+			api()
+				.tests.$post({
+					json: generatingTest.data
+				})
+				.then(parseClientResponse),
 			{
 				loading: 'Saving test...',
 				success: (resp) => {
-					console.log(resp);
-					const id = resp.json().then((data) => data.testId);
-					goto(`/test/${id}`);
+					goto(`/test/${resp.testId}`);
 					return 'Test is generated and saved successfully';
 				},
 				error: (err) => {
 					console.error(err);
+					if (err instanceof HTTPException) {
+						return `${err.status} ${err.message}`;
+					}
+					if (err instanceof Error) {
+						return err.message;
+					}
 					return 'Test is failed to save';
 				}
 			}

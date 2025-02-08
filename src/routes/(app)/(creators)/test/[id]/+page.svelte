@@ -48,13 +48,15 @@
 				{ value: 'Option 4', isCorrect: false }
 			],
 			status: 'new',
-			answerExplanation: null
+			answerExplanation: null,
+			codeBlock: null,
+			codeLang: null
 		});
 </script>
 
 <div class="flex gap-x-2">
 	<TakeTestDialog testTitle={serverData.test.title} testId={serverData.test.id} />
-	<SessionsTestDialog sessions={serverData.sessions} />
+	<SessionsTestDialog sessions={[]} />
 	<!-- <SettingsTestDialog /> -->
 	<ShareTestDialog testId={serverData.test.id} />
 	<Separator orientation="vertical" class="motion-opacity-in-0 motion-delay-[150ms]" />
@@ -65,10 +67,7 @@
 	{test.title}
 </h2>
 <div class="mt-3 flex gap-x-4 text-sm">
-	<span class="flex items-center gap-x-1 motion-opacity-in-0 motion-delay-300"
-		><CircleHelp size="12" /> {test?.questions?.length} Questions</span
-	>
-	<!-- <span class="flex items-center gap-x-1"><Timer size="12" /> 10 Minutes</span> -->
+	<span class="flex items-center gap-x-1 motion-opacity-in-0 motion-delay-300"> </span>
 </div>
 <TestDetails {test} initialQuestionsCount={serverData.test.questions.length} />
 

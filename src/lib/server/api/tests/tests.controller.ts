@@ -7,6 +7,7 @@ import { generateTestParamsDto } from '@/server/api/tests/dtos/generate-test-par
 import { streamOpenAiResponse } from '@api/common/utils/hono';
 import { rateLimit } from '../common/middleware/rate-limit.middleware';
 import { createTestDto } from './dtos/create-test-dto';
+import { NotFound } from '../common/utils/exceptions';
 
 @injectable()
 export class TestsController extends Controller {
@@ -42,23 +43,27 @@ export class TestsController extends Controller {
 					return streamOpenAiResponse(c, openAiStream);
 				}
 			)
-			.get('/:testId', authState('session'), async (c) => {
-				const testId = c.req.param('testId');
-				const test = await this.testsService.findTest(testId);
-				return c.json(test);
-			})
 			.delete('/:testId', authState('session'), (c) => {
 				const testId = c.req.param('testId');
 				this.testsService.deleteTest(testId);
 				return c.json({ message: 'Test!' });
 			})
+			.get('/:testId', async (c) => {
+				const testId = c.req.param('testId');
+				const test = await this.testsService.findTest(testId);
+				if (!test) {
+					throw NotFound('Test is not found');
+				}
+				return c.json(test);
+			})
 			.get('/:testId/pdf', authState('session'), async (c) => {
-				// const testId = c.req.param('testId');
-				const pdf = await this.testsService.generatePdf('123123');
+				const testId = c.req.param('testId');
+				const pdf = await this.testsService.generatePdf(testId);
 				return c.body(Buffer.from(pdf).buffer, {
 					headers: {
 						'Content-Type': 'application/pdf',
-						'Content-Disposition': `attachment; filename=test-${'12312'}.pdf`
+						// TODO: add filename
+						'Content-Disposition': `attachment; filename=test-${testId}.pdf`
 					}
 				});
 			});

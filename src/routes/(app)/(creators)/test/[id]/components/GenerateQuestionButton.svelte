@@ -70,6 +70,20 @@
 					});
 					console.log('Question generated:', finalData);
 					toast.success('Question is generated, does it look good for you?');
+				},
+				onError: (error) => {
+					if (error instanceof Error) {
+						console.error('Question generation failed:', error);
+						toast.error(error.message);
+					} else {
+						console.error('Question generation failed:', error);
+					}
+
+					if (!generatingQuestionIndex) return;
+
+					if (test?.questions[generatingQuestionIndex]) {
+						test.questions.splice(generatingQuestionIndex, 1);
+					}
 				}
 			});
 		} catch (error) {

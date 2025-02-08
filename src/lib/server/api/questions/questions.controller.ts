@@ -9,6 +9,7 @@ import { updateQuestionDto } from '@api/questions/dtos/update-question.dto';
 import { modifyQuestionToolDto } from '@api/questions/dtos/modify-question-tool.dto';
 import { streamOpenAiResponse } from '@api/common/utils/hono';
 import { z } from 'zod';
+import { NotFound } from '../common/utils/exceptions';
 
 @injectable()
 export class QuestionsController extends Controller {
@@ -28,6 +29,9 @@ export class QuestionsController extends Controller {
 						const question = c.req.valid('json');
 						const testId = c.req.param('testId');
 						const createdQuestion = await this.questionsService.createQuestion(question, testId);
+						if (!createdQuestion) {
+							throw NotFound('Test not found');
+						}
 						return c.json(createdQuestion);
 					}
 				)
@@ -35,7 +39,12 @@ export class QuestionsController extends Controller {
 					'/:testId/questions/generate',
 					authState('session'),
 
-					zValidator('json', generateQuestionParamsDto),
+					zValidator(
+						'json',
+						generateQuestionParamsDto.pick({
+							topic: true
+						})
+					),
 					async (c) => {
 						const testId = c.req.param('testId');
 						const dto = c.req.valid('json');
@@ -56,6 +65,9 @@ export class QuestionsController extends Controller {
 							questionId,
 							questionDto
 						);
+						if (!updatedQuestion) {
+							throw NotFound('Question not found');
+						}
 						return c.json(updatedQuestion);
 					}
 				)
@@ -67,16 +79,6 @@ export class QuestionsController extends Controller {
 				.post(
 					'/:testId/questions/:questionId/:tool',
 					authState('session'),
-					// validator('param', (_, c) => {
-					// 	const tool = c.req.param('tool');
-					// 	const parsed = modifyQuestionToolDto.safeParse({
-					// 		tool
-					// 	});
-					// 	if (!parsed.success) {
-					// 		return c.json({ message: 'Invalid tool' }, 400);
-					// 	}
-					// 	return parsed.data;
-					// }),
 					zValidator(
 						'param',
 						z.object({
@@ -99,7 +101,7 @@ export class QuestionsController extends Controller {
 					}
 				)
 				.post(
-					'/:testId/questions/:questionId/generate-code-block',
+					'/:testId/questions/:questionId/сode-block/generate',
 					authState('session'),
 					async (c) => {
 						const questionId = c.req.param('questionId');

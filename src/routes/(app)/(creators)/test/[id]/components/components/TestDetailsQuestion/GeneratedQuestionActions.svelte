@@ -2,8 +2,9 @@
 	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button/index.js';
 	import { Sparkles, Trash2 } from 'lucide-svelte';
-	import { questionState, type QuestionState } from '../../../types';
+	import { questionState, type QuestionState, type SavedQuestion } from '../../../types';
 	import { api } from '@/client-api';
+	import { parseClientResponse } from '@/utils/api';
 
 	const {
 		testId,
@@ -24,15 +25,22 @@
 
 		try {
 			if (question.status === 'generated') {
-				api().questions[':testId'].questions.$post({
-					param: { testId },
-					json: question
-				});
+				const persistedQuestion = await api()
+					.questions[':testId'].questions.$post({
+						param: { testId },
+						json: question
+					})
+					.then(parseClientResponse);
+
+				updateQuestionInStore({ ...persistedQuestion, status: 'saved' });
 			} else if (question.status === 'regenerated') {
-				api().questions[':testId'].questions[':questionId'].$put({
-					param: { testId, questionId: question.id },
-					json: question
-				});
+				const persistedQuestion = await api()
+					.questions[':testId'].questions[':questionId'].$put({
+						param: { testId, questionId: question.id },
+						json: question
+					})
+					.then(parseClientResponse);
+				updateQuestionInStore({ ...persistedQuestion, status: 'saved' });
 			}
 		} catch (err) {
 			console.error('Failed to approve question:', err);

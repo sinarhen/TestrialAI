@@ -6,7 +6,6 @@ import { NotFound } from '@api/common/utils/exceptions';
 import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
 import type { ModifyQuestionTool } from '@api/questions/dtos/modify-question-tool.dto';
 import { TestsRepository } from '@api/tests/tests.repository';
-import type { GenerateQuestionParamsDto } from './dtos/generate-question-params.dto';
 
 @injectable()
 export class QuestionsService {
@@ -32,7 +31,7 @@ export class QuestionsService {
 		return this.questionsRepository.updateQuestion(id, question);
 	}
 
-	async generateQuestion(testId: string, { topic }: GenerateQuestionParamsDto) {
+	async generateQuestion(testId: string, { topic }: { topic: string }) {
 		const test = await this.testsRepository.findOneByIdIncludeQuestions(testId);
 		if (!test) {
 			throw NotFound('Test not found');
