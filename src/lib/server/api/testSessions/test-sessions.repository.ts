@@ -18,13 +18,21 @@ export class TestSessionsRepository extends DrizzleRepository {
 		testSessionId: string,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
-		return db.select().from(testSessionsTable).where(eq(testSessionsTable.id, testSessionId));
+		return db
+			.select()
+			.from(testSessionsTable)
+			.where(eq(testSessionsTable.id, testSessionId))
+			.then(takeFirst);
 	}
 
 	async getTestSessionByCode(
 		code: string,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
-		return db.select().from(testSessionsTable).where(eq(testSessionsTable.code, code));
+		return db
+			.select()
+			.from(testSessionsTable)
+			.where(eq(testSessionsTable.code, code))
+			.then(takeFirst);
 	}
 }
