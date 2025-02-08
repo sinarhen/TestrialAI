@@ -1,5 +1,4 @@
 import { container, injectable } from 'tsyringe';
-import { zValidator } from '@hono/zod-validator';
 import { createRegisterRequestDto } from './auth/dtos/register-requests/create-register-request.dto';
 import { AuthService } from './auth/auth.service';
 import { SessionsService } from './sessions/sessions.service';
@@ -10,6 +9,7 @@ import { z } from 'zod';
 import { generateState } from '../common/utils/crypto';
 import { verifyRegisterRequestDto } from './auth/dtos/register-requests/verify-register-request.dto';
 import { loginDto } from './auth/dtos/login/login.dto';
+import { zValidator } from '../common/utils/zod-validator-wrapper';
 
 @injectable()
 export class IamController extends Controller {

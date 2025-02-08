@@ -16,6 +16,8 @@
 	import type { Provider } from '@/server/api/users/tables';
 	import { toast } from 'svelte-sonner';
 	import { invalidate, invalidateAll } from '$app/navigation';
+	import { parseClientResponse } from '@/utils/api';
+	import { HTTPException } from 'hono/http-exception';
 
 	// state variables for the dialog and form mode
 	let isAuthDialogOpen = $state<boolean | undefined>();
@@ -131,16 +133,26 @@
 			}
 
 			isSigningIn = true;
-			const resp = await api().iam.login.$post({
-				json: { email, password }
-			});
-			if (resp.ok) {
-				toast.success('Logged in successfully');
-				isAuthDialogOpen = false;
-			} else {
-				toast.error('Failed to login');
+			const resp = await api()
+				.iam.login.$post({
+					json: { email, password }
+				})
+				.then(parseClientResponse);
+
+			if (resp.error) {
+				toast.error(resp.error);
+				return;
 			}
+
+			toast.success('Logged in successfully');
+			isAuthDialogOpen = false;
 		} catch (err) {
+			console.error(err);
+
+			if (err instanceof Error) {
+				toast.error(err.message);
+				return;
+			}
 			toast.error('Something went wrong');
 		} finally {
 			isSigningIn = false;

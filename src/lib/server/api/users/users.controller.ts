@@ -1,7 +1,6 @@
 import { container, injectable } from 'tsyringe';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
-import { zValidator } from '@hono/zod-validator';
 import { updateUserDto } from './dtos/update-user.dto';
 import { EmailChangeRequestsService } from './email-change-requests/email-change-requests.service';
 import { updateEmailDto } from './dtos/update-email.dto';
@@ -9,6 +8,7 @@ import { UsersRepository } from './users.repository';
 import { rateLimit } from '../common/middleware/rate-limit.middleware';
 import { UsersService } from './users.service';
 import { verifyEmailDto } from './dtos/verify-email.dto';
+import { zValidator } from '../common/utils/zod-validator-wrapper';
 
 @injectable()
 export class UsersController extends Controller {

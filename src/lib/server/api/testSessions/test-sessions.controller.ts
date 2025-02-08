@@ -2,8 +2,8 @@ import { Controller } from '@api/common/factories/controllers.factory';
 import { container, injectable } from 'tsyringe';
 import { authState } from '@api/common/middleware/auth.middleware';
 import { TestSessionsService } from '@api/testSessions/test-sessions.service';
-import { zValidator } from '@hono/zod-validator';
 import { createTestSessionDto } from './dtos/create-test-session.dto';
+import { zValidator } from '../common/utils/zod-validator-wrapper';
 
 // TODO
 @injectable()

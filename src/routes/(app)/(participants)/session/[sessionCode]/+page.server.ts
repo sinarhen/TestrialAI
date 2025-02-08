@@ -12,13 +12,17 @@ export const load = async ({ fetch, params, parent }) => {
 				}
 			})
 			.then(parseClientResponse);
-		if (!session) {
+		if (session.error) {
+			return error(500, session.error);
+		}
+		if (!session.data) {
 			return error(404, 'Session not found');
 		}
+
 		const { user } = await parent();
 
 		return {
-			session,
+			session: session.data,
 			user
 		};
 	} catch (err) {

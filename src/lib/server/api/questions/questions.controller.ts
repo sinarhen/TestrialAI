@@ -1,7 +1,6 @@
 import { container, injectable } from 'tsyringe';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
-import { zValidator } from '@hono/zod-validator';
 import { QuestionsService } from '@api/questions/questions.service';
 import { createQuestionDto } from '@api/questions/dtos/create-question.dto';
 import { generateQuestionParamsDto } from '@/server/api/questions/dtos/generate-question-params.dto';
@@ -10,6 +9,7 @@ import { modifyQuestionToolDto } from '@api/questions/dtos/modify-question-tool.
 import { streamOpenAiResponse } from '@api/common/utils/hono';
 import { z } from 'zod';
 import { NotFound } from '../common/utils/exceptions';
+import { zValidator } from '@hono/zod-validator';
 
 @injectable()
 export class QuestionsController extends Controller {

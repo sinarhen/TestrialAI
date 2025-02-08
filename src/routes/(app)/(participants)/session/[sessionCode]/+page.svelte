@@ -143,7 +143,7 @@
 								>
 							{/if}
 							{#if data.user.lastName}
-								<button onclick={() => onSuggestionClick(data.user?.lastName)} class="underline"
+								<button onclick={() => onSuggestionClick(data.user.lastName)} class="underline"
 									>{data.user.lastName}</button
 								>
 							{/if}

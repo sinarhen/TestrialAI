@@ -1,13 +1,13 @@
 import { container, injectable } from 'tsyringe';
 import { Controller } from '../common/factories/controllers.factory';
 import { authState } from '../common/middleware/auth.middleware';
-import { zValidator } from '@hono/zod-validator';
 import { TestsService } from '@api/tests/tests.service';
 import { generateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
 import { streamOpenAiResponse } from '@api/common/utils/hono';
 import { rateLimit } from '../common/middleware/rate-limit.middleware';
 import { createTestDto } from './dtos/create-test-dto';
 import { NotFound } from '../common/utils/exceptions';
+import { zValidator } from '../common/utils/zod-validator-wrapper';
 
 @injectable()
 export class TestsController extends Controller {

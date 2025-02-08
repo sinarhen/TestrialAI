@@ -4,17 +4,22 @@ import { hc, type ClientResponse } from 'hono/client';
 export const honoClient = (baseUrl: string, options?: ClientRequestOptions) =>
 	hc<ApiRoutes>(baseUrl, options).api;
 
-export async function parseClientResponse<T>(response: ClientResponse<T>) {
-	if (response.ok) {
-		return response.json() as T;
+export async function parseClientResponse<T>(response: ClientResponse<T>): Promise<
+	| {
+			data: T;
+			error: null;
+	  }
+	| {
+			data: null;
+			error: string;
+	  }
+> {
+	console.error('response', response);
+	if (!response.ok) {
+		const res = await response.text();
+		return { data: null, error: res };
 	}
 
-	// handle errors
-	const error = await response.text();
-	try {
-		const jsonError = JSON.parse(error); // attempt to parse as JSON
-		throw new Error(jsonError);
-	} catch {
-		throw new Error(error);
-	}
+	const res = await response.json();
+	return { data: res as T, error: null };
 }
