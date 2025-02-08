@@ -18,7 +18,6 @@
 	import Input from '@/components/ui/input/input.svelte';
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import LogoutButton from '../../../(creators)/components/Header/LogoutButton.svelte';
-	import { applyAction, enhance } from '$app/forms';
 	import AuthDialog from '../../../(creators)/components/Header/AuthDialog.svelte';
 
 	const { data, form } = $props();
@@ -26,14 +25,8 @@
 	const startDate = data.session.startTime ? new Date(data.session.startTime) : null;
 	const endDate = data.session.endTime ? new Date(data.session.endTime) : null;
 
-	const isTestFinished = endDate && endDate < new Date();
-	const isTestNotStarted = !startDate || startDate > new Date();
-
-	let isLoginMode: boolean = $state(true);
-
-	function toggleAuthMode() {
-		isLoginMode = !isLoginMode;
-	}
+	const isTestFinished = !!endDate && endDate < new Date();
+	const isTestNotStarted = !!startDate && startDate > new Date();
 
 	function getUserNameFallback() {
 		if (data.user) {
@@ -134,7 +127,7 @@
 					{isTestFinished ? "Test's over" : isTestNotStarted ? 'Test not started' : 'Start Test'}
 				</Button>
 			</Dialog.Trigger>
-			<Dialog.Content class="max-w-[400px]">
+			<Dialog.Content class="max-w-[500px]">
 				<Dialog.Header>
 					<Dialog.Title>{data.user ? 'Start the test' : 'Start the test as a guest'}</Dialog.Title>
 					<Dialog.Description>Your name will be displayed to the test creator</Dialog.Description>
