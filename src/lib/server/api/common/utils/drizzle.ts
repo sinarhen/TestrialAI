@@ -5,8 +5,10 @@ import type { LibSQLDatabase } from 'drizzle-orm/libsql';
 
 type Schema = typeof schema;
 
-export type Transaction = Parameters<Parameters<LibSQLDatabase<Schema>['transaction']>[0]>[0];
-export type Client = LibSQLDatabase<Schema>;
+export type DrizzleTransaction = Parameters<
+	Parameters<LibSQLDatabase<Schema>['transaction']>[0]
+>[0];
+export type DrizzleClient = LibSQLDatabase<Schema>;
 
 type TSchema = ExtractTablesWithRelations<Schema>;
 

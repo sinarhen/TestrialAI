@@ -2,10 +2,10 @@ import { DrizzleRepository } from '@api/common/factories/drizzle-repository.fact
 import type { CreateQuestionDto } from '@api/questions/dtos/create-question.dto';
 import { questionsTable } from '@api/questions/tables/questions.table';
 import {
-	type Client,
+	type DrizzleClient,
 	takeFirst,
 	takeFirstOrThrow,
-	type Transaction
+	type DrizzleTransaction
 } from '@api/common/utils/drizzle';
 import { eq } from 'drizzle-orm';
 import type { UpdateQuestionDto } from '@api/questions/dtos/update-question.dto';
@@ -14,7 +14,11 @@ import { generateId } from '../common/utils/crypto';
 
 @injectable()
 export class QuestionsRepository extends DrizzleRepository {
-	create(value: CreateQuestionDto, testId: string, db: Transaction | Client = this.drizzle.db) {
+	create(
+		value: CreateQuestionDto,
+		testId: string,
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
+	) {
 		return db
 			.insert(questionsTable)
 			.values({
@@ -25,7 +29,7 @@ export class QuestionsRepository extends DrizzleRepository {
 			.then(takeFirst);
 	}
 
-	findOneByIdIncludeTest(id: string, db: Transaction | Client = this.drizzle.db) {
+	findOneByIdIncludeTest(id: string, db: DrizzleTransaction | DrizzleClient = this.drizzle.db) {
 		return db.query.questionsTable.findFirst({
 			where: eq(questionsTable.id, id),
 			with: {
@@ -34,18 +38,18 @@ export class QuestionsRepository extends DrizzleRepository {
 		});
 	}
 
-	findOneByIdOrThrow(id: string, db: Transaction | Client = this.drizzle.db) {
+	findOneByIdOrThrow(id: string, db: DrizzleTransaction | DrizzleClient = this.drizzle.db) {
 		return db.select().from(questionsTable).where(eq(questionsTable.id, id)).then(takeFirstOrThrow);
 	}
 
-	findQuestionsByTestId(testId: string, db: Transaction | Client = this.drizzle.db) {
+	findQuestionsByTestId(testId: string, db: DrizzleTransaction | DrizzleClient = this.drizzle.db) {
 		return db.select().from(questionsTable).where(eq(questionsTable.testId, testId));
 	}
 
 	createMultiple(
 		questions: CreateQuestionDto[],
 		testId: string,
-		db: Transaction | Client = this.drizzle.db
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
 		return db.insert(questionsTable).values(
 			questions.map((q) => ({
@@ -59,7 +63,7 @@ export class QuestionsRepository extends DrizzleRepository {
 	updateQuestion(
 		id: string,
 		question: UpdateQuestionDto,
-		db: Transaction | Client = this.drizzle.db
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
 		return db
 			.update(questionsTable)
@@ -69,7 +73,7 @@ export class QuestionsRepository extends DrizzleRepository {
 			.then(takeFirst);
 	}
 
-	deleteQuestion(id: string, db: Transaction | Client = this.drizzle.db) {
+	deleteQuestion(id: string, db: DrizzleTransaction | DrizzleClient = this.drizzle.db) {
 		return db.delete(questionsTable).where(eq(questionsTable.id, id));
 	}
 }

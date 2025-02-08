@@ -41,6 +41,7 @@ export const testSessionRelations = relations(testSessionsTable, ({ many }) => (
 }));
 
 export type TestSession = typeof testSessionsTable.$inferSelect;
+export type CreateTestSession = typeof testSessionsTable.$inferInsert;
 export type TestSessionWithRelations = InferResultType<
 	'testSessionsTable',
 	{
