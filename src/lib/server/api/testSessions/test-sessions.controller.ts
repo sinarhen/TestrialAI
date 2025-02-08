@@ -17,8 +17,8 @@ export class TestSessionsController extends Controller {
 			.post('/', authState('session'), zValidator('json', createTestSessionDto), async (c) => {
 				const validJson = c.req.valid('json');
 
-				const testSessionId = await this.testSessionsService.createTestSession(validJson);
-				return c.json({ testSessionId });
+				const testSession = await this.testSessionsService.createTestSession(validJson);
+				return c.json(testSession);
 			})
 			.get('/:testSessionCode', async (c) => {
 				const testSessionCode = c.req.param('testSessionCode');

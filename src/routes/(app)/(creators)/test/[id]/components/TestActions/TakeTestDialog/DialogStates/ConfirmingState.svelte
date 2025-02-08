@@ -1,14 +1,22 @@
 <script lang="ts">
+	import { parseClientResponse } from '@/utils/api.js';
 	import Button from '@/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
-	import { testSettings, type DialogState } from '../index.svelte';
+	import { type DialogState } from '../index.svelte';
+	import { api } from '@/client-api';
+	import type { DisplayMode } from '@/constants/display-modes';
 
 	const {
 		setDialogState,
+		testSettings,
 		testId
 	}: {
 		setDialogState: (state: DialogState) => void;
 		testId: string;
+		testSettings: {
+			durationInMinutes: number;
+			displayMode: DisplayMode;
+		};
 	} = $props();
 	const { durationInMinutes, displayMode } = testSettings;
 
@@ -22,14 +30,31 @@
 				status: 'creating'
 			});
 
-			// const { data: code } = await createTestSession(testId, {
-			// 	displayMode: testSettings.displayMode,
-			// 	durationInMinutes: testSettings.durationInMinutes
-			// });
+			const data = await api()
+				['test-sessions'].$post({
+					json: {
+						testId,
+						durationInMinutes,
+						displayMode
+					}
+				})
+				.then(parseClientResponse)
+				.catch((error) => {
+					toast.error('Failed to create test session.');
+					console.error(error);
+					throw error;
+				});
+
+			if (!data) {
+				console.debug(
+					'No data returned from the API after creating a test session but no error was thrown.'
+				);
+				return;
+			}
 
 			setDialogState({
 				status: 'created',
-				code: 'asdasd'
+				code: data.code
 			});
 		} catch (error) {
 			setDialogState({

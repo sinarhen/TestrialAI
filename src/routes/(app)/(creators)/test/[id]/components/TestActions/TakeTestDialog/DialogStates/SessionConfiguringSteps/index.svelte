@@ -1,10 +1,10 @@
 <script lang="ts">
 	import * as Accordion from '@/components/ui/accordion';
-	import type { DisplayMode } from '@/types/entities';
 	import type { Step } from '../../index.svelte';
 	import DisplayModeStep from './DisplayModeStep.svelte';
 	import DurationPickerStep from './DurationPickerStep.svelte';
 	import OtherSettingsStep from './OtherSettingsStep.svelte';
+	import type { DisplayMode } from '@/constants/display-modes';
 	const {
 		displayMode,
 		duration,

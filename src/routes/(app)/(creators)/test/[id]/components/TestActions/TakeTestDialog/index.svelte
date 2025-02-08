@@ -26,11 +26,6 @@
 				code: string;
 		  };
 	export type DialogStateStatus = DialogState['status'];
-
-	export const testSettings = {
-		displayMode: null as DisplayMode | null,
-		durationInMinutes: null as number | null
-	};
 </script>
 
 <script lang="ts">
@@ -61,6 +56,14 @@
 		testTitle: string;
 	} = $props();
 
+	const testSettings = $state({
+		displayMode: null as DisplayMode | null,
+		durationInMinutes: null as number | null
+	});
+	let dialogState = $state<DialogState>({
+		status: 'configuring'
+	});
+
 	const setDisplayMode = (mode: DisplayMode | null) => {
 		testSettings.displayMode = mode;
 	};
@@ -78,10 +81,6 @@
 	const isCreateButtonDisabled = $derived(
 		!testSettings.durationInMinutes || !testSettings.displayMode
 	);
-
-	let dialogState = $state<DialogState>({
-		status: 'configuring'
-	});
 
 	const setDialogState = (state: DialogState) => {
 		dialogState = state;
@@ -178,8 +177,15 @@
 			</div>
 			<Separator />
 
-			{#if dialogState.status === 'confirming'}
-				<ConfirmingState {setDialogState} {testId} />
+			{#if dialogState.status === 'confirming' && testSettings.displayMode && testSettings.durationInMinutes}
+				<ConfirmingState
+					testSettings={{
+						displayMode: testSettings.displayMode,
+						durationInMinutes: testSettings.durationInMinutes
+					}}
+					{setDialogState}
+					{testId}
+				/>
 			{:else if dialogState.status === 'creating'}
 				<div
 					class="flex h-48 flex-col items-center justify-center px-24 -motion-translate-y-in-[10%] motion-opacity-in-0"
