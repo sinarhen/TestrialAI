@@ -1,8 +1,8 @@
 import { injectable } from 'tsyringe';
 import { DrizzleRepository } from '../common/factories/drizzle-repository.factory';
-import { testSessionsTable, type CreateTestSession } from './tables';
+import { testSessionParticipantsTable, testSessionsTable, type CreateTestSession } from './tables';
 import { takeFirst, type DrizzleClient, type DrizzleTransaction } from '../common/utils/drizzle';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 @injectable()
 export class TestSessionsRepository extends DrizzleRepository {
@@ -22,6 +22,37 @@ export class TestSessionsRepository extends DrizzleRepository {
 			.select()
 			.from(testSessionsTable)
 			.where(eq(testSessionsTable.id, testSessionId))
+			.then(takeFirst);
+	}
+
+	async addParticipantToTestSession(
+		testSessionId: string,
+		name: string,
+		userId?: string,
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
+	) {
+		return db
+			.insert(testSessionParticipantsTable)
+			.values({ name, userId, testSessionId, status: 'IN_PROGRESS' })
+			.returning()
+			.then(takeFirst);
+	}
+
+	async abandonParticipantInTestSession(
+		testSessionId: string,
+		userId: string,
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
+	) {
+		return db
+			.update(testSessionParticipantsTable)
+			.set({ status: 'ABANDONED' })
+			.where(
+				and(
+					eq(testSessionParticipantsTable.testSessionId, testSessionId),
+					eq(testSessionParticipantsTable.userId, userId)
+				)
+			)
+			.returning()
 			.then(takeFirst);
 	}
 

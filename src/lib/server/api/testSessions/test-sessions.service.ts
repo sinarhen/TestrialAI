@@ -3,15 +3,40 @@ import { TestSessionsRepository } from './test-sessions.repository';
 import type { CreateTestSessionDto } from './dtos/create-test-session.dto';
 import { TestsRepository } from '../tests/tests.repository';
 import type { TestSession } from './tables';
+import { DrizzleTransactionService } from '../common/services/drizzle-transaction.service';
+import { NotFound } from '../common/utils/exceptions';
 
 @injectable()
 export class TestSessionsService {
 	constructor(
 		private testsSessionsRepository = container.resolve(TestSessionsRepository),
-		private testsRepository = container.resolve(TestsRepository)
+		private testsRepository = container.resolve(TestsRepository),
+		private drizzleTransactionService = container.resolve(DrizzleTransactionService)
 	) {}
 
-	public async createTestSession(createTestSessionDto: CreateTestSessionDto) {
+	async startTestSession(testSessionCode: string, name: string, userId?: string) {
+		return await this.drizzleTransactionService.runTransaction(async (tx) => {
+			const testSession = await this.testsSessionsRepository.getTestSessionByCode(
+				testSessionCode,
+				tx
+			);
+			if (!testSession) {
+				tx.rollback();
+				throw NotFound('Test session not found');
+			}
+
+			const participantAdded = await this.testsSessionsRepository.addParticipantToTestSession(
+				testSession.id,
+				name,
+				userId,
+				tx
+			);
+
+			return participantAdded;
+		});
+	}
+
+	async createTestSession(createTestSessionDto: CreateTestSessionDto) {
 		const originalTest = await this.testsRepository.findOneByIdWithRelations(
 			createTestSessionDto.testId
 		);

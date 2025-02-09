@@ -118,7 +118,7 @@
 	</div>
 
 	<div class="lg: flex flex-col gap-2 md:flex-row">
-		<Dialog.Root open={true}>
+		<Dialog.Root>
 			<Dialog.Trigger disabled={isTestFinished || isTestNotStarted}>
 				<Button
 					disabled={isTestFinished || isTestNotStarted}

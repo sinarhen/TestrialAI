@@ -7,8 +7,4 @@ export abstract class DrizzleRepository {
 	constructor() {
 		this.drizzle = container.resolve(DrizzleService);
 	}
-
-	get runTransaction() {
-		return this.drizzle.db.transaction;
-	}
 }

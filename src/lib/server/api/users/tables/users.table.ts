@@ -43,9 +43,9 @@ export type UserWithRelations = InferResultType<'usersTable', { tests: true }>;
 
 const userColumns = getTableColumns(usersTable);
 
-// export const publicUserColumns = {
-// 	id: userColumns.id,
-// 	username: userColumns.username,
-// 	firstName: userColumns.firstName,
-// 	lastName: userColumns.lastName
-// };
+export const publicUserColumns = {
+	id: userColumns.id,
+	username: userColumns.username,
+	firstName: userColumns.firstName,
+	lastName: userColumns.lastName
+};

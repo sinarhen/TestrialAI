@@ -25,22 +25,38 @@
 
 		try {
 			if (question.status === 'generated') {
-				const persistedQuestion = await api()
+				const { data, error } = await api()
 					.questions[':testId'].questions.$post({
 						param: { testId },
 						json: question
 					})
 					.then(parseClientResponse);
 
-				updateQuestionInStore({ ...persistedQuestion, status: 'saved' });
+				if (error) {
+					toast.error(error);
+					return;
+				}
+				if (!data) {
+					toast.error('Failed to approve question');
+					return;
+				}
+				updateQuestionInStore({ ...data, status: 'saved' });
 			} else if (question.status === 'regenerated') {
-				const persistedQuestion = await api()
+				const { data, error } = await api()
 					.questions[':testId'].questions[':questionId'].$put({
 						param: { testId, questionId: question.id },
 						json: question
 					})
 					.then(parseClientResponse);
-				updateQuestionInStore({ ...persistedQuestion, status: 'saved' });
+				if (error) {
+					toast.error(error);
+					return;
+				}
+				if (!data) {
+					toast.error('Failed to approve question');
+					return;
+				}
+				updateQuestionInStore({ ...data, status: 'saved' });
 			}
 		} catch (err) {
 			console.error('Failed to approve question:', err);

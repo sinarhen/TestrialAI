@@ -4,6 +4,7 @@ import { usersTable } from '../../users/tables/users.table';
 import { testSessionsTable } from './testSessions.table';
 import { relations } from 'drizzle-orm';
 import type { InferResultType } from '../../common/utils/drizzle';
+import { testSessionParticipantStatuses } from '@/constants/participant-statuses';
 
 export const testSessionParticipantsTable = sqliteTable('test_participant', {
 	id: text('id')
@@ -16,12 +17,9 @@ export const testSessionParticipantsTable = sqliteTable('test_participant', {
 		// .notNull()
 		.references(() => usersTable.id, { onDelete: 'cascade' }),
 	name: text('name').notNull(),
-	status: text(
-		'status'
-		//     {
-		// 	enum: entities.testSessionParticipantStatuses
-		// }
-	).notNull(),
+	status: text('status', {
+		enum: testSessionParticipantStatuses
+	}).notNull(),
 	score: integer('score').notNull().default(0),
 	feedback: text('feedback')
 });

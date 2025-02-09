@@ -14,7 +14,6 @@ export async function parseClientResponse<T>(response: ClientResponse<T>): Promi
 			error: string;
 	  }
 > {
-	console.error('response', response);
 	if (!response.ok) {
 		const res = await response.text();
 		return { data: null, error: res };

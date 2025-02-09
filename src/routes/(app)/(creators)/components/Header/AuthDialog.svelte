@@ -18,6 +18,7 @@
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import { parseClientResponse } from '@/utils/api';
 	import { HTTPException } from 'hono/http-exception';
+	import test from 'node:test';
 
 	// state variables for the dialog and form mode
 	let isAuthDialogOpen = $state<boolean | undefined>();
@@ -66,15 +67,17 @@
 			}
 
 			isSigningIn = true;
-			const resp = await api().iam.register.request.$post({
-				json: { email }
-			});
-			if (!resp.ok) {
-				toast.error('Failed to send verification code');
-			} else {
-				toast.success('Verification code sent!');
-				isVerificationCodeSent = true;
+			const resp = await api()
+				.iam.register.request.$post({
+					json: { email }
+				})
+				.then(parseClientResponse);
+			if (resp.error) {
+				toast.error(resp.error);
+				return;
 			}
+			toast.success('Verification code sent!');
+			isVerificationCodeSent = true;
 		} catch (err) {
 			toast.error('Something went wrong');
 		} finally {
@@ -95,23 +98,26 @@
 			}
 
 			isSigningIn = true;
-			const resp = await api().iam.register.verify.$post({
-				json: {
-					email,
-					password,
-					username,
-					firstName,
-					lastName,
-					verificationCode
-				}
-			});
-			if (resp.ok) {
+			const resp = await api()
+				.iam.register.verify.$post({
+					json: {
+						email,
+						password,
+						username,
+						firstName,
+						lastName,
+						verificationCode
+					}
+				})
+				.then(parseClientResponse);
+			if (!resp.error) {
 				toast.success('Account created successfully');
 				isAuthDialogOpen = false;
 				// invalidate current page to refresh the user state
 				invalidateAll();
 			} else {
-				toast.error('Failed to create account');
+				toast.error(resp.error);
+				console.error(resp);
 			}
 		} catch (err) {
 			toast.error('Something went wrong');

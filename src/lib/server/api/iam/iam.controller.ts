@@ -61,14 +61,13 @@ export class IamController extends Controller {
 					);
 					const state = generateState();
 					providerService.setStateCookie(state);
-
 					return c.redirect(providerService.getAuthorizationUrl(state));
 				}
 			)
 			.get(
 				'/login/:provider/callback',
 				authState('none'),
-				zValidator('param', userDto.pick({ provider: true }).required()),
+				zValidator('param', z.object({ provider: userDto.required().shape.provider })),
 				zValidator('query', z.object({ code: z.string(), state: z.string() })),
 				async (c) => {
 					const providerService = this.authService.getExternalProviderService(
