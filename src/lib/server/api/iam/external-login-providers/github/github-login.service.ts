@@ -72,10 +72,6 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 		const storedState = await this.getStateCookie();
 
 		if (!storedState || state !== storedState) {
-			console.dir({
-				storedState,
-				state
-			});
 			throw Unauthorized('Invalid state');
 		}
 		const { accessToken } = await this.validateAuthorizationCode(code);
@@ -86,11 +82,15 @@ export class GitHubLoginService extends BaseExternalLoginProviderService {
 		} else {
 			const existingUserByUsername = await this.usersService.getUserByUsername(githubUser.login);
 			if (existingUserByUsername) {
-				throw BadRequest('User with this username already exists');
+				throw BadRequest(
+					`You are already registered with ${existingUserByUsername.provider ?? 'email'} account`
+				);
 			}
 			const existingUserByEmail = await this.usersService.findUserByEmail(githubUser.email);
 			if (existingUserByEmail) {
-				throw BadRequest('User with this email already exists');
+				throw BadRequest(
+					`You are already registered with ${existingUserByEmail.provider ?? 'email'} account`
+				);
 			}
 			const userGitHubEmails = await this.getUserEmails(accessToken);
 

@@ -75,30 +75,23 @@
 	const onConfirm = async () => {
 		if (!generatingTest || generatingTest.status !== 'finished') return;
 
-		toast.promise(
-			api()
-				.tests.$post({
-					json: generatingTest.data
-				})
-				.then(parseClientResponse),
-			{
-				loading: 'Saving test...',
-				success: (resp) => {
-					goto(`/test/${resp.testId}`);
-					return 'Test is generated and saved successfully';
-				},
-				error: (err) => {
-					console.error(err);
-					if (err instanceof HTTPException) {
-						return `${err.status} ${err.message}`;
-					}
-					if (err instanceof Error) {
-						return err.message;
-					}
-					return 'Test is failed to save';
-				}
-			}
-		);
+		const resp = await api()
+			.tests.$post({
+				json: generatingTest.data
+			})
+			.then(parseClientResponse);
+
+		if (resp.error) {
+			toast.error(resp.error);
+		}
+		if (resp.data) {
+			toast.success('Test is successfully saved');
+			const { testId } = resp.data;
+			goto(`/test/${testId}`);
+			return;
+		}
+		console.error('Failed to save the test: No data returned', resp);
+		toast.error('Failed to save the test: No data returned');
 	};
 </script>
 

@@ -1,11 +1,11 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
-import { usersTable } from '../../users/tables';
+import { usersTable } from '../../users/tables/users.table';
 import { testSessionsTable } from './testSessions.table';
 import { relations } from 'drizzle-orm';
 import type { InferResultType } from '../../common/utils/drizzle';
 
-export const testParticipantsTable = sqliteTable('test_participant', {
+export const testSessionParticipantsTable = sqliteTable('test_participant', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => generateId()),
@@ -26,20 +26,23 @@ export const testParticipantsTable = sqliteTable('test_participant', {
 	feedback: text('feedback')
 });
 
-export const testSessionParticipantRelations = relations(testParticipantsTable, ({ one }) => ({
-	testSession: one(testSessionsTable, {
-		fields: [testParticipantsTable.testSessionId],
-		references: [testSessionsTable.id]
-	}),
-	user: one(usersTable, {
-		fields: [testParticipantsTable.userId],
-		references: [usersTable.id]
+export const testSessionParticipantRelations = relations(
+	testSessionParticipantsTable,
+	({ one }) => ({
+		testSession: one(testSessionsTable, {
+			fields: [testSessionParticipantsTable.testSessionId],
+			references: [testSessionsTable.id]
+		}),
+		user: one(usersTable, {
+			fields: [testSessionParticipantsTable.userId],
+			references: [usersTable.id]
+		})
 	})
-}));
+);
 
-export type TestParticipant = typeof testParticipantsTable.$inferSelect;
+export type TestParticipant = typeof testSessionParticipantsTable.$inferSelect;
 export type TestParticipantWithRelations = InferResultType<
-	'testParticipantsTable',
+	'testSessionParticipantsTable',
 	{
 		testSession: true;
 		user: true;

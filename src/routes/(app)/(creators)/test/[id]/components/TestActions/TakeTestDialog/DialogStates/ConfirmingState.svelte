@@ -30,7 +30,7 @@
 				status: 'creating'
 			});
 
-			const data = await api()
+			const resp = await api()
 				['test-sessions'].$post({
 					json: {
 						testId,
@@ -38,23 +38,23 @@
 						displayMode
 					}
 				})
-				.then(parseClientResponse)
-				.catch((error) => {
-					toast.error('Failed to create test session.');
-					console.error(error);
-					throw error;
-				});
+				.then(parseClientResponse);
 
-			if (!data) {
+			if (!resp) {
 				console.debug(
 					'No data returned from the API after creating a test session but no error was thrown.'
 				);
 				return;
 			}
 
+			if (resp.error) {
+				toast.error(resp.error);
+				return;
+			}
+
 			setDialogState({
 				status: 'created',
-				code: data.code
+				code: resp.data.code
 			});
 		} catch (error) {
 			setDialogState({

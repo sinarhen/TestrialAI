@@ -144,6 +144,7 @@
 				return;
 			}
 
+			invalidateAll();
 			toast.success('Logged in successfully');
 			isAuthDialogOpen = false;
 		} catch (err) {

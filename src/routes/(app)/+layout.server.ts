@@ -5,27 +5,23 @@ export const load = async ({ fetch }) => {
 	let user = null;
 	let history = null;
 
-	try {
-		const userData = await api({ fetch }).users.me.$get().then(parseClientResponse);
+	const userData = await api({ fetch }).users.me.$get().then(parseClientResponse);
 
-		if (!userData) return { user, history };
+	if (!userData) return { user, history };
 
-		if (userData.error) {
-			console.error(userData.error);
-			return { user, history };
-		}
+	if (userData.error) {
+		console.error(userData.error);
+		return { user, history };
+	}
 
-		user = userData.data;
+	user = userData.data;
 
-		const historyData = await api({ fetch }).tests.history.$get().then(parseClientResponse);
+	const historyData = await api({ fetch }).tests.history.$get().then(parseClientResponse);
 
-		if (historyData.error) {
-			console.error(historyData.error);
-		} else {
-			history = historyData.data;
-		}
-	} catch (err) {
-		console.error('Unexpected error:', err);
+	if (historyData.error) {
+		console.error(historyData.error);
+	} else {
+		history = historyData.data;
 	}
 
 	return { user, history };

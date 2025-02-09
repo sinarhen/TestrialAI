@@ -1,7 +1,7 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
 import { relations } from 'drizzle-orm';
-import { testParticipantsTable } from './testSessionParticipants.table';
+import { testSessionParticipantsTable } from './testSessionParticipants.table';
 import { participantAnswerOptionsTable } from './participantsAnswerOptions.table';
 import type { InferResultType } from '../../common/utils/drizzle';
 
@@ -11,7 +11,7 @@ export const participantAnswersTable = sqliteTable('participant_answers', {
 		.$defaultFn(() => generateId()),
 	testParticipantId: text('test_participant_id')
 		.notNull()
-		.references(() => testParticipantsTable.id, { onDelete: 'cascade' }),
+		.references(() => testSessionParticipantsTable.id, { onDelete: 'cascade' }),
 	questionId: text('question_id').notNull(),
 	// selectedOptionId: text('selected_option_id'),
 	score: integer('score').notNull().default(0),
@@ -20,9 +20,9 @@ export const participantAnswersTable = sqliteTable('participant_answers', {
 });
 
 export const participantAnswersRelations = relations(participantAnswersTable, ({ one, many }) => ({
-	participant: one(testParticipantsTable, {
+	participant: one(testSessionParticipantsTable, {
 		fields: [participantAnswersTable.testParticipantId],
-		references: [testParticipantsTable.id]
+		references: [testSessionParticipantsTable.id]
 	}),
 	participantAnswerOptions: many(participantAnswerOptionsTable)
 }));

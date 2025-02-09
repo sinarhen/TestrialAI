@@ -12,7 +12,7 @@ export class TestSessionsService {
 	) {}
 
 	public async createTestSession(createTestSessionDto: CreateTestSessionDto) {
-		const originalTest = await this.testsRepository.findOneByIdIncludeQuestions(
+		const originalTest = await this.testsRepository.findOneByIdWithRelations(
 			createTestSessionDto.testId
 		);
 		if (!originalTest) {

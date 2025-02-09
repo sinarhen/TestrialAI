@@ -1,4 +1,4 @@
-export * from '../../tests/tables';
+export * from '../../tests/tables/tests.table';
 export * from '../../questions/tables/questions.table';
-export * from '../../users/tables';
-export * from '../../testSessions/tables';
+export * from '../../testSessions/tables/index';
+export * from '../../users/tables/users.table';

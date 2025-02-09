@@ -1,8 +1,8 @@
 import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
-import { testsTable, type TestWithRelations } from '../../tests/tables';
+import { testsTable, type TestWithRelations } from '../../tests/tables/tests.table';
 import { relations } from 'drizzle-orm';
-import { testParticipantsTable } from './testSessionParticipants.table';
+import { testSessionParticipantsTable } from './testSessionParticipants.table';
 import type { InferResultType } from '../../common/utils/drizzle';
 import { displayModes } from '../../../../constants/display-modes';
 
@@ -36,8 +36,12 @@ export const testSessionsTable = sqliteTable(
 	})
 );
 
-export const testSessionRelations = relations(testSessionsTable, ({ many }) => ({
-	participants: many(testParticipantsTable)
+export const testSessionRelations = relations(testSessionsTable, ({ many, one }) => ({
+	participants: many(testSessionParticipantsTable),
+	test: one(testsTable, {
+		fields: [testSessionsTable.testId],
+		references: [testsTable.id]
+	})
 }));
 
 export type TestSession = typeof testSessionsTable.$inferSelect;

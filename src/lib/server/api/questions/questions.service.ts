@@ -32,7 +32,7 @@ export class QuestionsService {
 	}
 
 	async generateQuestion(testId: string, { topic }: { topic: string }) {
-		const test = await this.testsRepository.findOneByIdIncludeQuestions(testId);
+		const test = await this.testsRepository.findOneByIdWithRelations(testId);
 		if (!test) {
 			throw NotFound('Test not found');
 		}
@@ -46,7 +46,7 @@ export class QuestionsService {
 	}
 
 	async regenerateQuestion(testId: string, questionId: string, tool: ModifyQuestionTool) {
-		const test = await this.testsRepository.findOneByIdIncludeQuestions(testId);
+		const test = await this.testsRepository.findOneByIdWithRelations(testId);
 		if (!test) {
 			throw NotFound('Test not found');
 		}

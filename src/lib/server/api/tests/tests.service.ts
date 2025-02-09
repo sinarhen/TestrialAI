@@ -31,7 +31,7 @@ export class TestsService {
 	}
 
 	async findTest(testId: string) {
-		return this.testsRepository.findOneByIdIncludeQuestions(testId);
+		return this.testsRepository.findOneByIdWithRelations(testId);
 	}
 
 	generateTestStream(params: GenerateTestParamsDto) {

@@ -1,7 +1,7 @@
 import { drizzle, LibSQLDatabase } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 import * as schema from './drizzle-schema';
-import { container, singleton } from 'tsyringe';
+import { container, injectable, singleton } from 'tsyringe';
 import { ConfigService } from '../../common/configs/config.service';
 
 // await drizzleDb.transaction(async (tx) => {
@@ -25,8 +25,9 @@ import { ConfigService } from '../../common/configs/config.service';
 // 		]
 // 	});
 // });
+console.dir(schema, { depth: 1 });
 
-@singleton()
+@injectable()
 export class DrizzleService {
 	public db: LibSQLDatabase<typeof schema>;
 	public schema = schema;

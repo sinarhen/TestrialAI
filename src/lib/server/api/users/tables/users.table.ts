@@ -3,6 +3,7 @@ import { primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-c
 import { testsTable } from '../../tests/tables/tests.table';
 import type { InferResultType } from '@/server/api/common/utils/drizzle';
 import { generateId } from '../../common/utils/crypto';
+import { testSessionsTable } from '../../testSessions/tables';
 
 const providers = ['google', 'github'] as const;
 export type Provider = (typeof providers)[number];
@@ -33,7 +34,8 @@ export const usersTable = sqliteTable(
 	})
 );
 export const userRelations = relations(usersTable, ({ many }) => ({
-	tests: many(testsTable)
+	tests: many(testsTable),
+	participations: many(testSessionsTable)
 }));
 
 export type User = InferSelectModel<typeof usersTable>;
@@ -41,9 +43,9 @@ export type UserWithRelations = InferResultType<'usersTable', { tests: true }>;
 
 const userColumns = getTableColumns(usersTable);
 
-export const publicUserColumns = {
-	id: userColumns.id,
-	username: userColumns.username,
-	firstName: userColumns.firstName,
-	lastName: userColumns.lastName
-};
+// export const publicUserColumns = {
+// 	id: userColumns.id,
+// 	username: userColumns.username,
+// 	firstName: userColumns.firstName,
+// 	lastName: userColumns.lastName
+// };

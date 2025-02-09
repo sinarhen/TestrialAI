@@ -40,14 +40,15 @@ export class TestsRepository extends DrizzleRepository {
 		return await this.findOneById(id, db).then(takeFirstOrThrow);
 	}
 
-	async findOneByIdIncludeQuestions(
+	async findOneByIdWithRelations(
 		id: string,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
 		return db.query.testsTable.findFirst({
 			where: eq(testsTable.id, id),
 			with: {
-				questions: true
+				questions: true,
+				sessions: true
 			}
 		});
 	}
