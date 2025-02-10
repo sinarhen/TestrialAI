@@ -19,6 +19,8 @@
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import LogoutButton from '../../../(creators)/components/Header/LogoutButton.svelte';
 	import AuthDialog from '../../../(creators)/components/Header/AuthDialog.svelte';
+	import { api } from '@/client-api';
+	import { parseClientResponse } from '@/utils/api';
 
 	const { data } = $props();
 
@@ -54,11 +56,31 @@
 		userTestName = suggestion;
 	};
 
-	const onTestSessionStart = () => {
+	const onTestSessionStart = async () => {
 		if (!userTestName) {
 			toast.error('Please enter your name');
 			return;
 		}
+		const resp = await api()
+			['test-sessions'][':testSessionCode'].start.$post({
+				json: {
+					name: userTestName
+				},
+				param: {
+					testSessionCode: data.session.code
+				}
+			})
+			.then(parseClientResponse);
+		if (resp.error) {
+			toast.error(resp.error);
+			return;
+		}
+		if (!resp.data) {
+			toast.error('Something went wrong');
+			return;
+		}
+		const { testSessionId } = resp.data;
+
 		goto('/session/' + data.session.code + '/take');
 	};
 </script>

@@ -74,12 +74,7 @@ export class TestSessionsService {
 			throw NotFound('Test session not found');
 		}
 
-		const dto = publicTestSessionDto.safeParse(testSession);
-		if (dto.error) {
-			console.error(dto.error.errors);
-			throw InternalError('Failed to parse test session');
-		}
-		return dto.data;
+		return publicTestSessionDto.parse(testSession);
 	}
 
 	public async getTestSessionByCode(code: string) {

@@ -11,7 +11,7 @@ export const questionDto = z.object({
 	question: z.string(),
 	codeBlock: z.string().nullable(),
 	codeLang: z.enum(supportedLangs).nullable(),
-	options: z.array(publicOptionDto).nullable(),
+	options: z.array(optionDto).nullable(),
 	answerExplanation: z.string().nullable()
 });
 

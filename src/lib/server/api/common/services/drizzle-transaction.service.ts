@@ -3,7 +3,7 @@ import { DrizzleRepository } from '@api/common/factories/drizzle-repository.fact
 
 @injectable()
 export class DrizzleTransactionService extends DrizzleRepository {
-	get runTransaction() {
-		return this.drizzle.db.transaction;
+	runTransaction(...args: Parameters<typeof this.drizzle.db.transaction>) {
+		return this.drizzle.db.transaction(...args);
 	}
 }

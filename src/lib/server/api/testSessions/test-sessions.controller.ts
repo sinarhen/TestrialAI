@@ -26,6 +26,11 @@ export class TestSessionsController extends Controller {
 				const testSession = await this.testSessionsService.getTestSessionByCode(testSessionCode);
 				return c.json(testSession);
 			})
+			.get('/:testSessionId/test', async (c) => {
+				const testSessionId = c.req.param('testSessionId');
+				const testSession = await this.testSessionsService.getTestSessionPublicData(testSessionId);
+				return c.json(testSession);
+			})
 			.post(
 				'/:testSessionCode/start',
 				zValidator(
