@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { optionDto } from './option/option.dto';
+import { optionDto, publicOptionDto } from './option/option.dto';
 import type { DeepPartial } from '@api/common/utils/deep-partial';
 import { supportedLangs } from '@/constants/supported-codeblock-langs';
 import { generatedOptionDto } from './option/generated-option.dto';
@@ -11,7 +11,7 @@ export const questionDto = z.object({
 	question: z.string(),
 	codeBlock: z.string().nullable(),
 	codeLang: z.enum(supportedLangs).nullable(),
-	options: z.array(optionDto).nullable(),
+	options: z.array(publicOptionDto).nullable(),
 	answerExplanation: z.string().nullable()
 });
 
@@ -27,6 +27,17 @@ export const questionDto = z.object({
 // 		path: ['correctAnswer'] // Point the error to the `correctAnswer` field
 // 	}
 // );
+
+export const publicQuestionDto = questionDto
+	.omit({
+		correctAnswer: true,
+		options: true,
+		answerExplanation: true
+	})
+	.extend({
+		options: z.array(publicOptionDto)
+	});
+
 export type QuestionDto = z.infer<typeof questionDto>;
 
 export const generatedQuestionDto = questionDto.omit({ id: true, options: true }).extend({

@@ -7,4 +7,6 @@ export const optionDto = z.object({
 	isCorrect: z.boolean()
 });
 
+export const publicOptionDto = optionDto.omit({ isCorrect: true });
+
 export type OptionDto = z.infer<typeof optionDto>;

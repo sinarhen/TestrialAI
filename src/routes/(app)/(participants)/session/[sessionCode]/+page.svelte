@@ -20,7 +20,7 @@
 	import LogoutButton from '../../../(creators)/components/Header/LogoutButton.svelte';
 	import AuthDialog from '../../../(creators)/components/Header/AuthDialog.svelte';
 
-	const { data, form } = $props();
+	const { data } = $props();
 
 	const startDate = data.session.startTime ? new Date(data.session.startTime) : null;
 	const endDate = data.session.endTime ? new Date(data.session.endTime) : null;
@@ -52,6 +52,14 @@
 
 	const onSuggestionClick = (suggestion: string) => {
 		userTestName = suggestion;
+	};
+
+	const onTestSessionStart = () => {
+		if (!userTestName) {
+			toast.error('Please enter your name');
+			return;
+		}
+		goto('/session/' + data.session.code + '/take');
 	};
 </script>
 
@@ -167,7 +175,9 @@
 							{/if}
 						</div>
 					{/if}
-					<Button class="mt-3 w-full" disabled={!userTestName}>Start</Button>
+					<Button onclick={onTestSessionStart} class="mt-3 w-full" disabled={!userTestName}
+						>Start</Button
+					>
 				</div>
 				<Separator />
 				{#if !data.user}

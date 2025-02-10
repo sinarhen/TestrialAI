@@ -1,6 +1,6 @@
 import { displayModes } from '@/constants/display-modes';
 import { z } from 'zod';
-import { testDto } from '../../tests/dtos/test.dto';
+import { publicTestDto, testDto } from '../../tests/dtos/test.dto';
 
 export const testSessionDto = z.object({
 	id: z.string(),
@@ -13,4 +13,9 @@ export const testSessionDto = z.object({
 	displayMode: z.enum(displayModes)
 });
 
+export const publicTestSessionDto = testSessionDto.omit({ testStateJson: true }).extend({
+	testStateJson: publicTestDto
+});
+
+export type TestSessionWithPublicTestDto = z.infer<typeof publicTestSessionDto>;
 export type TestSessionDto = z.infer<typeof testSessionDto>;

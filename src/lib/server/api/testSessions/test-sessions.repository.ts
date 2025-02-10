@@ -18,11 +18,12 @@ export class TestSessionsRepository extends DrizzleRepository {
 		testSessionId: string,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
-		return db
-			.select()
-			.from(testSessionsTable)
-			.where(eq(testSessionsTable.id, testSessionId))
-			.then(takeFirst);
+		return db.query.testSessionsTable.findFirst({
+			where: eq(testSessionsTable.id, testSessionId),
+			with: {
+				participants: true
+			}
+		});
 	}
 
 	async addParticipantToTestSession(

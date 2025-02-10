@@ -4,7 +4,8 @@ import type { CreateTestSessionDto } from './dtos/create-test-session.dto';
 import { TestsRepository } from '../tests/tests.repository';
 import type { TestSession } from './tables';
 import { DrizzleTransactionService } from '../common/services/drizzle-transaction.service';
-import { NotFound } from '../common/utils/exceptions';
+import { InternalError, NotFound } from '../common/utils/exceptions';
+import { publicTestSessionDto, type TestSessionWithPublicTestDto } from './dtos/test-session.dto';
 
 @injectable()
 export class TestSessionsService {
@@ -49,7 +50,7 @@ export class TestSessionsService {
 			testStateJson: originalTest
 		});
 		if (!created) {
-			throw new Error('Failed to create test session');
+			throw InternalError('Failed to create test session');
 		}
 		return this.convertDatesToNumbers(created);
 	}
@@ -58,11 +59,29 @@ export class TestSessionsService {
 		const testSession = await this.testsSessionsRepository.getTestSession(testSessionId);
 
 		if (!testSession) {
-			throw new Error('Test session not found');
+			throw NotFound('Test session not found');
 		}
 
 		return this.convertDatesToNumbers(testSession);
 	}
+
+	public async getTestSessionPublicData(
+		testSessionId: string
+	): Promise<TestSessionWithPublicTestDto> {
+		const testSession = await this.testsSessionsRepository.getTestSession(testSessionId);
+
+		if (!testSession) {
+			throw NotFound('Test session not found');
+		}
+
+		const dto = publicTestSessionDto.safeParse(testSession);
+		if (dto.error) {
+			console.error(dto.error.errors);
+			throw InternalError('Failed to parse test session');
+		}
+		return dto.data;
+	}
+
 	public async getTestSessionByCode(code: string) {
 		const testSession = await this.testsSessionsRepository.getTestSessionByCode(code);
 		if (!testSession) {
