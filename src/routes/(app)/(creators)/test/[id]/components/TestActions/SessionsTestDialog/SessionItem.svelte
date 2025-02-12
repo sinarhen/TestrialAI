@@ -2,15 +2,17 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '@/components/ui/button';
 	import { Separator } from '@/components/ui/separator';
-	import type { TestSession } from '@/types/entities';
+	import type { TestSession } from '@/server/api/db/libsql/drizzle-schema';
+	import type { TestSessionDto } from '@/server/api/testSessions/dtos/test-session.dto';
 	import { copy } from '@/utils/copy';
 	import { Circle, Copy, User } from 'lucide-svelte';
 
 	const {
 		session
 	}: {
-		session: TestSession;
+		session: TestSessionDto;
 	} = $props();
+	console.dir(session);
 </script>
 
 <div class="block h-full w-full rounded-md border p-4">
@@ -40,7 +42,7 @@
 			</span>
 			<span class="flex items-center gap-x-1">
 				<User strokeWidth={2.5} size="14" />
-				{session.participants.length}
+				{session.participantsCount}
 			</span>
 		</div>
 

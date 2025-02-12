@@ -6,6 +6,8 @@ import { QuestionsRepository } from '@api/questions/questions.repository';
 import { PdfService } from '@api/common/services/pdf.service';
 import type { CreateTestDto } from './dtos/create-test-dto';
 import { DrizzleTransactionService } from '../common/services/drizzle-transaction.service';
+import { NotFound } from '../common/utils/exceptions';
+import { mapTestSession } from '../testSessions/dtos/test-session.dto';
 
 @injectable()
 export class TestsService {
@@ -18,7 +20,11 @@ export class TestsService {
 	) {}
 
 	getTestsHistoryForUser(userId: string) {
-		return this.testsRepository.findAllByUserId(userId);
+		const history = this.testsRepository.findAllByUserId(userId);
+		if (!history) {
+			throw NotFound('Tests history is not found');
+		}
+		return history;
 	}
 
 	async saveTest(test: CreateTestDto, userId: string) {
@@ -30,11 +36,19 @@ export class TestsService {
 	}
 
 	async findTest(testId: string) {
-		return this.testsRepository.findOneByIdWithRelations(testId);
+		const test = await this.testsRepository.findOneByIdWithRelations(testId);
+		if (!test) {
+			throw NotFound('Test is not found');
+		}
+		return { ...test, sessions: test.sessions.map(mapTestSession) };
 	}
 
-	generateTestStream(params: GenerateTestParamsDto) {
-		return this.testsGenerationService.streamTestGeneration(params);
+	async generateTestStream(params: GenerateTestParamsDto) {
+		const testStream = await this.testsGenerationService.streamTestGeneration(params);
+		if (!testStream) {
+			throw NotFound('Test generation failed');
+		}
+		return testStream;
 	}
 
 	async deleteTest(testId: string) {

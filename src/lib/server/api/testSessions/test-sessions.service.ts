@@ -5,7 +5,7 @@ import { TestsRepository } from '../tests/tests.repository';
 import type { TestSession } from './tables';
 import { DrizzleTransactionService } from '../common/services/drizzle-transaction.service';
 import { InternalError, NotFound } from '../common/utils/exceptions';
-import { publicTestSessionDto, type TestSessionWithPublicTestDto } from './dtos/test-session.dto';
+import { mapTestSessionToPublic, type PublicTestSessionDto } from './dtos/test-session.dto';
 
 @injectable()
 export class TestSessionsService {
@@ -65,16 +65,14 @@ export class TestSessionsService {
 		return this.convertDatesToNumbers(testSession);
 	}
 
-	public async getTestSessionPublicData(
-		testSessionId: string
-	): Promise<TestSessionWithPublicTestDto> {
+	public async getTestSessionPublicData(testSessionId: string): Promise<PublicTestSessionDto> {
 		const testSession = await this.testsSessionsRepository.getTestSession(testSessionId);
 
 		if (!testSession) {
 			throw NotFound('Test session not found');
 		}
 
-		return publicTestSessionDto.parse(testSession);
+		return mapTestSessionToPublic(testSession);
 	}
 
 	public async getTestSessionByCode(code: string) {
@@ -85,7 +83,6 @@ export class TestSessionsService {
 		return this.convertDatesToNumbers(testSession);
 	}
 
-	// TODO: Find a better way to convert dates to numbers for all entities
 	private convertDatesToNumbers(testSession: TestSession) {
 		return {
 			...testSession,

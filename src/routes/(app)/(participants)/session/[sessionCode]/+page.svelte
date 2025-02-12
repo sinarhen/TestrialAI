@@ -81,7 +81,7 @@
 		}
 		const { testSessionId } = resp.data;
 
-		goto('/session/' + data.session.code + '/take');
+		goto('/session/' + testSessionId + '/take');
 	};
 </script>
 

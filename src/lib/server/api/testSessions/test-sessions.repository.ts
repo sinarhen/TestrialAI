@@ -22,6 +22,7 @@ export class TestSessionsRepository extends DrizzleRepository {
 			where: eq(testSessionsTable.id, testSessionId),
 			with: {
 				participants: true
+				// test: true
 			}
 		});
 	}

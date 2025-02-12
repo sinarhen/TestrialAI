@@ -56,7 +56,7 @@
 
 <div class="flex gap-x-2">
 	<TakeTestDialog testTitle={serverData.test.title} testId={serverData.test.id} />
-	<SessionsTestDialog sessions={[]} />
+	<SessionsTestDialog sessions={serverData.test.sessions} />
 	<!-- <SettingsTestDialog /> -->
 	<ShareTestDialog testId={serverData.test.id} />
 	<Separator orientation="vertical" class="motion-opacity-in-0 motion-delay-[150ms]" />

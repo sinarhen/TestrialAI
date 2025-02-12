@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
-	import type { TestSession } from '@/types/entities';
 	import { FileClock } from 'lucide-svelte';
 	import * as Dialog from '@/components/ui/dialog';
 	import SessionItem from './SessionItem.svelte';
+	import type { TestSessionDto } from '@/server/api/testSessions/dtos/test-session.dto';
 
 	const {
 		sessions
 	}: {
-		sessions?: TestSession[];
+		sessions: TestSessionDto[] | undefined;
 	} = $props();
 
-	const calculateAverageScore = (participants: TestSession['participants']) => {
-		const finishedParticipants = participants.filter(
-			(participant) => participant.status === 'completed'
-		);
+	// const calculateAverageScore = (participants: TestSessionDto['participants']) => {
+	// 	const finishedParticipants = participants.filter(
+	// 		(participant) => participant.status === 'completed'
+	// 	);
 
-		const totalScore = finishedParticipants.reduce((prev, curr) => prev + curr.score, 0);
-		return totalScore / finishedParticipants.length;
-	};
+	// 	const totalScore = finishedParticipants.reduce((prev, curr) => prev + curr.score, 0);
+	// 	return totalScore / finishedParticipants.length;
+	// };
 </script>
 
 <Dialog.Root>
