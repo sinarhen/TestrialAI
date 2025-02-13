@@ -48,7 +48,7 @@
 	const isQuestionNewlyAdded = (index: number): boolean => index >= initialQuestionsCount;
 </script>
 
-<section class="relative mt-8 flex h-full w-full flex-col">
+<section class="relative flex h-full w-full flex-col">
 	<div class="flex w-full flex-col gap-y-12">
 		{#each test.questions ?? [] as question, index (index)}
 			<div

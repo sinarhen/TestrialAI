@@ -1,5 +1,6 @@
 import { api } from '@/client-api';
 import { parseClientResponse } from '@/utils/api.js';
+import { error } from '@sveltejs/kit';
 
 export async function load({ params, fetch }) {
 	const { sessionId } = params;
@@ -11,8 +12,9 @@ export async function load({ params, fetch }) {
 		})
 		.then(parseClientResponse);
 
-	// if (!resp.data) {
-	// 	return error(404);
-	// }
+	if (!resp.data) {
+		return error(404);
+	}
+
 	return { testSession: resp.data };
 }

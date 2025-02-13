@@ -5,7 +5,7 @@
 	import type { TestSession } from '@/server/api/db/libsql/drizzle-schema';
 	import type { TestSessionDto } from '@/server/api/testSessions/dtos/test-session.dto';
 	import { copy } from '@/utils/copy';
-	import { Circle, Copy, User } from 'lucide-svelte';
+	import { Circle, Copy, ExternalLink, User } from 'lucide-svelte';
 
 	const {
 		session
@@ -49,9 +49,9 @@
 		<div class="flex justify-end gap-x-1">
 			<Button
 				onclick={() => goto(`/session/${session.code}`)}
-				class="h-8 px-3 text-xs"
+				class="h-8 gap-x-1 px-3 text-xs"
 				variant="outline"
-				size="sm">Details</Button
+				size="sm">Go to <ExternalLink size="8" /></Button
 			>
 
 			<Button class="h-8 px-3 text-xs" variant="outline" size="sm">Configure</Button>

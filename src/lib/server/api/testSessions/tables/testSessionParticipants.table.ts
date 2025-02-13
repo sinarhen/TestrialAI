@@ -5,6 +5,7 @@ import { testSessionsTable } from './testSessions.table';
 import { relations } from 'drizzle-orm';
 import type { InferResultType } from '../../common/utils/drizzle';
 import { testSessionParticipantStatuses } from '@/constants/participant-statuses';
+import { participantAnswersTable } from './participantsAnswers.table';
 
 export const testSessionParticipantsTable = sqliteTable('test_participant', {
 	id: text('id')
@@ -26,7 +27,7 @@ export const testSessionParticipantsTable = sqliteTable('test_participant', {
 
 export const testSessionParticipantRelations = relations(
 	testSessionParticipantsTable,
-	({ one }) => ({
+	({ one, many }) => ({
 		testSession: one(testSessionsTable, {
 			fields: [testSessionParticipantsTable.testSessionId],
 			references: [testSessionsTable.id]
@@ -34,7 +35,8 @@ export const testSessionParticipantRelations = relations(
 		user: one(usersTable, {
 			fields: [testSessionParticipantsTable.userId],
 			references: [usersTable.id]
-		})
+		}),
+		answers: many(participantAnswersTable)
 	})
 );
 

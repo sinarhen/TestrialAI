@@ -28,6 +28,7 @@ export const participantAnswersRelations = relations(participantAnswersTable, ({
 }));
 
 export type ParticipantAnswer = typeof participantAnswersTable.$inferSelect;
+export type CreateParticipantAnswer = typeof participantAnswersTable.$inferInsert;
 export type ParticipantAnswerWithRelations = InferResultType<
 	'participantAnswersTable',
 	{

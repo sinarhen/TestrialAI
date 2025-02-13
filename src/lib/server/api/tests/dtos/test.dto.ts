@@ -20,7 +20,7 @@ export function mapTestToPublic(test: TestWithRelations): PublicTestDto {
 		description: test.description,
 		questions: test.questions.map((q) => ({
 			id: q.id,
-			answerType: q.answerType,
+			answerType: q.answerType, // TODO: Add an option to not expose answerType to the test taker
 			question: q.question,
 			codeBlock: q.codeBlock,
 			codeLang: q.codeLang,

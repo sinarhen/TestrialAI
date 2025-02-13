@@ -1,11 +1,43 @@
 import { injectable } from 'tsyringe';
 import { DrizzleRepository } from '../common/factories/drizzle-repository.factory';
-import { testSessionParticipantsTable, testSessionsTable, type CreateTestSession } from './tables';
+import {
+	participantAnswerOptionsTable,
+	participantAnswersTable,
+	testSessionParticipantsTable,
+	testSessionsTable,
+	type CreateParticipantAnswer,
+	type CreateParticipantAnswerOption,
+	type CreateTestSession
+} from './tables';
 import { takeFirst, type DrizzleClient, type DrizzleTransaction } from '../common/utils/drizzle';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 @injectable()
 export class TestSessionsRepository extends DrizzleRepository {
+	async createOrUpdateParticipantAnswerOptions(
+		options: CreateParticipantAnswerOption[],
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
+	) {
+		return db.insert(participantAnswerOptionsTable).values(options).returning().then(takeFirst);
+	}
+
+	async createOrUpdateParticipantAnswers(
+		answers: CreateParticipantAnswer[],
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
+	) {
+		return db
+			.insert(participantAnswersTable)
+			.values(answer)
+			.onConflictDoUpdate({
+				target: participantAnswersTable.id,
+				set: {
+					score: 
+				}
+			})
+			.returning()
+			.then(takeFirst);
+	}
+
 	async createTestSession(
 		testSession: CreateTestSession,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db

@@ -48,7 +48,11 @@
 			<QuestionTitle questionTitle={question.question} />
 			{#if question.codeBlock && question.codeBlock.length > 0}
 				<div class="mt-1">
-					<QuestionCodeBlock codeBlock={question.codeBlock} codeLanguage={question.codeLang} />
+					<QuestionCodeBlock
+						isGenerating={questionState.isGenerating(question)}
+						codeBlock={question.codeBlock}
+						codeLanguage={question.codeLang}
+					/>
 				</div>
 			{/if}
 		</div>

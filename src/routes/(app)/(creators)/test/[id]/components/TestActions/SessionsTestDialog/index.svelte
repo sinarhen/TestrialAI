@@ -37,7 +37,7 @@
 			<Dialog.Description>View and manage test sessions</Dialog.Description>
 		</Dialog.Header>
 		{#if !!sessions?.length}
-			<div class="flex flex-col gap-y-2">
+			<div class="flex flex-col gap-y-4">
 				{#each sessions as session}
 					<SessionItem {session} />
 				{/each}

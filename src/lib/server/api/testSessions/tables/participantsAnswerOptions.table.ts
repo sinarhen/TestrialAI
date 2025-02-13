@@ -24,4 +24,5 @@ export const participantAnswerOptionsRelations = relations(
 	})
 );
 
+export type CreateParticipantAnswerOption = typeof participantAnswerOptionsTable.$inferInsert;
 export type ParticipantAnswerOption = typeof participantAnswerOptionsTable.$inferSelect;
