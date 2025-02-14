@@ -11,7 +11,7 @@ import {
 import { DrizzleTransactionService } from '../common/services/drizzle-transaction.service';
 import { InternalError, NotFound, Unauthorized } from '../common/utils/exceptions';
 import { mapTestSessionToPublic, type PublicTestSessionDto } from './dtos/test-session.dto';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 
 @injectable()
 export class TestSessionsService {
@@ -31,7 +31,7 @@ export class TestSessionsService {
 		}[]
 	): Promise<void> {
 		return this.drizzleTransactionService.runTransaction(async (tx) => {
-			const participantCheck = await tx.query.testSessionParticipantsTable.findFirst({
+			const existingParticipant = await tx.query.testSessionParticipantsTable.findFirst({
 				where: and(
 					eq(testSessionParticipantsTable.id, testParticipantId),
 					eq(testSessionParticipantsTable.testSessionId, testSessionId)
@@ -40,22 +40,39 @@ export class TestSessionsService {
 					answers: true
 				}
 			});
-			if (!participantCheck) throw Unauthorized('Participant not found in session');
+			if (!existingParticipant) throw Unauthorized('Participant not found in session');
 
-			// const answersToUpsert = [];
-			// const answersToDelete = [];
-			// for (const incoming of participantCheck)
-			// for (const incoming of answers) {
-			// 	const existingAnswer = participantCheck.answers.find(
-			// 		(a) => a.questionId === incoming.questionId
-			// 	);
+			const existingAnswers = existingParticipant.answers;
 
-			// 	if (!existingAnswer) {
-			// 		newAnswers.push(incoming);
-			// 	} else {
-			// 		updatedAnswers.push(incoming);
-			// 	}
-			// }
+			tx.insert(participantAnswersTable).values(
+				answers.map((a) => ({
+					...a,
+					testParticipantId
+				}))
+			).onConflictDoUpdate({
+				target: participantAnswersTable.id,
+				set: {
+					typedAnswer: sql`excluded.typedAnswer`,
+					// submittedAt: 
+				}
+
+			});
+
+			const answersToDelete = [];
+			const answersToUpsert = [];
+			for (const answer of existingAnswers) {
+				const isQuestionAnswerChanged = !answers.some((a) => a.questionId === answer.questionId);
+				if (isQuestionAnswerChanged) {
+					answersToDelete.push(answer);
+				} else {
+					answersToUpsert.push(answer);
+				}
+			}
+			const existingAnswersToDelete = existingAnswers.filter(
+				(answer) => !answers.some((a) => a.questionId === answer.questionId)
+			);
+
+			tx.delete(participantAnswersTable);
 
 			// const [newAnswer] = await tx
 			// 	.insert(participantAnswersTable)

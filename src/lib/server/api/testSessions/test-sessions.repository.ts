@@ -25,17 +25,15 @@ export class TestSessionsRepository extends DrizzleRepository {
 		answers: CreateParticipantAnswer[],
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
-		return db
+		return await db
 			.insert(participantAnswersTable)
-			.values(answer)
+			.values(answers)
 			.onConflictDoUpdate({
-				target: participantAnswersTable.id,
+				target: [participantAnswersTable.questionId],
 				set: {
-					score: 
+					typedAnswer: sql`excluded.typedAnswer`
 				}
-			})
-			.returning()
-			.then(takeFirst);
+			});
 	}
 
 	async createTestSession(
