@@ -5,6 +5,7 @@ import { TestSessionsService } from '@api/testSessions/test-sessions.service';
 import { createTestSessionDto } from './dtos/create-test-session.dto';
 import { zValidator } from '../common/utils/zod-validator-wrapper';
 import { z } from 'zod';
+import { answerDto } from './dtos/answer.dto';
 
 // TODO
 @injectable()
@@ -26,14 +27,19 @@ export class TestSessionsController extends Controller {
 				const testSession = await this.testSessionsService.getTestSessionByCode(testSessionCode);
 				return c.json(testSession);
 			})
-			.get('/:testSessionId/test', async (c) => {
-				const testSessionId = c.req.param('testSessionId');
-				const testSession = await this.testSessionsService.getTestSessionPublicData(testSessionId);
+			.get('/:testSessionToken/test', async (c) => {
+				const testSessionToken = c.req.param('testSessionToken');
+				const testSession =
+					await this.testSessionsService.getTestSessionPublicData(testSessionToken);
 				return c.json(testSession);
 			})
-			.post('/:testSessionId/sync', async (c) => {
-				const testSessionId = c.req.param('testSessionId');
-				const testSession = await this.testSessionsService.syncTestSession(testSessionId);
+			.post('/:testSessionToken/sync', zValidator('json', z.array(answerDto)), async (c) => {
+				const answersDtos = c.req.valid('json');
+				const testSessionToken = c.req.param('testSessionToken');
+				const testSession = await this.testSessionsService.syncAnswers(
+					testSessionToken,
+					answersDtos
+				);
 				return c.json(testSession);
 			})
 			.post(

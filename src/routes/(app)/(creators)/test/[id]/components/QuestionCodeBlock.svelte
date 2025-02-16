@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { SupportedLanguage } from '@/constants/supported-codeblock-langs';
-	import { getHljsStyles, getHljsWithLanguage } from '@/utils/code-parser';
+	import type { SupportedLanguage } from '@/shared/constants/supported-codeblock-langs';
+	import { getHljsStyles, getHljsWithLanguage } from '@/client/utils/code-parser';
 
 	let {
 		codeBlock,

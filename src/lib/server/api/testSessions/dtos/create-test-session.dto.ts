@@ -1,4 +1,4 @@
-import { displayModes } from '@/constants/display-modes';
+import { displayModes } from '@/shared/constants/display-modes';
 import { z } from 'zod';
 
 export const createTestSessionDto = z.object({

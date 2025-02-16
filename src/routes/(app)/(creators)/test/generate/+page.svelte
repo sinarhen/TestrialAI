@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { parseClientResponse } from '@/utils/api.js';
+	import { parseClientResponse } from '@/client/utils/api.js';
 	import { Check, Trash, X } from 'lucide-svelte';
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
@@ -7,9 +7,9 @@
 	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
-	import { api } from '@/client-api';
+	import { api } from '@/client/api';
 	import type { GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';
-	import { streamOpenAiResponse } from '@/utils/openai-stream';
+	import { streamOpenAiResponse } from '@/client/utils/openai-stream';
 	import type {
 		GeneratedTestDto,
 		GeneratingTestDto

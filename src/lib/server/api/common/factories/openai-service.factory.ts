@@ -1,7 +1,7 @@
 import { container } from 'tsyringe';
 import { ConfigService } from '@api/common/configs/config.service';
 import OpenAI from 'openai';
-import type { CustomChatCompletionParams } from '@/types/openai';
+import type { CustomChatCompletionParams } from '@/client/types/openai';
 
 export class OpenAiBaseService {
 	private client: OpenAI;

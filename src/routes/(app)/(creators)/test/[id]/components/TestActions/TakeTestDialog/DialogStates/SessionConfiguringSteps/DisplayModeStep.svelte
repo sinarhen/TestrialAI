@@ -2,7 +2,7 @@
 	import AccordionStep from './AccordionStep.svelte';
 	import { Layers, List } from 'lucide-svelte';
 	import StepCardSelector from '../../StepCardSelector.svelte';
-	import type { DisplayMode } from '@/constants/display-modes';
+	import type { DisplayMode } from '@/shared/constants/display-modes';
 	import { steps, type Step } from '../../index.svelte';
 
 	const displayModes: {

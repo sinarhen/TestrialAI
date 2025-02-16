@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { supportedLangs } from '@/constants/supported-codeblock-langs';
+import { supportedLangs } from '@/shared/constants/supported-codeblock-langs';
 
 export const codeBlockDto = z.object({
 	codeBlock: z.string(),

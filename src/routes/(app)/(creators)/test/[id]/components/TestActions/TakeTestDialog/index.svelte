@@ -39,14 +39,14 @@
 	import { Copy, Layers, Play, Settings, Share, Timer } from 'lucide-svelte';
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import { Input } from '@/components/ui/input';
-	import { copy } from '@/utils/copy';
+	import { copy } from '@/client/utils/copy';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import QR from '@svelte-put/qr/svg/QR.svelte';
 	import StepCardSelector from './StepCardSelector.svelte';
 	import ConfigureSession from './DialogStates/SessionConfiguringSteps/index.svelte';
 	import ConfirmingState from './DialogStates/ConfirmingState.svelte';
-	import type { DisplayMode } from '@/constants/display-modes';
+	import type { DisplayMode } from '@/shared/constants/display-modes';
 
 	const {
 		testId,

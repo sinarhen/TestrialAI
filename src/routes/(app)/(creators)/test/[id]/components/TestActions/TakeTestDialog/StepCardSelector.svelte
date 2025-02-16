@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
-	import { cn } from '@/utils/shadcn';
+	import { cn } from '@/client/utils/shadcn';
 
 	const {
 		selected,

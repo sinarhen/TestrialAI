@@ -19,8 +19,8 @@
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import LogoutButton from '../../../(creators)/components/Header/LogoutButton.svelte';
 	import AuthDialog from '../../../(creators)/components/Header/AuthDialog.svelte';
-	import { api } from '@/client-api';
-	import { parseClientResponse } from '@/utils/api';
+	import { api } from '@/client/api';
+	import { parseClientResponse } from '@/client/utils/api';
 
 	const { data } = $props();
 
@@ -79,9 +79,9 @@
 			toast.error('Something went wrong');
 			return;
 		}
-		const { testSessionId } = resp.data;
+		const { sessionToken } = resp.data;
 
-		goto('/session/' + testSessionId + '/take');
+		goto(`/session/${sessionToken}/take`);
 	};
 </script>
 

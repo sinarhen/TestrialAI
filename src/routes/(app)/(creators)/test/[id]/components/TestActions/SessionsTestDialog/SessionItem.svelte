@@ -4,7 +4,7 @@
 	import { Separator } from '@/components/ui/separator';
 	import type { TestSession } from '@/server/api/db/libsql/drizzle-schema';
 	import type { TestSessionDto } from '@/server/api/testSessions/dtos/test-session.dto';
-	import { copy } from '@/utils/copy';
+	import { copy } from '@/client/utils/copy';
 	import { Circle, Copy, ExternalLink, User } from 'lucide-svelte';
 
 	const {

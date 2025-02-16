@@ -4,7 +4,7 @@ import { testsTable, type TestWithRelations } from '../../tests/tables/tests.tab
 import { relations } from 'drizzle-orm';
 import { testSessionParticipantsTable } from './testSessionParticipants.table';
 import type { InferResultType } from '../../common/utils/drizzle';
-import { displayModes } from '../../../../constants/display-modes';
+import { displayModes } from '../../../../shared/constants/display-modes';
 
 export const testSessionsTable = sqliteTable(
 	'test_sessions',
@@ -53,4 +53,11 @@ export type TestSessionWithRelations = InferResultType<
 		participants: true;
 		// test: true;
 	}
->;
+> & {
+	participants: InferResultType<
+		'testSessionParticipantsTable',
+		{
+			answers: true;
+		}
+	>[];
+};

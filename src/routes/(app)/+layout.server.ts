@@ -1,5 +1,5 @@
-import { api } from '@/client-api';
-import { parseClientResponse } from '@/utils/api.js';
+import { api } from '@/client/api';
+import { parseClientResponse } from '@/client/utils/api.js';
 
 export const load = async ({ fetch }) => {
 	let user = null;

@@ -1,5 +1,5 @@
-import { api } from '@/client-api/index.js';
-import { parseClientResponse } from '@/utils/api.js';
+import { api } from '@/client/api/index.js';
+import { parseClientResponse } from '@/client/utils/api.js';
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ fetch, params, parent }) => {

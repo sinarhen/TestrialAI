@@ -3,8 +3,8 @@
 	import { Button } from '@/components/ui/button/index.js';
 	import { Sparkles, Trash2 } from 'lucide-svelte';
 	import { questionState, type QuestionState, type SavedQuestion } from '../../../types';
-	import { api } from '@/client-api';
-	import { parseClientResponse } from '@/utils/api';
+	import { api } from '@/client/api';
+	import { parseClientResponse } from '@/client/utils/api';
 
 	const {
 		testId,

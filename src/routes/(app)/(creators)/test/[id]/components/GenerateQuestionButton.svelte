@@ -7,8 +7,8 @@
 	import { toast } from 'svelte-sonner';
 	import type { TestState } from '../types';
 	import type { GenerateQuestionParamsDto } from '@/server/api/questions/dtos/generate-question-params.dto';
-	import { streamOpenAiResponse } from '@/utils/openai-stream';
-	import { api } from '@/client-api';
+	import { streamOpenAiResponse } from '@/client/utils/openai-stream';
+	import { api } from '@/client/api';
 	import { type GeneratedQuestionDto } from '@/server/api/questions/dtos/question.dto';
 
 	let isPopoverOpen = $state(false);

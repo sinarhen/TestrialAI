@@ -4,7 +4,7 @@
 	import DisplayModeStep from './DisplayModeStep.svelte';
 	import DurationPickerStep from './DurationPickerStep.svelte';
 	import OtherSettingsStep from './OtherSettingsStep.svelte';
-	import type { DisplayMode } from '@/constants/display-modes';
+	import type { DisplayMode } from '@/shared/constants/display-modes';
 	const {
 		displayMode,
 		duration,

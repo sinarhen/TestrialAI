@@ -12,11 +12,11 @@
 	import { Separator } from '@/components/ui/separator';
 	import { Button } from '@/components/ui/button';
 	import { LogIn } from 'lucide-svelte';
-	import { api } from '@/client-api';
+	import { api } from '@/client/api';
 	import type { Provider } from '@/server/api/users/tables';
 	import { toast } from 'svelte-sonner';
 	import { invalidate, invalidateAll } from '$app/navigation';
-	import { parseClientResponse } from '@/utils/api';
+	import { parseClientResponse } from '@/client/utils/api';
 	import { HTTPException } from 'hono/http-exception';
 	import test from 'node:test';
 

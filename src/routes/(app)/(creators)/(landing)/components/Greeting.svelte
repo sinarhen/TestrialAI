@@ -2,7 +2,7 @@
 	import { Input } from '@/components/ui/input';
 	import { Button } from '@/components/ui/button';
 	import { toast } from 'svelte-sonner';
-	import type { SupportedModel } from '@/types/openai';
+	import type { SupportedModel } from '@/client/types/openai';
 	import type { Selected } from 'bits-ui';
 	import * as Select from '$lib/components/ui/select';
 	import { Slider } from '$lib/components/ui/slider/index';

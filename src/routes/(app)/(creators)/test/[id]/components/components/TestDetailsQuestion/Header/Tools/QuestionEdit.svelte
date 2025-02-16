@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { parseClientResponse } from '@/utils/api.js';
+	import { parseClientResponse } from '@/client/utils/api.js';
 	import { type QuestionState, questionState, type SavedQuestion } from '../../../../../types';
 	import { toast } from 'svelte-sonner';
 	import {
@@ -22,11 +22,14 @@
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import * as Select from '@/components/ui/select';
 	import QuestionCodeBlock from '../../../../QuestionCodeBlock.svelte';
-	import { streamOpenAiResponse } from '@/utils/openai-stream';
-	import { api } from '@/client-api';
+	import { streamOpenAiResponse } from '@/client/utils/openai-stream';
+	import { api } from '@/client/api';
 	import type { GeneratedQuestionDto } from '@/server/api/questions/dtos/question.dto';
-	import { AnswerTypes } from '@/constants/question-answer-types';
-	import { supportedLangs, type SupportedLanguage } from '@/constants/supported-codeblock-langs';
+	import { AnswerTypes } from '@/shared/constants/question-answer-types';
+	import {
+		supportedLangs,
+		type SupportedLanguage
+	} from '@/shared/constants/supported-codeblock-langs';
 
 	const {
 		testId,

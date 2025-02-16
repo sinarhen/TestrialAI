@@ -1,12 +1,10 @@
 import { injectable } from 'tsyringe';
 import { DrizzleRepository } from '../common/factories/drizzle-repository.factory';
 import {
-	participantAnswerOptionsTable,
 	participantAnswersTable,
 	testSessionParticipantsTable,
 	testSessionsTable,
 	type CreateParticipantAnswer,
-	type CreateParticipantAnswerOption,
 	type CreateTestSession
 } from './tables';
 import { takeFirst, type DrizzleClient, type DrizzleTransaction } from '../common/utils/drizzle';
@@ -14,24 +12,19 @@ import { and, eq, sql } from 'drizzle-orm';
 
 @injectable()
 export class TestSessionsRepository extends DrizzleRepository {
-	async createOrUpdateParticipantAnswerOptions(
-		options: CreateParticipantAnswerOption[],
-		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
-	) {
-		return db.insert(participantAnswerOptionsTable).values(options).returning().then(takeFirst);
-	}
-
-	async createOrUpdateParticipantAnswers(
+	async upsertParticipantAnswers(
 		answers: CreateParticipantAnswer[],
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
-		return await db
+		return db
 			.insert(participantAnswersTable)
 			.values(answers)
 			.onConflictDoUpdate({
-				target: [participantAnswersTable.questionId],
+				target: [participantAnswersTable.questionId, participantAnswersTable.testParticipantId],
 				set: {
-					typedAnswer: sql`excluded.typedAnswer`
+					typedAnswer: sql`excluded.typedAnswer`,
+					submittedAt: new Date(),
+					selectedOptionIds: sql`excluded.selectedOptionIds`
 				}
 			});
 	}
@@ -52,7 +45,24 @@ export class TestSessionsRepository extends DrizzleRepository {
 			where: eq(testSessionsTable.id, testSessionId),
 			with: {
 				participants: true
-				// test: true
+			}
+		});
+	}
+
+	async getTestSessionWithParticipantAnswers(
+		testSessionId: string,
+		participantId: string,
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
+	) {
+		return db.query.testSessionsTable.findFirst({
+			where: eq(testSessionsTable.id, testSessionId),
+			with: {
+				participants: {
+					where: eq(testSessionParticipantsTable.id, participantId),
+					with: {
+						answers: true
+					}
+				}
 			}
 		});
 	}

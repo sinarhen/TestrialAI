@@ -14,7 +14,8 @@ export const privateEnvsDto = z.object({
 	ENV: z.enum(['dev', 'prod']),
 	PORT: z.number({ coerce: true }),
 	GOOGLE_APP_PASSWORD: z.string(),
-	GOOGLE_APP_EMAIL: z.string()
+	GOOGLE_APP_EMAIL: z.string(),
+	TOKEN_SECRET: z.string()
 });
 
 export type PrivateEnvsDto = z.infer<typeof privateEnvsDto>;

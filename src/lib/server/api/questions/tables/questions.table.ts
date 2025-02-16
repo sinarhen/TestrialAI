@@ -2,8 +2,8 @@ import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
 import { relations, type InferSelectModel } from 'drizzle-orm';
 import type { InferResultType } from '@api/common/utils/drizzle';
-import type { SupportedLanguage } from '@/constants/supported-codeblock-langs';
-import type { AnswerType } from '../../../../constants/question-answer-types';
+import type { SupportedLanguage } from '@/shared/constants/supported-codeblock-langs';
+import type { AnswerType } from '../../../../shared/constants/question-answer-types';
 import type { OptionDto } from '../dtos/option/option.dto';
 import { testsTable } from '../../tests/tables/tests.table';
 

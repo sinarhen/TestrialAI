@@ -1,12 +1,12 @@
 <script lang="ts">
 	import * as DropdownMenu from '@/components/ui/dropdown-menu';
-	import type { QuestionModificationTool } from '@/types/openai';
+	import type { QuestionModificationTool } from '@/client/types/openai';
 	import { Brain, CaseLower, Globe, RotateCw, Sparkles, ChevronDown, Icon } from 'lucide-svelte';
 	import { questionState, type QuestionState } from '../../../../../types';
 	import { toast } from 'svelte-sonner';
 	import lodash from 'lodash';
-	import { streamOpenAiResponse } from '@/utils/openai-stream';
-	import { api } from '@/client-api';
+	import { streamOpenAiResponse } from '@/client/utils/openai-stream';
+	import { api } from '@/client/api';
 	import type { GeneratedQuestionDto } from '@/server/api/questions/dtos/question.dto';
 
 	let isActionMenuOpen = $state(false);
