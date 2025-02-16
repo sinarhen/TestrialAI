@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { Button } from '@/components/ui/button';
-	import * as Dialog from '@/components/ui/dialog';
-	import { Separator } from '@/components/ui/separator';
+	import { Button } from '@client/components/ui/button';
+	import * as Dialog from '@client/components/ui/dialog';
+	import { Separator } from '@client/components/ui/separator';
 	import { Link, Share } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
 

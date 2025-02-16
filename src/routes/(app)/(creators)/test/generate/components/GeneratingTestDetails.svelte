@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Label } from '@/components/ui/label';
-	import * as RadioGroup from '@/components/ui/radio-group';
-	import { Checkbox } from '@/components/ui/checkbox';
-	import { Input } from '@/components/ui/input';
+	import { Label } from '@client/components/ui/label';
+	import * as RadioGroup from '@client/components/ui/radio-group';
+	import { Checkbox } from '@client/components/ui/checkbox';
+	import { Input } from '@client/components/ui/input';
 	import type { GeneratingTestCompletion } from '@/types/entities.js';
 	import { CircleHelp } from 'lucide-svelte';
 	import QuestionTitleWithCodeBlock from '../../[id]/components/components/TestDetailsQuestion/Header/QuestionTitle.svelte';

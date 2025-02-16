@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@client/components/ui/button';
 	import { cn } from '@/client/utils/shadcn';
 
 	const {

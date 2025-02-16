@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@client/components/ui/button';
 	import { FileClock } from 'lucide-svelte';
-	import * as Dialog from '@/components/ui/dialog';
+	import * as Dialog from '@client/components/ui/dialog';
 	import SessionItem from './SessionItem.svelte';
 	import type { TestSessionDto } from '@/server/api/testSessions/dtos/test-session.dto';
 

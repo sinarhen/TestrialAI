@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Input } from '@/components/ui/input';
-	import { Button } from '@/components/ui/button';
+	import { Input } from '@client/components/ui/input';
+	import { Button } from '@client/components/ui/button';
 	import { toast } from 'svelte-sonner';
 	import type { SupportedModel } from '@/client/types/openai';
 	import type { Selected } from 'bits-ui';
-	import * as Select from '$lib/components/ui/select';
-	import { Slider } from '$lib/components/ui/slider/index';
+	import * as Select from '@client/components/ui/select';
+	import { Slider } from '@client/components/ui/slider/index';
 	import { goto } from '$app/navigation';
 
 	let {

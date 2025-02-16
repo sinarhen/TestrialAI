@@ -33,12 +33,12 @@
 
 	import { browser } from '$app/environment';
 
-	import * as Accordion from '@/components/ui/accordion';
-	import { Button } from '@/components/ui/button';
-	import * as Dialog from '@/components/ui/dialog';
+	import * as Accordion from '@client/components/ui/accordion';
+	import { Button } from '@client/components/ui/button';
+	import * as Dialog from '@client/components/ui/dialog';
 	import { Copy, Layers, Play, Settings, Share, Timer } from 'lucide-svelte';
-	import Separator from '@/components/ui/separator/separator.svelte';
-	import { Input } from '@/components/ui/input';
+	import Separator from '@client/components/ui/separator/separator.svelte';
+	import { Input } from '@client/components/ui/input';
 	import { copy } from '@/client/utils/copy';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';

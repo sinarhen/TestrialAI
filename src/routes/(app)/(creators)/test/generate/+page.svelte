@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@client/components/ui/button';
 	import GeneratingTestDetails from './components/GeneratingTestDetails.svelte';
 	import { api } from '@/client/api';
 	import type { GenerateTestParamsDto } from '@/server/api/tests/dtos/generate-test-params.dto';

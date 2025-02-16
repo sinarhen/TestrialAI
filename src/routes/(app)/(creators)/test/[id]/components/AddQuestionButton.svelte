@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Plus } from 'lucide-svelte';
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@client/components/ui/button';
 
 	const {
 		onCreateQuestion

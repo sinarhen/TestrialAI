@@ -10,17 +10,17 @@
 		DialogFooter,
 		DialogTitle,
 		DialogDescription
-	} from '@/components/ui/dialog';
-	import * as RadioGroup from '@/components/ui/radio-group';
-	import * as Accordion from '@/components/ui/accordion';
+	} from '@client/components/ui/dialog';
+	import * as RadioGroup from '@client/components/ui/radio-group';
+	import * as Accordion from '@client/components/ui/accordion';
 	import lodash from 'lodash';
 	import { Info, Pencil, Plus, Sparkles, Trash2 } from 'lucide-svelte';
-	import { Label } from '@/components/ui/label';
-	import { Input } from '@/components/ui/input';
-	import { Checkbox } from '@/components/ui/checkbox';
-	import { Button } from '@/components/ui/button';
-	import Textarea from '@/components/ui/textarea/textarea.svelte';
-	import * as Select from '@/components/ui/select';
+	import { Label } from '@client/components/ui/label';
+	import { Input } from '@client/components/ui/input';
+	import { Checkbox } from '@client/components/ui/checkbox';
+	import { Button } from '@client/components/ui/button';
+	import Textarea from '@client/components/ui/textarea/textarea.svelte';
+	import * as Select from '@client/components/ui/select';
 	import QuestionCodeBlock from '../../../../QuestionCodeBlock.svelte';
 	import { streamOpenAiResponse } from '@/client/utils/openai-stream';
 	import { api } from '@/client/api';

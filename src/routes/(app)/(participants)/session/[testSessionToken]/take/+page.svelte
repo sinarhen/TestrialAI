@@ -1,12 +1,12 @@
 <script lang="ts">
-	import * as RadioGroup from '@/components/ui/radio-group';
+	import * as RadioGroup from '@client/components/ui/radio-group';
 	import QuestionTitle from '../../../../(creators)/test/[id]/components/components/TestDetailsQuestion/Header/QuestionTitle.svelte';
 	import QuestionCodeBlock from '../../../../(creators)/test/[id]/components/QuestionCodeBlock.svelte';
-	import { Label } from '@/components/ui/label';
-	import { Checkbox } from '@/components/ui/checkbox';
-	import { Input } from '@/components/ui/input';
+	import { Label } from '@client/components/ui/label';
+	import { Checkbox } from '@client/components/ui/checkbox';
+	import { Input } from '@client/components/ui/input';
 	import { User } from 'lucide-svelte';
-	import Button from '@/components/ui/button/button.svelte';
+	import Button from '@client/components/ui/button/button.svelte';
 	import { onMount } from 'svelte';
 	import { api } from '@/client/api';
 

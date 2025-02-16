@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Sparkles, Square } from 'lucide-svelte';
-	import { Button } from '@/components/ui/button';
-	import * as Popover from '@/components/ui/popover';
-	import { Input } from '@/components/ui/input';
-	import { Label } from '@/components/ui/label';
+	import { Button } from '@client/components/ui/button';
+	import * as Popover from '@client/components/ui/popover';
+	import { Input } from '@client/components/ui/input';
+	import { Label } from '@client/components/ui/label';
 	import { toast } from 'svelte-sonner';
 	import type { TestState } from '../types';
 	import type { GenerateQuestionParamsDto } from '@/server/api/questions/dtos/generate-question-params.dto';

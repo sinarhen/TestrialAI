@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as Accordion from '@/components/ui/accordion';
+	import * as Accordion from '@client/components/ui/accordion';
 	import type { Step } from '../../index.svelte';
 	import DisplayModeStep from './DisplayModeStep.svelte';
 	import DurationPickerStep from './DurationPickerStep.svelte';

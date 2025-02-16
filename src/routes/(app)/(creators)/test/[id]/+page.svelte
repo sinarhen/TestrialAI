@@ -11,7 +11,7 @@
 		Trash2
 	} from 'lucide-svelte';
 	import type { PageServerData } from './$types';
-	import Separator from '@/components/ui/separator/separator.svelte';
+	import Separator from '@client/components/ui/separator/separator.svelte';
 	import type { TestState } from './types';
 	import AddQuestionButton from './components/AddQuestionButton.svelte';
 	import GenerateQuestionButton from './components/GenerateQuestionButton.svelte';

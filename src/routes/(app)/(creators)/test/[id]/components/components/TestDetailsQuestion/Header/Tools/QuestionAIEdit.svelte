@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as DropdownMenu from '@/components/ui/dropdown-menu';
+	import * as DropdownMenu from '@client/components/ui/dropdown-menu';
 	import type { QuestionModificationTool } from '@/client/types/openai';
 	import { Brain, CaseLower, Globe, RotateCw, Sparkles, ChevronDown, Icon } from 'lucide-svelte';
 	import { questionState, type QuestionState } from '../../../../../types';

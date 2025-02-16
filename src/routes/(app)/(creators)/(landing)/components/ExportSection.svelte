@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@client/components/ui/button';
 </script>
 
 <section class="sticky top-1/4 mt-14 flex h-1/2 w-full flex-col xl:mt-0 xl:w-3/4">

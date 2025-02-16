@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Label } from '@/components/ui/label';
+	import { Label } from '@client/components/ui/label';
 	import { questionState, type QuestionState } from '../../../types';
-	import * as RadioGroup from '@/components/ui/radio-group';
-	import { Checkbox } from '@/components/ui/checkbox';
-	import { Input } from '@/components/ui/input';
+	import * as RadioGroup from '@client/components/ui/radio-group';
+	import { Checkbox } from '@client/components/ui/checkbox';
+	import { Input } from '@client/components/ui/input';
 	const {
 		question
 	}: {

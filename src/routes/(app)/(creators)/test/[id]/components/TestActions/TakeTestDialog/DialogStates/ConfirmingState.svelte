@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { parseClientResponse } from '@/client/utils/api.js';
-	import Button from '@/components/ui/button/button.svelte';
+	import Button from '@client/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
 	import { type DialogState } from '../index.svelte';
 	import { api } from '@/client/api';

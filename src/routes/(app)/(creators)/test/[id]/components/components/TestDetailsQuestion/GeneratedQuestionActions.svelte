@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { Button } from '@/components/ui/button/index.js';
+	import { Button } from '@client/components/ui/button/index.js';
 	import { Sparkles, Trash2 } from 'lucide-svelte';
 	import { questionState, type QuestionState, type SavedQuestion } from '../../../types';
 	import { api } from '@/client/api';

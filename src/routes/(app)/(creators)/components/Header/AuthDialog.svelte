@@ -6,11 +6,11 @@
 		DialogHeader,
 		DialogTitle,
 		DialogDescription
-	} from '@/components/ui/dialog';
-	import { Label } from '@/components/ui/label';
-	import { Input } from '@/components/ui/input';
-	import { Separator } from '@/components/ui/separator';
-	import { Button } from '@/components/ui/button';
+	} from '@client/components/ui/dialog';
+	import { Label } from '@client/components/ui/label';
+	import { Input } from '@client/components/ui/input';
+	import { Separator } from '@client/components/ui/separator';
+	import { Button } from '@client/components/ui/button';
 	import { LogIn } from 'lucide-svelte';
 	import { api } from '@/client/api';
 	import type { Provider } from '@/server/api/users/tables';

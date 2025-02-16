@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@client/components/ui/button';
 	import type { PageServerData } from './$types';
 	import {
 		Circle,
@@ -13,10 +13,10 @@
 		User
 	} from 'lucide-svelte';
 	import { goto, invalidateAll } from '$app/navigation';
-	import * as Tooltip from '@/components/ui/tooltip';
-	import * as Dialog from '@/components/ui/dialog';
-	import Input from '@/components/ui/input/input.svelte';
-	import Separator from '@/components/ui/separator/separator.svelte';
+	import * as Tooltip from '@client/components/ui/tooltip';
+	import * as Dialog from '@client/components/ui/dialog';
+	import Input from '@client/components/ui/input/input.svelte';
+	import Separator from '@client/components/ui/separator/separator.svelte';
 	import LogoutButton from '../../../(creators)/components/Header/LogoutButton.svelte';
 	import AuthDialog from '../../../(creators)/components/Header/AuthDialog.svelte';
 	import { api } from '@/client/api';

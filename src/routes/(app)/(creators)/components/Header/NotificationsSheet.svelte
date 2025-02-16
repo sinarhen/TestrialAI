@@ -1,7 +1,13 @@
 <script lang="ts">
-	import * as Sheet from '@/components/ui/sheet';
+	import * as Sheet from '@client/components/ui/sheet';
 	import { Bell } from 'lucide-svelte';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '@client/components/ui/card';
 </script>
 
 <Sheet.Root>

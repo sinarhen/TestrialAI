@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@/components/ui/button';
+	import { Button } from '@client/components/ui/button';
 	import { ChevronDown } from 'lucide-svelte';
 </script>
 

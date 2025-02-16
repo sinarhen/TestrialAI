@@ -1,10 +1,10 @@
 <script lang="ts">
-	import * as RadioGroup from '@/components/ui/radio-group';
+	import * as RadioGroup from '@client/components/ui/radio-group';
 	import { CircleHelp, Gauge } from 'lucide-svelte';
 	import type { PageServerData } from './$types';
-	import { Checkbox } from '@/components/ui/checkbox';
-	import { Label } from '@/components/ui/label';
-	import { Input } from '@/components/ui/input';
+	import { Checkbox } from '@client/components/ui/checkbox';
+	import { Label } from '@client/components/ui/label';
+	import { Input } from '@client/components/ui/input';
 	import QuestionCodeBlock from '../../components/QuestionCodeBlock.svelte';
 	import QuestionTitle from '../../components/components/TestDetailsQuestion/Header/QuestionTitle.svelte';
 

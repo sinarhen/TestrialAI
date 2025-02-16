@@ -3,10 +3,10 @@
 	import AuthDialog from './AuthDialog.svelte';
 	import TestHistorySheet from './TestHistorySheet.svelte';
 	import NotificationsSheet from './NotificationsSheet.svelte';
-	import * as Popover from '@/components/ui/popover';
-	import { Button } from '@/components/ui/button';
+	import * as Popover from '@client/components/ui/popover';
+	import { Button } from '@client/components/ui/button';
 	import { goto } from '$app/navigation';
-	import { Separator } from '@/components/ui/separator';
+	import { Separator } from '@client/components/ui/separator';
 	import LogoutButton from './LogoutButton.svelte';
 	import type { UserDto } from '@/server/api/users/dtos/user.dto';
 	import type { TestDto } from '@/server/api/tests/dtos/test.dto';

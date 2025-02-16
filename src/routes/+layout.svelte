@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { ModeWatcher } from 'mode-watcher';
-	import { Toaster } from '@/components/ui/sonner';
+	import { Toaster } from '@client/components/ui/sonner';
 	import type { LayoutData } from './$types';
 
 	const {
