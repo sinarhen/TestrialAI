@@ -20,5 +20,5 @@ export async function load({ params }) {
 		return error(404);
 	}
 
-	return { testSession: resp.data };
+	return { testSession: resp.data, token: testSessionToken };
 }

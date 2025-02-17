@@ -5,3 +5,5 @@ export const answerDto = z.object({
 	typedAnswer: z.string().optional(),
 	selectedOptionIds: z.array(z.string()).optional()
 });
+
+export type AnswerDto = z.infer<typeof answerDto>;

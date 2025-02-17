@@ -8,6 +8,7 @@ import { InternalError, NotFound, Unauthorized } from '../common/utils/exception
 import { type PublicTestSessionDto } from './dtos/public-test-session.dto';
 import { mapTestSessionToPublic } from './dtos/public-test-session.dto';
 import { TokenService } from '../common/services/token.service';
+import type { AnswerDto } from './dtos/answer.dto';
 
 @injectable()
 export class TestSessionsService {
@@ -18,14 +19,7 @@ export class TestSessionsService {
 		private tokenService: TokenService = container.resolve(TokenService)
 	) {}
 
-	public async syncAnswers(
-		testSessionToken: string,
-		answers: {
-			questionId: string;
-			typedAnswer?: string;
-			selectedOptionIds?: string[];
-		}[]
-	) {
+	public async syncAnswers(testSessionToken: string, answers: AnswerDto[]) {
 		const { participantId } = this.tokenService.decodeTestSessionToken(testSessionToken);
 		return this.testsSessionsRepository.upsertParticipantAnswers(
 			answers.map((a) => ({

@@ -2,7 +2,7 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
 import { usersTable } from '../../users/tables/users.table';
 import { testSessionsTable } from './testSessions.table';
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import type { InferResultType } from '../../common/utils/drizzle';
 import { testSessionParticipantStatuses } from '../../../../shared/constants/participant-statuses';
 import { participantAnswersTable } from './participantsAnswers.table';
@@ -22,6 +22,9 @@ export const testSessionParticipantsTable = sqliteTable('test_participant', {
 		enum: testSessionParticipantStatuses
 	}).notNull(),
 	score: integer('score').notNull().default(0),
+	startedAt: integer('started_at', { mode: 'timestamp' })
+		.notNull()
+		.default(sql`CURRENT_TIMESTAMP`),
 	feedback: text('feedback')
 });
 

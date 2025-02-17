@@ -13,11 +13,21 @@ export const publicTestSessionDto = z.object({
 	testStateJson: publicTestDto,
 	displayMode: z.enum(displayModes),
 	participantsCount: z.number(),
-	participantAnswers: z.array(answerDto)
+	participantAnswers: z.array(answerDto),
+	timeLeft: z.number().nullable()
 });
 export function mapTestSessionToPublic(
 	testSession: TestSessionWithRelations
 ): PublicTestSessionDto {
+	const timeLeft =
+		testSession.durationInMinutes && testSession.participants[0].startedAt
+			? Math.max(
+					0,
+					testSession.durationInMinutes * 60 -
+						(Date.now() - Number(testSession.participants[0].startedAt)) / 1000
+				)
+			: null;
+
 	return {
 		id: testSession.id,
 		code: testSession.code,
@@ -31,7 +41,8 @@ export function mapTestSessionToPublic(
 			questionId: answer.questionId,
 			typedAnswer: answer.typedAnswer ?? undefined,
 			selectedOptionIds: answer.selectedOptionIds ?? undefined
-		}))
+		})),
+		timeLeft
 	};
 }
 

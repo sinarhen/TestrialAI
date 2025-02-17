@@ -22,9 +22,9 @@ export class TestSessionsRepository extends DrizzleRepository {
 			.onConflictDoUpdate({
 				target: [participantAnswersTable.questionId, participantAnswersTable.testParticipantId],
 				set: {
-					typedAnswer: sql`excluded.typedAnswer`,
-					submittedAt: new Date(),
-					selectedOptionIds: sql`excluded.selectedOptionIds`
+					typedAnswer: sql`excluded.typed_answer`,
+					selectedOptionIds: sql`excluded.selected_option_ids`,
+					submittedAt: new Date()
 				}
 			});
 	}
