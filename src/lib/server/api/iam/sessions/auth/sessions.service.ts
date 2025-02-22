@@ -8,6 +8,7 @@ import type { CreateSessionDto } from './dtos/create-session-dto';
 import type { SessionDto } from './dtos/sessions.dto';
 import { generateId } from '../../../common/utils/crypto';
 
+// TODO: Move to base class
 @injectable()
 export class SessionsService {
 	public readonly sessionCookieName = 'session';
