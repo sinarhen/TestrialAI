@@ -1,6 +1,6 @@
 import { type Context, Hono } from 'hono';
 import { stream } from 'hono/streaming';
-import type { SessionDto } from '@api/iam/sessions/dtos/sessions.dto';
+import type { SessionDto } from '@/server/api/iam/sessions/auth/dtos/sessions.dto';
 import type { ChatCompletionChunk } from 'openai/resources/index.mjs';
 import type { Stream } from 'openai/streaming.mjs';
 

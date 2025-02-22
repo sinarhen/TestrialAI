@@ -17,6 +17,7 @@ export const testSessionParticipantsTable = sqliteTable('test_participant', {
 	userId: text('user_id')
 		// .notNull()
 		.references(() => usersTable.id, { onDelete: 'cascade' }),
+	anonymousUserId: text('anonymous_user_id'),
 	name: text('name').notNull(),
 	status: text('status', {
 		enum: testSessionParticipantStatuses

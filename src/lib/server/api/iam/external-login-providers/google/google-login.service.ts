@@ -3,7 +3,7 @@ import { Unauthorized } from '@/server/api/common/utils/exceptions';
 import axios from 'axios';
 import { UsersService } from '@/server/api/users/users.service';
 import { BaseExternalLoginProviderService } from '../external-login-provider.service';
-import { SessionsService } from '../../sessions/sessions.service';
+import { SessionsService } from '../../sessions/auth/sessions.service';
 
 type GoogleAuthorizeQueryParams = {
 	client_id: string;

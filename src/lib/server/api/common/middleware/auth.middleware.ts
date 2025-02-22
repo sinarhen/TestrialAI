@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
-import type { SessionDto } from '@api/iam/sessions/dtos/sessions.dto';
+import type { SessionDto } from '@/server/api/iam/sessions/auth/dtos/sessions.dto';
 import { Unauthorized } from '../utils/exceptions';
 
 /* ---------------------------------- Types --------------------------------- */

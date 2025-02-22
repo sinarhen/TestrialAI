@@ -1,6 +1,6 @@
 import { injectable } from 'tsyringe';
 import { createSessionDto, type CreateSessionDto } from './dtos/create-session-dto';
-import { RedisRepository } from '../../common/factories/redis-repository.factory';
+import { RedisRepository } from '../../../common/factories/redis-repository.factory';
 
 @injectable()
 export class SessionsRepository extends RedisRepository<'session'> {

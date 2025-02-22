@@ -1,24 +1,24 @@
 import { deleteCookie, getSignedCookie, setSignedCookie } from 'hono/cookie';
 import { container, injectable } from 'tsyringe';
-import { SessionsRepository } from './sessions.repository';
 import dayjs from 'dayjs';
-import { RequestContextService } from '../../common/services/request-context.service';
-import { ConfigService } from '../../common/configs/config.service';
-import type { CreateSessionDto } from './dtos/create-session-dto';
-import type { SessionDto } from './dtos/sessions.dto';
-import { generateId } from '../../common/utils/crypto';
+import { RequestContextService } from '../../../common/services/request-context.service';
+import { ConfigService } from '../../../common/configs/config.service';
+import { generateId } from '../../../common/utils/crypto';
+import type { ParticipantSessionDto } from './dtos/participant-session.dto';
+import { ParticipantSessionsRepository } from './participant-sessions.repository';
+import type { CreateParticipantSessionDto } from './dtos/create-participant-session.dto';
 
 @injectable()
 export class SessionsService {
 	public readonly sessionCookieName = 'session';
 
 	constructor(
-		private sessionsRepository = container.resolve(SessionsRepository),
+		private participantSessionsRepository = container.resolve(ParticipantSessionsRepository),
 		private requestContextService = container.resolve(RequestContextService),
 		private configService = container.resolve(ConfigService)
 	) {}
 
-	setSessionCookie(session: SessionDto) {
+	setParticipantSessionCookie(session: ParticipantSessionDto) {
 		return setSignedCookie(
 			this.requestContextService.getContext(),
 			this.sessionCookieName,
@@ -34,7 +34,7 @@ export class SessionsService {
 		);
 	}
 
-	async getSessionCookie(): Promise<string | null> {
+	async getParticipantSessionCookie(): Promise<string | null> {
 		const session = await getSignedCookie(
 			this.requestContextService.getContext(),
 			this.configService.envs.SIGNING_SECRET,
@@ -44,24 +44,24 @@ export class SessionsService {
 		return session;
 	}
 
-	deleteSessionCookie() {
+	deleteParticipantSessionCookie() {
 		return deleteCookie(this.requestContextService.getContext(), this.sessionCookieName);
 	}
 
-	async createSession(userId: string): Promise<SessionDto> {
-		const session: CreateSessionDto = {
+	async createParticipantSession(anonymousUserId: string): Promise<ParticipantSessionDto> {
+		const session: CreateParticipantSessionDto = {
 			id: this.generateSessionToken(),
-			userId,
+			anonymousUserId,
 			expiresAt: dayjs().add(30, 'day').toDate()
 		};
 
-		await this.sessionsRepository.create(session);
+		await this.participantSessionsRepository.create(session);
 		return { ...session };
 	}
 
-	async validateSession(sessionId: string): Promise<SessionDto | null> {
+	async validateSession(sessionId: string): Promise<ParticipantSessionDto | null> {
 		// Check if session exists
-		const existingSession = await this.sessionsRepository.get(sessionId);
+		const existingSession = await this.participantSessionsRepository.get(sessionId);
 
 		// If session does not exist, return null
 		if (!existingSession) return null;
@@ -72,7 +72,7 @@ export class SessionsService {
 		// If session should be extended, update the session in the database
 		if (shouldExtendSession) {
 			existingSession.expiresAt = dayjs().add(30, 'day').toDate();
-			await this.sessionsRepository.create({ ...existingSession });
+			await this.participantSessionsRepository.create({ ...existingSession });
 			return { ...existingSession };
 		}
 
@@ -80,7 +80,7 @@ export class SessionsService {
 	}
 
 	async invalidateSession(sessionId: string): Promise<void> {
-		await this.sessionsRepository.delete(sessionId);
+		await this.participantSessionsRepository.delete(sessionId);
 	}
 
 	private generateSessionToken(): string {

@@ -78,6 +78,7 @@
 			areAnswersModified = false;
 		}, 5000);
 
+		isSubmitDisabled = true;
 		return () => clearInterval(intervalId);
 	});
 
@@ -168,11 +169,23 @@
 
 		endTest();
 	}
+
+	let isSubmitDisabled = $derived(
+		isSyncing ||
+			Object.keys(localAnswers).length !== test.questions.length ||
+			!Object.values(localAnswers).every(
+				(answer) => answer.typedAnswer || answer.selectedOptionIds?.size
+			)
+	);
 </script>
 
 <div class=" flex flex-col items-center">
-	<h2 class="text-lg font-medium">{formattedTime}</h2>
-	<p>Time left</p>
+	{#if timer !== null}
+		<h2 class="text-lg font-medium text-muted-foreground">{formattedTime}</h2>
+		<p class="text-sm text-muted-foreground">Time left</p>
+	{:else}
+		<p class="text-sm text-muted-foreground">No time limit</p>
+	{/if}
 </div>
 <div class="mt-7 flex w-full justify-between">
 	<div>
@@ -254,6 +267,6 @@
 				{/if}
 			</div>
 		{/each}
-		<Button onclick={submitTest} class="md:w-fit">Submit</Button>
+		<Button onclick={submitTest} disabled={isSubmitDisabled} class="md:w-fit">Submit</Button>
 	</section>
 </main>

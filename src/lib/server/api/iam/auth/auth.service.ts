@@ -3,7 +3,7 @@ import { RegisterRequestsRepository } from './dtos/register-requests/register-re
 import { LoginVerificationEmail } from '../../mail/templates/login-verification.template';
 import { BadRequest } from '../../common/utils/exceptions';
 import { WelcomeEmail } from '../../mail/templates/welcome.template';
-import { SessionsService } from '../sessions/sessions.service';
+import { SessionsService } from '../sessions/auth/sessions.service';
 import { UsersRepository } from '../../users/users.repository';
 import { VerificationCodesService } from '../../common/services/verification-codes.service';
 import { UsersService } from '../../users/users.service';
@@ -11,7 +11,7 @@ import { MailerService } from '../../mail/mailer.service';
 import type { VerifyRegisterRequestDto } from './dtos/register-requests/verify-register-request.dto';
 import type { LoginDto } from './dtos/login/login.dto';
 import { HashingService } from '../../common/services/hashing.service';
-import type { SessionDto } from '../sessions/dtos/sessions.dto';
+import type { SessionDto } from '../sessions/auth/dtos/sessions.dto';
 import type { BaseExternalLoginProviderService } from '../external-login-providers/external-login-provider.service';
 import type { Provider } from '../../users/tables';
 import { GitHubLoginService } from '../external-login-providers/github/github-login.service';

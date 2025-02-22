@@ -1,7 +1,7 @@
 import { container, injectable } from 'tsyringe';
 import { createRegisterRequestDto } from './auth/dtos/register-requests/create-register-request.dto';
 import { AuthService } from './auth/auth.service';
-import { SessionsService } from './sessions/sessions.service';
+import { SessionsService } from './sessions/auth/sessions.service';
 import { authState } from '../common/middleware/auth.middleware';
 import { Controller } from '../common/factories/controllers.factory';
 import { userDto } from '../users/dtos/user.dto';
