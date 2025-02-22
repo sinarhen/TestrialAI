@@ -5,7 +5,8 @@ import {
 	testSessionParticipantsTable,
 	testSessionsTable,
 	type CreateParticipantAnswer,
-	type CreateTestSession
+	type CreateTestSession,
+	type TestParticipantInsert
 } from './tables';
 import { takeFirst, type DrizzleClient, type DrizzleTransaction } from '../common/utils/drizzle';
 import { and, eq, sql } from 'drizzle-orm';
@@ -26,7 +27,21 @@ export class TestSessionsRepository extends DrizzleRepository {
 					selectedOptionIds: sql`excluded.selected_option_ids`,
 					submittedAt: new Date()
 				}
-			});
+			})
+			.returning();
+	}
+
+	async updateTestSessionParticipant(
+		participantId: string,
+		participant: Partial<TestParticipantInsert>,
+		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
+	) {
+		return db
+			.update(testSessionParticipantsTable)
+			.set(participant)
+			.where(eq(testSessionParticipantsTable.id, participantId))
+			.returning()
+			.then(takeFirst);
 	}
 
 	async createTestSession(

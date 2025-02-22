@@ -10,12 +10,14 @@
 	import { onMount } from 'svelte';
 	import { api } from '@/client/api';
 	import { parseClientResponse } from '@/client/utils/api';
+	import type { AnswerDto } from '@/server/api/testSessions/dtos/answer.dto';
+	import { toast } from 'svelte-sonner';
 
 	const { data } = $props();
 
-	const { durationInMinutes, testStateJson: test, participantsCount } = data.testSession;
+	const { testStateJson: test, participantsCount } = data.testSession;
 
-	let timer = $state(data.testSession.timeLeft);
+	let timer = $state<number | null>(data.testSession.timeLeft);
 	let formattedTime = $derived(formatTime(timer));
 
 	function formatTime(seconds: number | null) {
@@ -33,16 +35,17 @@
 	};
 
 	// TODO: DO not allow users submit the test if they exceed the time limit on the server side
-	const interval = !!timer
-		? setInterval(() => {
-				if (timer > 0) {
-					timer--;
-				} else {
-					endTest();
-					clearInterval(interval);
-				}
-			}, 1000)
-		: null;
+	// const interval =
+	// 	timer !== null
+	// 		? setInterval(() => {
+	// 				if (timer > 0) {
+	// 					timer--;
+	// 				} else {
+	// 					endTest();
+	// 					clearInterval(interval);
+	// 				}
+	// 			}, 1000)
+	// 		: null;
 
 	const displayableName =
 		data.user?.firstName && data.user?.lastName
@@ -57,18 +60,22 @@
 	}>({});
 
 	onMount(() => {
-		const saved = localStorage.getItem(`testAnswers_${data.token}`);
+		const saved: AnswerDto[] = JSON.parse(
+			localStorage.getItem(`testAnswers_${data.token}`) ?? '[]'
+		);
 		if (saved) {
-			localAnswers = syncFromLocalStorage();
+			localAnswers = getAnswersFromLocalStorage();
 		}
 
-		const intervalId = setInterval(() => {
+		const intervalId = setInterval(async () => {
 			if (isSyncing || !areAnswersModified) return;
+
 			isSyncing = true;
-			syncAnswersToServer().finally(() => {
-				isSyncing = false;
-				areAnswersModified = false;
-			});
+
+			await syncAnswersToServer();
+
+			isSyncing = false;
+			areAnswersModified = false;
 		}, 5000);
 
 		return () => clearInterval(intervalId);
@@ -80,7 +87,7 @@
 		localAnswers[questionId] = {
 			selectedOptionIds: new Set([...existingSet, optionId])
 		};
-		syncToLocalStorage();
+		saveAnswersToLocalStorage();
 	}
 
 	function handleTextAnswerChange(questionId: string, newValue: string) {
@@ -88,11 +95,13 @@
 		localAnswers[questionId] = {
 			typedAnswer: newValue
 		};
-		syncToLocalStorage();
+		saveAnswersToLocalStorage();
 	}
 
-	function syncFromLocalStorage() {
-		const parsed = JSON.parse(localStorage.getItem(`testAnswers_${data.token}`) ?? '{}');
+	function getAnswersFromLocalStorage() {
+		const parsed: AnswerDto[] = JSON.parse(
+			localStorage.getItem(`testAnswers_${data.token}`) ?? '{}'
+		);
 		return Object.fromEntries(
 			Object.entries(parsed).map(([qId, answer]) => [
 				qId,
@@ -106,9 +115,11 @@
 		);
 	}
 
-	function syncToLocalStorage() {
+	function saveAnswersToLocalStorage() {
 		// Convert Sets to arrays before storing
-		const serializable = Object.fromEntries(
+		const serializable: {
+			[questionId: AnswerDto['questionId']]: Omit<AnswerDto, 'questionId'>;
+		} = Object.fromEntries(
 			Object.entries(localAnswers).map(([qId, answer]) => [
 				qId,
 				{
@@ -139,14 +150,14 @@
 			.then(parseClientResponse);
 
 		if (response.error) {
-			// we have everything in a local storage, so its not a big deal
-			// toast.error(
-			// 	'Error syncing answers: ' +
-			// 		response.error +
-			// 		'\nPlease do '
-			// );
+			if (response.data) {
+				console.error(response.data);
+			} else {
+				console.error(response.error);
+			}
+			toast.error(response.error);
 		} else {
-			// toast.success('Answers synced successfully');
+			console.log('Answers synced successfully');
 		}
 	}
 

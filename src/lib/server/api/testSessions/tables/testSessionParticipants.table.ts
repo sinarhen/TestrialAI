@@ -22,6 +22,7 @@ export const testSessionParticipantsTable = sqliteTable('test_participant', {
 		enum: testSessionParticipantStatuses
 	}).notNull(),
 	score: integer('score').notNull().default(0),
+	submittedAt: integer('submitted_at', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`),
 	startedAt: integer('started_at', { mode: 'timestamp' })
 		.notNull()
 		.default(sql`CURRENT_TIMESTAMP`),
@@ -44,6 +45,7 @@ export const testSessionParticipantRelations = relations(
 );
 
 export type TestParticipant = typeof testSessionParticipantsTable.$inferSelect;
+export type TestParticipantInsert = typeof testSessionParticipantsTable.$inferInsert;
 export type TestParticipantWithRelations = InferResultType<
 	'testSessionParticipantsTable',
 	{

@@ -42,6 +42,11 @@ export class TestSessionsController extends Controller {
 				);
 				return c.json(testSession);
 			})
+			.post('/:testSessionToken/submit', async (c) => {
+				const testSessionToken = c.req.param('testSessionToken');
+				const testSession = await this.testSessionsService.submitTestSession(testSessionToken);
+				return c.json(testSession);
+			})
 			.post(
 				'/:testSessionCode/start',
 				zValidator(

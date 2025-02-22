@@ -71,7 +71,10 @@
 </div>
 <TestDetails {test} initialQuestionsCount={serverData.test.questions.length} />
 
-<div class="mt-16 flex">
+<div
+	style={`--delay: ${200 + 150 * (test.questions.length + 1)}ms`}
+	class={`mt-16 flex -motion-translate-y-in-25 motion-opacity-in-0 motion-delay-[--delay]`}
+>
 	<AddQuestionButton {onCreateQuestion} />
 	<GenerateQuestionButton bind:test />
 </div>

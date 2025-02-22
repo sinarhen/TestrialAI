@@ -2,9 +2,9 @@ import { container, injectable } from 'tsyringe';
 import { TestSessionsRepository } from './test-sessions.repository';
 import type { CreateTestSessionDto } from './dtos/create-test-session.dto';
 import { TestsRepository } from '../tests/tests.repository';
-import { type TestSession } from './tables';
+import { type TestSession, type TestSessionWithRelations } from './tables';
 import { DrizzleTransactionService } from '../common/services/drizzle-transaction.service';
-import { InternalError, NotFound, Unauthorized } from '../common/utils/exceptions';
+import { BadRequest, InternalError, NotFound, Unauthorized } from '../common/utils/exceptions';
 import { type PublicTestSessionDto } from './dtos/public-test-session.dto';
 import { mapTestSessionToPublic } from './dtos/public-test-session.dto';
 import { TokenService } from '../common/services/token.service';
@@ -27,6 +27,54 @@ export class TestSessionsService {
 				testParticipantId: participantId
 			}))
 		);
+	}
+
+	public async submitTestSession(testSessionToken: string, answers: AnswerDto[]) {
+		return await this.drizzleTransactionService.runTransaction(async (tx) => {
+			const { participantId } = this.tokenService.decodeTestSessionToken(testSessionToken);
+
+			await this.testsSessionsRepository.upsertParticipantAnswers(
+				answers.map((a) => ({
+					...a,
+					testParticipantId: participantId
+				})),
+				tx
+			);
+			const testSession = await this.testsSessionsRepository.getTestSessionWithParticipantAnswers(
+				testSessionToken,
+				participantId,
+				tx
+			);
+
+			if (!testSession || !testSession.participants.at(0)) {
+				throw NotFound('Test session not found');
+			}
+
+			if (testSession.durationInMinutes) {
+				const timeLeft =
+					testSession.durationInMinutes * 60 -
+					(Date.now() - Number(testSession.participants[0].startedAt)) / 1000;
+
+				if (
+					timeLeft <= 0
+					//	TODO: && !testSession.isOverTimeAllowed
+				) {
+					throw BadRequest('Test session time is over');
+				}
+			}
+
+			const calculatedScore = this.calculateScore(testSession, answers);
+
+			return this.testsSessionsRepository.updateTestSessionParticipant(
+				participantId,
+				{
+					score: calculatedScore,
+					status: 'COMPLETED',
+					submittedAt: new Date()
+				},
+				tx
+			);
+		});
 	}
 
 	async startTestSession(testSessionCode: string, name: string, userId?: string) {
@@ -122,5 +170,33 @@ export class TestSessionsService {
 			startTime: Number(testSession.startTime),
 			endTime: Number(testSession.endTime)
 		};
+	}
+
+	private calculateScore(testSession: TestSessionWithRelations, answers: AnswerDto[]) {
+		const answersLookup = new Map(answers.map((a) => [a.questionId, a]));
+
+		let calculatedScore = 0;
+		testSession.testStateJson.questions.forEach((question) => {
+			if (question.answerType === 'text') {
+				if (question.correctAnswer === answersLookup.get(question.id)?.typedAnswer) {
+					calculatedScore += 1 / testSession.testStateJson.questions.length;
+				}
+			} else {
+				const correctOptions = question.options?.filter((o) => o.isCorrect);
+				if (!correctOptions) {
+					throw InternalError('Correct options not found');
+				}
+				const selectedOptions = answersLookup.get(question.id)?.selectedOptionIds;
+				if (!selectedOptions) {
+					throw BadRequest('Selected options not found');
+				}
+				const optionsLookup = new Map(correctOptions.map((o) => [o.id, o]));
+				const correctSelectedCount = selectedOptions.filter((o) => optionsLookup.has(o)).length;
+				calculatedScore +=
+					correctSelectedCount / testSession.testStateJson.questions.length / correctOptions.length;
+			}
+		});
+
+		return calculatedScore;
 	}
 }
