@@ -4,10 +4,9 @@ import type { CreateTestSessionDto } from './dtos/create-test-session.dto';
 import { TestsRepository } from '../tests/tests.repository';
 import { type TestSession, type TestSessionWithRelations } from './tables';
 import { DrizzleTransactionService } from '../common/services/drizzle-transaction.service';
-import { BadRequest, InternalError, NotFound, Unauthorized } from '../common/utils/exceptions';
+import { BadRequest, InternalError, NotFound } from '../common/utils/exceptions';
 import { type PublicTestSessionDto } from './dtos/public-test-session.dto';
 import { mapTestSessionToPublic } from './dtos/public-test-session.dto';
-import { TokenService } from '../common/services/token.service';
 import type { AnswerDto } from './dtos/answer.dto';
 
 @injectable()
@@ -15,12 +14,10 @@ export class TestSessionsService {
 	constructor(
 		private testsSessionsRepository = container.resolve(TestSessionsRepository),
 		private testsRepository = container.resolve(TestsRepository),
-		private drizzleTransactionService = container.resolve(DrizzleTransactionService),
-		private tokenService: TokenService = container.resolve(TokenService)
+		private drizzleTransactionService = container.resolve(DrizzleTransactionService)
 	) {}
 
-	public async syncAnswers(testSessionToken: string, answers: AnswerDto[]) {
-		const { participantId } = this.tokenService.decodeTestSessionToken(testSessionToken);
+	public async syncAnswers(answers: AnswerDto[], participantId: string) {
 		return this.testsSessionsRepository.upsertParticipantAnswers(
 			answers.map((a) => ({
 				...a,
@@ -29,10 +26,12 @@ export class TestSessionsService {
 		);
 	}
 
-	public async submitTestSession(testSessionToken: string, answers: AnswerDto[]) {
+	public async submitTestSession(
+		testSessionCode: string,
+		participantId: string,
+		answers: AnswerDto[]
+	) {
 		return await this.drizzleTransactionService.runTransaction(async (tx) => {
-			const { participantId } = this.tokenService.decodeTestSessionToken(testSessionToken);
-
 			await this.testsSessionsRepository.upsertParticipantAnswers(
 				answers.map((a) => ({
 					...a,
@@ -41,24 +40,29 @@ export class TestSessionsService {
 				tx
 			);
 			const testSession = await this.testsSessionsRepository.getTestSessionWithParticipantAnswers(
-				testSessionToken,
+				testSessionCode,
 				participantId,
 				tx
 			);
+
+			if (!testSession) {
+				throw NotFound('Test session not found');
+			}
+
+			if (!testSession.participants.at(0)) {
+				throw NotFound('Test session not found');
+			}
 
 			if (!testSession || !testSession.participants.at(0)) {
 				throw NotFound('Test session not found');
 			}
 
 			if (testSession.durationInMinutes) {
-				const timeLeft =
-					testSession.durationInMinutes * 60 -
-					(Date.now() - Number(testSession.participants[0].startedAt)) / 1000;
-
-				if (
-					timeLeft <= 0
-					//	TODO: && !testSession.isOverTimeAllowed
-				) {
+				const timeLeft = this.calculateTimeLeft(
+					testSession.durationInMinutes,
+					Number(testSession.participants[0].startedAt)
+				);
+				if (timeLeft <= 0) {
 					throw BadRequest('Test session time is over');
 				}
 			}
@@ -94,14 +98,16 @@ export class TestSessionsService {
 				tx
 			);
 
-			const sessionToken = this.tokenService.encodeTestSessionToken({
-				testSessionId: testSession.id,
-				participantId: participant?.id ?? ''
-			});
+			if (!participant) {
+				throw InternalError('Failed to create participant');
+			}
 
 			return {
-				sessionToken,
-				testSessionId: testSession.id
+				testSessionId: testSession.id,
+				participant: {
+					anonymousUserId: participant.anonymousUserId,
+					id: participant.id
+				}
 			};
 		});
 	}
@@ -133,19 +139,22 @@ export class TestSessionsService {
 
 		return this.convertDatesToNumbers(testSession);
 	}
-	public async getTestSessionPublicData(token: string): Promise<PublicTestSessionDto> {
-		let decodedToken;
-		try {
-			decodedToken = this.tokenService.decodeTestSessionToken(token);
-		} catch (err) {
-			console.error(err);
-			throw Unauthorized('Invalid session token');
+	public async getTestSessionPublicData(testSessionCode: string): Promise<PublicTestSessionDto> {
+		const testSession = await this.testsSessionsRepository.getTestSessionByCode(testSessionCode);
+
+		if (!testSession) {
+			throw NotFound('Test session not found');
 		}
 
-		const { testSessionId, participantId } = decodedToken;
+		return mapTestSessionToPublic(testSession);
+	}
 
+	public async getTestSessionPublicDataWithParticipantAnswers(
+		testSessionCode: string,
+		participantId: string
+	) {
 		const testSession = await this.testsSessionsRepository.getTestSessionWithParticipantAnswers(
-			testSessionId,
+			testSessionCode,
 			participantId
 		);
 
@@ -198,5 +207,11 @@ export class TestSessionsService {
 		});
 
 		return calculatedScore;
+	}
+
+	private calculateTimeLeft(durationInMinutes: number, startedAt: number) {
+		const timeLeft = durationInMinutes * 60 - (Date.now() - startedAt) / 1000;
+
+		return timeLeft;
 	}
 }

@@ -6,7 +6,7 @@ import { requestId } from 'hono/request-id';
 import { generateId } from './common/utils/crypto';
 import { UsersController } from './users/users.controller';
 import { browserSessions } from './common/middleware/browser-session.middleware';
-import { IamController } from './iam/iam.controller';
+import { AuthController } from './auth/auth.controller';
 import { sessionManagement } from './common/middleware/session-management.middleware';
 import { TestsController } from '@/server/api/tests/tests.controller';
 import { QuestionsController } from './questions/questions.controller';
@@ -17,7 +17,7 @@ import { logger } from 'hono/logger';
 @injectable()
 export class ApplicationController extends RootController {
 	constructor(
-		private iamController = container.resolve(IamController),
+		private iamController = container.resolve(AuthController),
 		private usersController = container.resolve(UsersController),
 		private testsController = container.resolve(TestsController),
 		private questionsController = container.resolve(QuestionsController),

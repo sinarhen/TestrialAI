@@ -10,6 +10,7 @@ import {
 } from './tables';
 import { takeFirst, type DrizzleClient, type DrizzleTransaction } from '../common/utils/drizzle';
 import { and, eq, sql } from 'drizzle-orm';
+import { generateId } from '../common/utils/crypto';
 
 @injectable()
 export class TestSessionsRepository extends DrizzleRepository {
@@ -65,12 +66,12 @@ export class TestSessionsRepository extends DrizzleRepository {
 	}
 
 	async getTestSessionWithParticipantAnswers(
-		testSessionId: string,
+		testSessionCode: string,
 		participantId: string,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
 		return db.query.testSessionsTable.findFirst({
-			where: eq(testSessionsTable.id, testSessionId),
+			where: eq(testSessionsTable.code, testSessionCode),
 			with: {
 				participants: {
 					where: eq(testSessionParticipantsTable.id, participantId),
@@ -90,7 +91,13 @@ export class TestSessionsRepository extends DrizzleRepository {
 	) {
 		return db
 			.insert(testSessionParticipantsTable)
-			.values({ name, userId, testSessionId, status: 'IN_PROGRESS' })
+			.values({
+				name,
+				userId,
+				testSessionId,
+				anonymousUserId: userId ? null : generateId(),
+				status: 'IN_PROGRESS'
+			})
 			.returning()
 			.then(takeFirst);
 	}

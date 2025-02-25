@@ -13,18 +13,20 @@ export const publicTestSessionDto = z.object({
 	testStateJson: publicTestDto,
 	displayMode: z.enum(displayModes),
 	participantsCount: z.number(),
-	participantAnswers: z.array(answerDto),
+	participantAnswers: z.array(answerDto).nullable(),
 	timeLeft: z.number().nullable()
 });
 export function mapTestSessionToPublic(
-	testSession: TestSessionWithRelations
+	testSession: Omit<TestSessionWithRelations, 'participants'> & {
+		participants?: TestSessionWithRelations['participants'];
+	}
 ): PublicTestSessionDto {
 	const timeLeft =
-		testSession.durationInMinutes && testSession.participants[0].startedAt
+		testSession.durationInMinutes && testSession.participants?.[0]?.startedAt
 			? Math.max(
 					0,
 					testSession.durationInMinutes * 60 -
-						(Date.now() - Number(testSession.participants[0].startedAt)) / 1000
+						(Date.now() - Number(testSession.participants?.[0]?.startedAt)) / 1000
 				)
 			: null;
 
@@ -36,12 +38,13 @@ export function mapTestSessionToPublic(
 		durationInMinutes: Number(testSession.durationInMinutes),
 		testStateJson: mapTestToPublic(testSession.testStateJson),
 		displayMode: testSession.displayMode,
-		participantsCount: testSession.participants.length,
-		participantAnswers: testSession.participants[0].answers.map((answer) => ({
-			questionId: answer.questionId,
-			typedAnswer: answer.typedAnswer ?? undefined,
-			selectedOptionIds: answer.selectedOptionIds ?? undefined
-		})),
+		participantsCount: testSession.participants?.length ?? 0,
+		participantAnswers:
+			testSession.participants?.[0]?.answers.map((answer) => ({
+				questionId: answer.questionId,
+				typedAnswer: answer.typedAnswer ?? undefined,
+				selectedOptionIds: answer.selectedOptionIds ?? undefined
+			})) || null,
 		timeLeft
 	};
 }

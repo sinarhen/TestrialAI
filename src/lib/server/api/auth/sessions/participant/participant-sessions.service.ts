@@ -9,8 +9,8 @@ import { ParticipantSessionsRepository } from './participant-sessions.repository
 import type { CreateParticipantSessionDto } from './dtos/create-participant-session.dto';
 
 @injectable()
-export class SessionsService {
-	public readonly sessionCookieName = 'session';
+export class ParticipantSessionsService {
+	public readonly sessionCookieName = 'participant-session';
 
 	constructor(
 		private participantSessionsRepository = container.resolve(ParticipantSessionsRepository),
@@ -56,7 +56,7 @@ export class SessionsService {
 		};
 
 		await this.participantSessionsRepository.create(session);
-		return { ...session };
+		return session;
 	}
 
 	async validateSession(sessionId: string): Promise<ParticipantSessionDto | null> {
@@ -76,7 +76,7 @@ export class SessionsService {
 			return { ...existingSession };
 		}
 
-		return { ...existingSession };
+		return existingSession;
 	}
 
 	async invalidateSession(sessionId: string): Promise<void> {

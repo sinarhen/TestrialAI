@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
-import { SessionsService } from '../../iam/sessions/auth/sessions.service';
+import { SessionsService } from '../../auth/sessions/user/sessions.service';
 import { container } from 'tsyringe';
 
 export const sessionManagement: MiddlewareHandler = createMiddleware(async (c, next) => {

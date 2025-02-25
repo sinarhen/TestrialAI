@@ -1,12 +1,14 @@
 import { type Context, Hono } from 'hono';
 import { stream } from 'hono/streaming';
-import type { SessionDto } from '@/server/api/iam/sessions/auth/dtos/sessions.dto';
+import type { SessionDto } from '@/server/api/auth/sessions/user/dtos/sessions.dto';
 import type { ChatCompletionChunk } from 'openai/resources/index.mjs';
 import type { Stream } from 'openai/streaming.mjs';
+import type { ParticipantSessionDto } from '../../auth/sessions/participant/dtos/participant-session.dto';
 
 export type HonoEnv = {
 	Variables: {
 		session: SessionDto | null;
+		'participant-session': ParticipantSessionDto | null;
 		browserSessionId: string;
 		requestId: string;
 	};

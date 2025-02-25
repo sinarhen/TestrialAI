@@ -1,18 +1,18 @@
 import { container, injectable } from 'tsyringe';
-import { createRegisterRequestDto } from './auth/dtos/register-requests/create-register-request.dto';
-import { AuthService } from './auth/auth.service';
-import { SessionsService } from './sessions/auth/sessions.service';
+import { createRegisterRequestDto } from './dtos/register-requests/create-register-request.dto';
+import { AuthService } from './auth.service';
+import { SessionsService } from './sessions/user/sessions.service';
 import { authState } from '../common/middleware/auth.middleware';
 import { Controller } from '../common/factories/controllers.factory';
 import { userDto } from '../users/dtos/user.dto';
 import { z } from 'zod';
 import { generateState } from '../common/utils/crypto';
-import { verifyRegisterRequestDto } from './auth/dtos/register-requests/verify-register-request.dto';
-import { loginDto } from './auth/dtos/login/login.dto';
+import { verifyRegisterRequestDto } from './dtos/register-requests/verify-register-request.dto';
+import { loginDto } from './dtos/login/login.dto';
 import { zValidator } from '../common/utils/zod-validator-wrapper';
 
 @injectable()
-export class IamController extends Controller {
+export class AuthController extends Controller {
 	constructor(
 		private authService = container.resolve(AuthService),
 		private sessionsService = container.resolve(SessionsService)

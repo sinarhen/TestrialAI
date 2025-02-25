@@ -27,6 +27,8 @@
 		return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 	}
 
+	const localStorageKey = `testAnswers_${data.testSession.id}`;
+
 	let isSyncing = $state(false);
 	let areAnswersModified = $state(false);
 
@@ -61,7 +63,7 @@
 
 	onMount(() => {
 		const saved: AnswerDto[] = JSON.parse(
-			localStorage.getItem(`testAnswers_${data.token}`) ?? '[]'
+			localStorage.getItem(`testAnswers_${data.testSession.id}`) ?? '[]'
 		);
 		if (saved) {
 			localAnswers = getAnswersFromLocalStorage();
@@ -100,9 +102,7 @@
 	}
 
 	function getAnswersFromLocalStorage() {
-		const parsed: AnswerDto[] = JSON.parse(
-			localStorage.getItem(`testAnswers_${data.token}`) ?? '{}'
-		);
+		const parsed: AnswerDto[] = JSON.parse(localStorage.getItem(localStorageKey) ?? '{}');
 		return Object.fromEntries(
 			Object.entries(parsed).map(([qId, answer]) => [
 				qId,
@@ -131,7 +131,7 @@
 				}
 			])
 		);
-		localStorage.setItem(`testAnswers_${data.token}`, JSON.stringify(serializable));
+		localStorage.setItem(localStorageKey, JSON.stringify(serializable));
 	}
 
 	function serializeAnswers() {
@@ -144,8 +144,8 @@
 
 	async function syncAnswersToServer() {
 		const response = await api()
-			['test-sessions'][':testSessionToken'].sync.$post({
-				param: { testSessionToken: data.token },
+			['test-sessions'][':testSessionCode'].sync.$post({
+				param: { testSessionCode: data.testSession.code },
 				json: serializeAnswers()
 			})
 			.then(parseClientResponse);

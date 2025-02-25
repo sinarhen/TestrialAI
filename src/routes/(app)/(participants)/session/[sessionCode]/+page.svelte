@@ -12,7 +12,7 @@
 		Timer,
 		User
 	} from 'lucide-svelte';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import * as Tooltip from '@client/components/ui/tooltip';
 	import * as Dialog from '@client/components/ui/dialog';
 	import Input from '@client/components/ui/input/input.svelte';
@@ -23,7 +23,6 @@
 	import { parseClientResponse } from '@/client/utils/api';
 
 	const { data } = $props();
-
 	const startDate = data.session.startTime ? new Date(data.session.startTime) : null;
 	const endDate = data.session.endTime ? new Date(data.session.endTime) : null;
 
@@ -79,9 +78,7 @@
 			toast.error('Something went wrong');
 			return;
 		}
-		const { sessionToken } = resp.data;
-
-		goto(`/session/${sessionToken}/take`);
+		goto(`/session/${data.session.code}/take`);
 	};
 </script>
 
@@ -165,29 +162,30 @@
 				{#if data.user}
 					<div class="mt-2 flex gap-x-1 text-xs">
 						{#if data.user.firstName}
-							<button onclick={() => onSuggestionClick(data.user?.firstName)} class="underline"
-								>{data.user.firstName}</button
+							<button
+								onclick={() => onSuggestionClick(data.user?.firstName ?? '')}
+								class="underline">{data.user?.firstName}</button
 							>
 						{/if}
-						{#if data.user.lastName}
-							<button onclick={() => onSuggestionClick(data.user.lastName)} class="underline"
-								>{data.user.lastName}</button
+						{#if data.user?.lastName}
+							<button onclick={() => onSuggestionClick(data.user?.lastName ?? '')} class="underline"
+								>{data.user?.lastName}</button
 							>
 						{/if}
-						{#if data.user.firstName && data.user.lastName}
+						{#if data.user?.firstName && data.user?.lastName}
 							<button
 								onclick={() => onSuggestionClick(data.user?.firstName ?? '' + data.user?.lastName)}
 								class="underline">{data.user.firstName} {data.user.lastName}</button
 							>
 						{/if}
-						{#if data.user.username}
-							<button onclick={() => onSuggestionClick(data.user?.username)} class="underline"
+						{#if data.user?.username}
+							<button onclick={() => onSuggestionClick(data.user?.username ?? '')} class="underline"
 								>{data.user.username}</button
 							>
 						{/if}
 						{#if data.user.email}
 							<button
-								onclick={() => onSuggestionClick(data.user.email.split('@').at(0)) ?? ''}
+								onclick={() => onSuggestionClick(data.user?.email?.split('@').at(0) ?? '')}
 								class="underline">{data.user.email.split('@').at(0)}</button
 							>
 						{/if}

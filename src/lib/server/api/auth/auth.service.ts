@@ -1,21 +1,21 @@
 import { container, injectable } from 'tsyringe';
 import { RegisterRequestsRepository } from './dtos/register-requests/register-requests.repository';
-import { LoginVerificationEmail } from '../../mail/templates/login-verification.template';
-import { BadRequest } from '../../common/utils/exceptions';
-import { WelcomeEmail } from '../../mail/templates/welcome.template';
-import { SessionsService } from '../sessions/auth/sessions.service';
-import { UsersRepository } from '../../users/users.repository';
-import { VerificationCodesService } from '../../common/services/verification-codes.service';
-import { UsersService } from '../../users/users.service';
-import { MailerService } from '../../mail/mailer.service';
-import type { VerifyRegisterRequestDto } from './dtos/register-requests/verify-register-request.dto';
+import { HashingService } from '../common/services/hashing.service';
+import { VerificationCodesService } from '../common/services/verification-codes.service';
+import { BadRequest } from '../common/utils/exceptions';
+import { MailerService } from '../mail/mailer.service';
+import { LoginVerificationEmail } from '../mail/templates/login-verification.template';
+import { WelcomeEmail } from '../mail/templates/welcome.template';
+import { UsersRepository } from '../users/users.repository';
+import { UsersService } from '../users/users.service';
 import type { LoginDto } from './dtos/login/login.dto';
-import { HashingService } from '../../common/services/hashing.service';
-import type { SessionDto } from '../sessions/auth/dtos/sessions.dto';
-import type { BaseExternalLoginProviderService } from '../external-login-providers/external-login-provider.service';
-import type { Provider } from '../../users/tables';
-import { GitHubLoginService } from '../external-login-providers/github/github-login.service';
-import { GoogleLoginService } from '../external-login-providers/google/google-login.service';
+import type { VerifyRegisterRequestDto } from './dtos/register-requests/verify-register-request.dto';
+import type { BaseExternalLoginProviderService } from './external-login-providers/external-login-provider.service';
+import { GitHubLoginService } from './external-login-providers/github/github-login.service';
+import { GoogleLoginService } from './external-login-providers/google/google-login.service';
+import type { SessionDto } from './sessions/user/dtos/sessions.dto';
+import { SessionsService } from './sessions/user/sessions.service';
+import type { Provider } from '../users/tables';
 
 @injectable()
 export class AuthService {

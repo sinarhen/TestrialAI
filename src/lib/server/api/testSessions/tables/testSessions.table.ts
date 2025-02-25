@@ -50,11 +50,11 @@ export type CreateTestSession = typeof testSessionsTable.$inferInsert;
 export type TestSessionWithRelations = InferResultType<
 	'testSessionsTable',
 	{
-		participants: true;
+		participants?: true;
 		// test: true;
 	}
 > & {
-	participants: InferResultType<
+	participants?: InferResultType<
 		'testSessionParticipantsTable',
 		{
 			answers: true;

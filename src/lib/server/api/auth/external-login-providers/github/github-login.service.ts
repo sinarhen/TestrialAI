@@ -8,7 +8,7 @@ import {
 } from '@/server/api/common/utils/exceptions';
 import { UsersService } from '@/server/api/users/users.service';
 import { BaseExternalLoginProviderService } from '../external-login-provider.service';
-import { SessionsService } from '../../sessions/auth/sessions.service';
+import { SessionsService } from '../../sessions/user/sessions.service';
 
 type GitHubAuthorizeQueryParams = {
 	client_id: string;

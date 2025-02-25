@@ -1,10 +1,10 @@
+import { RedisRepository } from '@/server/api/common/factories/redis-repository.factory';
 import { injectable } from 'tsyringe';
-import { RedisRepository } from '../../../../common/factories/redis-repository.factory';
 
 type RegisterRequest = { email: string; hashedCode: string };
 
 @injectable()
-export class RegisterRequestsRepository extends RedisRepository<'login-request'> {
+export class RegisterRequestsRepository extends RedisRepository<'register-request'> {
 	async set(args: RegisterRequest) {
 		return this.redis.setWithExpiry({
 			prefix: this.prefix,
