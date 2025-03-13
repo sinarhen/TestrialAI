@@ -1,7 +1,7 @@
 import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { generateId } from '../../common/utils/crypto';
 import { relations } from 'drizzle-orm';
-import { testSessionParticipantsTable } from './testSessionParticipants.table';
+import { testSessionParticipantsTable } from '../../testSessions/tables/testSessionParticipants.table';
 import type { InferResultType } from '../../common/utils/drizzle';
 
 export const participantAnswersTable = sqliteTable(
@@ -11,7 +11,7 @@ export const participantAnswersTable = sqliteTable(
 			.primaryKey()
 			.$defaultFn(() => generateId()),
 		questionId: text('question_id').notNull(),
-		testParticipantId: text('test_participant_id')
+		testSessionParticipantId: text('test_session_participant_id')
 			.notNull()
 			.references(() => testSessionParticipantsTable.id, { onDelete: 'cascade' }),
 		typedAnswer: text('typed_answer'),
@@ -22,14 +22,14 @@ export const participantAnswersTable = sqliteTable(
 	(table) => ({
 		uniqueAnswer: uniqueIndex('unique_participant_answer').on(
 			table.questionId,
-			table.testParticipantId
+			table.testSessionParticipantId
 		)
 	})
 );
 
 export const participantAnswersRelations = relations(participantAnswersTable, ({ one }) => ({
 	participant: one(testSessionParticipantsTable, {
-		fields: [participantAnswersTable.testParticipantId],
+		fields: [participantAnswersTable.testSessionParticipantId],
 		references: [testSessionParticipantsTable.id]
 	})
 }));

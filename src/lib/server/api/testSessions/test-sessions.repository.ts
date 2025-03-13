@@ -1,37 +1,16 @@
 import { injectable } from 'tsyringe';
 import { DrizzleRepository } from '../common/factories/drizzle-repository.factory';
 import {
-	participantAnswersTable,
 	testSessionParticipantsTable,
 	testSessionsTable,
-	type CreateParticipantAnswer,
 	type CreateTestSession,
 	type TestParticipantInsert
 } from './tables';
 import { takeFirst, type DrizzleClient, type DrizzleTransaction } from '../common/utils/drizzle';
-import { and, eq, sql } from 'drizzle-orm';
-import { generateId } from '../common/utils/crypto';
+import { and, eq } from 'drizzle-orm';
 
 @injectable()
 export class TestSessionsRepository extends DrizzleRepository {
-	async upsertParticipantAnswers(
-		answers: CreateParticipantAnswer[],
-		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
-	) {
-		return db
-			.insert(participantAnswersTable)
-			.values(answers)
-			.onConflictDoUpdate({
-				target: [participantAnswersTable.questionId, participantAnswersTable.testParticipantId],
-				set: {
-					typedAnswer: sql`excluded.typed_answer`,
-					selectedOptionIds: sql`excluded.selected_option_ids`,
-					submittedAt: new Date()
-				}
-			})
-			.returning();
-	}
-
 	async updateTestSessionParticipant(
 		participantId: string,
 		participant: Partial<TestParticipantInsert>,
@@ -40,7 +19,7 @@ export class TestSessionsRepository extends DrizzleRepository {
 		return db
 			.update(testSessionParticipantsTable)
 			.set(participant)
-			.where(eq(testSessionParticipantsTable.id, participantId))
+			.where(eq(testSessionParticipantsTable.participantId, participantId))
 			.returning()
 			.then(takeFirst);
 	}
@@ -74,7 +53,7 @@ export class TestSessionsRepository extends DrizzleRepository {
 			where: eq(testSessionsTable.code, testSessionCode),
 			with: {
 				participants: {
-					where: eq(testSessionParticipantsTable.id, participantId),
+					where: eq(testSessionParticipantsTable.participantId, participantId),
 					with: {
 						answers: true
 					}
@@ -84,19 +63,18 @@ export class TestSessionsRepository extends DrizzleRepository {
 	}
 
 	async addParticipantToTestSession(
+		participantId: string,
 		testSessionId: string,
 		name: string,
-		userId?: string,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
 		return db
 			.insert(testSessionParticipantsTable)
 			.values({
-				name,
-				userId,
+				participantId,
+				status: 'IN_PROGRESS',
 				testSessionId,
-				anonymousUserId: userId ? null : generateId(),
-				status: 'IN_PROGRESS'
+				name
 			})
 			.returning()
 			.then(takeFirst);
@@ -104,7 +82,7 @@ export class TestSessionsRepository extends DrizzleRepository {
 
 	async abandonParticipantInTestSession(
 		testSessionId: string,
-		userId: string,
+		participantId: string,
 		db: DrizzleTransaction | DrizzleClient = this.drizzle.db
 	) {
 		return db
@@ -113,7 +91,7 @@ export class TestSessionsRepository extends DrizzleRepository {
 			.where(
 				and(
 					eq(testSessionParticipantsTable.testSessionId, testSessionId),
-					eq(testSessionParticipantsTable.userId, userId)
+					eq(testSessionParticipantsTable.participantId, participantId)
 				)
 			)
 			.returning()

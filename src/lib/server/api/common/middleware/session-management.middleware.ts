@@ -2,9 +2,25 @@ import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { SessionsService } from '../../auth/sessions/user/sessions.service';
 import { container } from 'tsyringe';
+import { ParticipantSessionsService } from '../../auth/sessions/participant/participant-sessions.service';
 
 export const sessionManagement: MiddlewareHandler = createMiddleware(async (c, next) => {
 	const sessionService = container.resolve(SessionsService);
+	const participantSessionService = container.resolve(ParticipantSessionsService);
+
+	const participantSessionId = await participantSessionService.getParticipantSessionCookie();
+	if (participantSessionId) {
+		const participantSession =
+			await participantSessionService.validateSession(participantSessionId);
+		if (!participantSession) {
+			participantSessionService.deleteParticipantSessionCookie();
+		} else {
+			c.set(participantSessionService.sessionCookieName, participantSession);
+		}
+	} else {
+		c.set(participantSessionService.sessionCookieName, null);
+	}
+
 	const sessionId = await sessionService.getSessionCookie();
 
 	if (!sessionId) {

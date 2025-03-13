@@ -1,7 +1,7 @@
 import { displayModes } from '@/shared/constants/display-modes';
 import { z } from 'zod';
 import { publicTestDto, mapTestToPublic } from '../../tests/dtos/test.dto';
-import { answerDto } from './answer.dto';
+import { answerDto } from '../../participants/dtos/answer.dto';
 import type { TestSessionWithRelations } from '../tables';
 
 export const publicTestSessionDto = z.object({

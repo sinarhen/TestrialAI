@@ -48,10 +48,10 @@ export class ParticipantSessionsService {
 		return deleteCookie(this.requestContextService.getContext(), this.sessionCookieName);
 	}
 
-	async createParticipantSession(anonymousUserId: string): Promise<ParticipantSessionDto> {
+	async createParticipantSession(participantId: string): Promise<ParticipantSessionDto> {
 		const session: CreateParticipantSessionDto = {
 			id: this.generateSessionToken(),
-			anonymousUserId,
+			participantId,
 			expiresAt: dayjs().add(30, 'day').toDate()
 		};
 

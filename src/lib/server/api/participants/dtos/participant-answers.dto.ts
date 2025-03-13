@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { answerDto } from './answer.dto';
+import { answerDto } from '../../testSessions/dtos/answer.dto';
 
 export const participantAnswersDto = z.object({
 	participantId: z.string(),

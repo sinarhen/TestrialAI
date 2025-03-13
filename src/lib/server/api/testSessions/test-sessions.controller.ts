@@ -5,7 +5,7 @@ import { TestSessionsService } from '@api/testSessions/test-sessions.service';
 import { createTestSessionDto } from './dtos/create-test-session.dto';
 import { zValidator } from '../common/utils/zod-validator-wrapper';
 import { z } from 'zod';
-import { answerDto } from './dtos/answer.dto';
+import { answerDto } from '../participants/dtos/answer.dto';
 import { ParticipantSessionsService } from '../auth/sessions/participant/participant-sessions.service';
 import dayjs from 'dayjs';
 
@@ -69,6 +69,7 @@ export class TestSessionsController extends Controller {
 			)
 			.post(
 				'/:testSessionCode/start',
+				// authState('participant-session'),
 				zValidator(
 					'json',
 					z.object({
@@ -78,20 +79,19 @@ export class TestSessionsController extends Controller {
 				async (c) => {
 					const testSessionCode = c.req.param('testSessionCode');
 					const validJson = c.req.valid('json');
-					const testSession = await this.testSessionsService.startTestSession(
+					const result = await this.testSessionsService.startTestSession({
 						testSessionCode,
-						validJson.name,
-						c.var.session?.userId
-					);
+						name: validJson.name,
+						participantId: c.var['participant-session']?.id,
+						userId: c.var['session']?.userId
+					});
 
-					if (testSession.participant.anonymousUserId) {
-						await this.participantSessionsService.setParticipantSessionCookie({
-							expiresAt: dayjs().add(1, 'day').toDate(),
-							id: testSession.participant.id,
-							anonymousUserId: testSession.participant.anonymousUserId
-						});
-					}
-					return c.json(testSession);
+					await this.participantSessionsService.setParticipantSessionCookie({
+						expiresAt: dayjs().add(1, 'day').toDate(),
+						id: result.participantId,
+						participantId: result.participantId
+					});
+					return c.json(result);
 				}
 			);
 }

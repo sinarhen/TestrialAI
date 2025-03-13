@@ -7,21 +7,25 @@ import { DrizzleTransactionService } from '../common/services/drizzle-transactio
 import { BadRequest, InternalError, NotFound } from '../common/utils/exceptions';
 import { type PublicTestSessionDto } from './dtos/public-test-session.dto';
 import { mapTestSessionToPublic } from './dtos/public-test-session.dto';
-import type { AnswerDto } from './dtos/answer.dto';
+import type { AnswerDto } from '../participants/dtos/answer.dto';
+import { ParticipantSessionsService } from '../auth/sessions/participant/participant-sessions.service';
+import { ParticipantsRepository } from '../participants/participants.repository';
 
 @injectable()
 export class TestSessionsService {
 	constructor(
 		private testsSessionsRepository = container.resolve(TestSessionsRepository),
 		private testsRepository = container.resolve(TestsRepository),
-		private drizzleTransactionService = container.resolve(DrizzleTransactionService)
+		private drizzleTransactionService = container.resolve(DrizzleTransactionService),
+		private participantSessionsService = container.resolve(ParticipantSessionsService),
+		private participantsRepository = container.resolve(ParticipantsRepository)
 	) {}
 
 	public async syncAnswers(answers: AnswerDto[], participantId: string) {
-		return this.testsSessionsRepository.upsertParticipantAnswers(
+		return this.participantsRepository.upsertParticipantAnswers(
 			answers.map((a) => ({
 				...a,
-				testParticipantId: participantId
+				testSessionParticipantId: participantId
 			}))
 		);
 	}
@@ -32,10 +36,10 @@ export class TestSessionsService {
 		answers: AnswerDto[]
 	) {
 		return await this.drizzleTransactionService.runTransaction(async (tx) => {
-			await this.testsSessionsRepository.upsertParticipantAnswers(
+			await this.participantsRepository.upsertParticipantAnswers(
 				answers.map((a) => ({
 					...a,
-					testParticipantId: participantId
+					testSessionParticipantId: participantId
 				})),
 				tx
 			);
@@ -81,7 +85,17 @@ export class TestSessionsService {
 		});
 	}
 
-	async startTestSession(testSessionCode: string, name: string, userId?: string) {
+	async startTestSession({
+		testSessionCode,
+		name,
+		participantId,
+		userId
+	}: {
+		testSessionCode: string;
+		name: string;
+		participantId?: string;
+		userId?: string;
+	}) {
 		return await this.drizzleTransactionService.runTransaction(async (tx) => {
 			const testSession = await this.testsSessionsRepository.getTestSessionByCode(
 				testSessionCode,
@@ -91,9 +105,8 @@ export class TestSessionsService {
 				throw NotFound('Test session not found');
 			}
 
-			const participant = await this.testsSessionsRepository.addParticipantToTestSession(
-				testSession.id,
-				name,
+			const participant = await this.participantsRepository.getOrCreateParticipant(
+				participantId,
 				userId,
 				tx
 			);
@@ -102,12 +115,21 @@ export class TestSessionsService {
 				throw InternalError('Failed to create participant');
 			}
 
+			const testSessionParticipant = await this.testsSessionsRepository.addParticipantToTestSession(
+				participant.id,
+				testSession.id,
+				name,
+				tx
+			);
+
+			if (!testSessionParticipant) {
+				throw InternalError('Failed to create participant');
+			}
+
+			await this.participantSessionsService.createParticipantSession(participant.id);
+
 			return {
-				testSessionId: testSession.id,
-				participant: {
-					anonymousUserId: participant.anonymousUserId,
-					id: participant.id
-				}
+				participantId: participant.id
 			};
 		});
 	}
