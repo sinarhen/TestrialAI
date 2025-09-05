@@ -1,10 +1,5 @@
 {
   "framework": "sveltekit",
-  "functions": {
-    "**": {
-      "maxDuration": 30
-    }
-  },
   "build": {
     "env": {
       "VERCEL_NODEJS_HELPERS_PACKAGE_CACHE": "0"
