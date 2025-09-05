@@ -50,7 +50,7 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 	}
 
 	getAuthorizationUrl(state: string): string {
-		const callbackUrl = `${this.configService.envs.BASE_URL}/auth/google/callback`;
+		const callbackUrl = `${this.configService.envs.BASE_URL}/api/iam/login/google/callback`;
 		const qs = this.constructQs<GoogleAuthorizeQueryParams>({
 			client_id: this.configService.envs.GOOGLE_CLIENT_ID,
 			redirect_uri: callbackUrl,
@@ -74,7 +74,7 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 		const googleUserResponse = await this.getUserInfo(access_token);
 		const existingUser = await this.usersService.findUserByProviderId(
 			'google',
-			googleUserResponse.sub
+			String(googleUserResponse.sub)
 		);
 
 		if (existingUser) {
@@ -82,7 +82,7 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 		} else {
 			const createdUser = await this.usersService.create({
 				provider: 'google',
-				providerId: googleUserResponse.sub,
+				providerId: String(googleUserResponse.sub),
 				username: googleUserResponse.name,
 				firstName: googleUserResponse.given_name,
 				lastName: googleUserResponse.family_name,
@@ -116,7 +116,7 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 
 	private async getUserInfo(accessToken: string) {
 		const response = await axios.get<GoogleUser>(
-			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/oauth2/v1/userinfo',
 			{
 				headers: {
 					Authorization: `Bearer ${accessToken}`
@@ -136,7 +136,7 @@ export class GoogleLoginService extends BaseExternalLoginProviderService {
 	}
 
 	private get redirectUrl() {
-		return `${this.configService.envs.BASE_URL}/auth/google/callback`;
+		return `${this.configService.envs.BASE_URL}/api/iam/login/google/callback`;
 	}
 
 	private get clientId() {

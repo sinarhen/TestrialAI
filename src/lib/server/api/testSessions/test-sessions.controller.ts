@@ -44,10 +44,15 @@ export class TestSessionsController extends Controller {
 				authState('participant-session'),
 				zValidator('json', z.array(answerDto)),
 				async (c) => {
+					const participantSession = c.var['participant-session'];
+					if (!participantSession?.id) {
+						return c.json({ error: 'Invalid participant session' }, 400);
+					}
+
 					const answersDtos = c.req.valid('json');
 					const testSession = await this.testSessionsService.syncAnswers(
 						answersDtos,
-						c.var['participant-session'].id
+						participantSession.id
 					);
 					return c.json(testSession);
 				}
@@ -85,6 +90,10 @@ export class TestSessionsController extends Controller {
 						participantId: c.var['participant-session']?.id,
 						userId: c.var['session']?.userId
 					});
+
+					if (!result) {
+						return c.json({ error: 'Failed to start test session' }, 500);
+					}
 
 					await this.participantSessionsService.setParticipantSessionCookie({
 						expiresAt: dayjs().add(1, 'day').toDate(),
