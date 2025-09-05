@@ -14,7 +14,22 @@ const config = {
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter({
 			runtime: 'nodejs20.x',
-			maxDuration: 30
+			maxDuration: 30,
+			split: true,
+			external: [
+				'puppeteer',
+				'openai',
+				'pdfmake',
+				'ioredis',
+				'drizzle-orm',
+				'@libsql/client',
+				'nodemailer',
+				'@node-rs/argon2',
+				'axios',
+				'highlight.js',
+				'tsyringe',
+				'reflect-metadata'
+			]
 		}),
 		alias: {
 			'@/*': './src/lib/*',
