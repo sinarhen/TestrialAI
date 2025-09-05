@@ -3,10 +3,6 @@
   "functions": {
     "**": {
       "maxDuration": 30
-    },
-    "src/routes/api/**": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 30
     }
   },
   "build": {
