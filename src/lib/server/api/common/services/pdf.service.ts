@@ -1,6 +1,9 @@
 import { container, injectable } from 'tsyringe';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 import { ConfigService } from '@api/common/configs/config.service';
+
+// @ts-ignore - No types available for @sparticuz/chromium
+const chromium = require('@sparticuz/chromium');
 
 @injectable()
 export class PdfService {
@@ -9,15 +12,20 @@ export class PdfService {
 	public async generateTestPdf(testId: string) {
 		const exportUrl = `${this.configService.envs.BASE_URL}/test/${testId}/pdf`;
 
-		// 2) Launch Puppeteer
-		const browser = await puppeteer.launch({});
+		// Configure chromium for serverless environment
+		const browser = await puppeteer.launch({
+			args: chromium.args,
+			defaultViewport: chromium.defaultViewport,
+			executablePath: await chromium.executablePath(),
+			headless: chromium.headless,
+		});
 
 		const page = await browser.newPage();
 		await page.goto(exportUrl, { waitUntil: 'networkidle0' });
 
 		const pdfBuffer = await page.pdf({
 			format: 'A4',
-			// printBackground: true,
+			printBackground: true,
 			margin: {
 				top: '1cm',
 				right: '1cm',
@@ -26,7 +34,6 @@ export class PdfService {
 			}
 		});
 
-		// 5) Close browser
 		await browser.close();
 
 		return pdfBuffer;

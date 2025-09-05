@@ -17,7 +17,8 @@ const config = {
 			maxDuration: 30,
 			split: true,
 			external: [
-				'puppeteer',
+				'puppeteer-core',
+				'@sparticuz/chromium',
 				'openai',
 				'pdfmake', 
 				'ioredis',

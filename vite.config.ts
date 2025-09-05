@@ -9,7 +9,8 @@ export default defineConfig({
 	ssr: {
 		noExternal: ['@sveltejs/kit', 'svelte'],
 		external: [
-			'puppeteer',
+			'puppeteer-core',
+			'@sparticuz/chromium',
 			'openai', 
 			'pdfmake',
 			'ioredis',
@@ -31,7 +32,8 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			external: [
-				'puppeteer',
+				'puppeteer-core',
+				'@sparticuz/chromium',
 				'openai',
 				'pdfmake',
 				'ioredis',
