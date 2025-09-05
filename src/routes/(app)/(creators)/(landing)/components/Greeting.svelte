@@ -7,6 +7,8 @@
 	import * as Select from '@client/components/ui/select';
 	import { Slider } from '@client/components/ui/slider/index';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import AuthDialog from '../../components/Header/AuthDialog.svelte';
 
 	let {
 		userName = 'stranger'
@@ -22,8 +24,14 @@
 	let topic = $state<string | undefined>();
 	let modelSelected = $state<Selected<SupportedModel> | undefined>(modelList[0]);
 	let numberOfQuestions = $state<number>(10);
+	let showAuthDialog = $state(false);
 
 	const onGenerateTest = async () => {
+		if (!$page.data.user) {
+			showAuthDialog = true;
+			return;
+		}
+
 		if (!topic) {
 			toast.error('Please provide a topic');
 			return;
@@ -37,6 +45,11 @@
 
 		return;
 	};
+
+	function onAuthSuccess() {
+		// Proceed with test generation after successful authentication
+		onGenerateTest();
+	}
 </script>
 
 <div class="flex h-[65vh] w-full flex-grow flex-col items-center justify-center">
@@ -81,3 +94,9 @@
 		<Button onclick={onGenerateTest} type="submit" class="mt-5">Create test</Button>
 	</div>
 </div>
+
+<AuthDialog 
+	bind:open={showAuthDialog}
+	onSuccessCallback={onAuthSuccess}
+	showTrigger={false}
+/>

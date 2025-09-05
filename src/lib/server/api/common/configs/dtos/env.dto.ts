@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const privateEnvsDto = z.object({
 	DATABASE_URL: z.string(),
 	REDIS_URL: z.string(),
+	UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 	OPENAI_API_KEY: z.string(),
 	OPENAI_DEFAULT_MODEL: z.string(),
 	OPENAI_COMPLETION_TOKEN_LIMIT: z.number({ coerce: true }),

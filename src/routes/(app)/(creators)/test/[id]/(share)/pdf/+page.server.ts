@@ -10,11 +10,15 @@ export const load = async ({ params, fetch }) => {
 			}
 		})
 		.then(parseClientResponse);
-	if (!test) {
+	
+	if (test.error) {
+		return error(500, test.error);
+	}
+	if (!test.data) {
 		return error(404, 'Test not found');
 	}
 
 	return {
-		test
+		test: test.data
 	};
 };

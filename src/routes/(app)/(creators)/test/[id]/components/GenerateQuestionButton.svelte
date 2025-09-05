@@ -37,7 +37,6 @@
 		});
 		generatingQuestionIndex = test?.questions.length - 1;
 
-		resetPopover();
 		const generateEndpoint = api().questions[':testId'].questions.generate;
 		const generateEndpointUrl = generateEndpoint
 			.$url({
@@ -69,6 +68,8 @@
 						status: 'generated'
 					});
 					console.log('Question generated:', finalData);
+					resetPopover();
+
 					toast.success('Question is generated, does it look good for you?');
 				},
 				onError: (error) => {

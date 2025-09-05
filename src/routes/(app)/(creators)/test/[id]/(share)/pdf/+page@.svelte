@@ -29,7 +29,7 @@
 	<div class="relative mt-8 flex h-full w-full flex-col">
 		<div class="flex w-full flex-col gap-y-12">
 			{#each data.test.questions ?? [] as question, index (index)}
-				<div class={`group relative`} role="list">
+				<div class="question-container group relative" role="list">
 					<div class="group flex gap-x-6">
 						<div class="w-full">
 							<div class="mt-2 w-full">
@@ -81,4 +81,19 @@
 			{/each}
 		</div>
 	</div>
+</section>
+
+<style>
+	@media print {
+		body {
+			margin: 0;
+		}
+		section {
+			page-break-inside: avoid;
+		}
+		.question-container {
+			page-break-inside: avoid;
+			margin-bottom: 20px;
+		}
+	}
 </section>

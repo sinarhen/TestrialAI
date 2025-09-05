@@ -81,6 +81,7 @@
 			})
 			.then(parseClientResponse);
 
+		console.log('resp', resp);
 		if (resp.error) {
 			toast.error(resp.error);
 		}

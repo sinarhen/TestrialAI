@@ -91,11 +91,13 @@ export class QuestionsGenerationService extends OpenAiBaseService {
 		existingQuestions,
 		testTitle
 	}: GenerateQuestionParamsDto): string {
-		return `
+		const prompt = `
 Generate a new question about "${topic}" for the test titled "${testTitle}".
 Avoid repeating any existing questions:
 ${existingQuestions.join(', ')}.
         `;
+		console.log('🔍 Debug: Final prompt being sent to OpenAI:', prompt);
+		return prompt;
 	}
 
 	private buildRegenerateQuestionUserPrompt(params: RegenerateQuestionParams): string {

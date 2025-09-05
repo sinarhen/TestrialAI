@@ -20,8 +20,24 @@
 	import { HTTPException } from 'hono/http-exception';
 	import test from 'node:test';
 
+	// Allow external control of dialog state
+	let {
+		open = $bindable(false),
+		onSuccessCallback,
+		showTrigger = true
+	}: {
+		open?: boolean;
+		onSuccessCallback?: () => void;
+		showTrigger?: boolean;
+	} = $props();
+
 	// state variables for the dialog and form mode
-	let isAuthDialogOpen = $state<boolean | undefined>();
+	let isAuthDialogOpen = $state<boolean | undefined>(open);
+	
+	// Sync with external prop
+	$effect(() => {
+		isAuthDialogOpen = open;
+	});
 	let isLoginMode = $state<boolean>(true);
 	let isSigningIn = $state<boolean>(false);
 
@@ -113,8 +129,10 @@
 			if (!resp.error) {
 				toast.success('Account created successfully');
 				isAuthDialogOpen = false;
+				open = false;
 				// invalidate current page to refresh the user state
 				invalidateAll();
+				onSuccessCallback?.();
 			} else {
 				toast.error(resp.error);
 				console.error(resp);
@@ -153,6 +171,8 @@
 			invalidateAll();
 			toast.success('Logged in successfully');
 			isAuthDialogOpen = false;
+			open = false;
+			onSuccessCallback?.();
 		} catch (err) {
 			console.error(err);
 
@@ -181,14 +201,17 @@
 	open={isAuthDialogOpen}
 	onOpenChange={() => {
 		isAuthDialogOpen = !isAuthDialogOpen;
+		open = isAuthDialogOpen;
 	}}
 >
-	<DialogTrigger>
-		<Button size="sm" variant="outline" class="flex gap-x-2 text-sm">
-			<LogIn size="14" />
-			Login
-		</Button>
-	</DialogTrigger>
+	{#if showTrigger}
+		<DialogTrigger>
+			<Button size="sm" variant="outline" class="flex gap-x-2 text-sm">
+				<LogIn size="14" />
+				Login
+			</Button>
+		</DialogTrigger>
+	{/if}
 	<DialogContent>
 		<DialogHeader>
 			<DialogTitle>{isLoginMode ? 'Login' : 'Register'}</DialogTitle>
