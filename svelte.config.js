@@ -19,7 +19,7 @@ const config = {
 			external: [
 				'puppeteer',
 				'openai',
-				'pdfmake',
+				'pdfmake', 
 				'ioredis',
 				'drizzle-orm',
 				'@libsql/client',
@@ -28,8 +28,18 @@ const config = {
 				'axios',
 				'highlight.js',
 				'tsyringe',
-				'reflect-metadata'
-			]
+				'reflect-metadata',
+				'lodash',
+				'uuid',
+				'dayjs',
+				'hono',
+				'partial-json',
+				'rate-limit-redis',
+				'hono-rate-limiter'
+			],
+			isr: {
+				expiration: false
+			}
 		}),
 		alias: {
 			'@/*': './src/lib/*',

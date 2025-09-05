@@ -7,19 +7,25 @@ export default defineConfig({
 		target: 'es2022'
 	},
 	ssr: {
+		noExternal: ['@sveltejs/kit', 'svelte'],
 		external: [
 			'puppeteer',
-			'openai',
+			'openai', 
 			'pdfmake',
 			'ioredis',
 			'drizzle-orm',
-			'@libsql/client',
+			'@libsql/client', 
 			'nodemailer',
 			'@node-rs/argon2',
 			'axios',
 			'highlight.js',
 			'tsyringe',
-			'reflect-metadata'
+			'reflect-metadata',
+			'lodash',
+			'uuid',
+			'dayjs',
+			'hono',
+			'partial-json'
 		]
 	},
 	build: {
