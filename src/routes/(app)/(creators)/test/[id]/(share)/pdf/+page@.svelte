@@ -85,9 +85,6 @@
 
 <style>
 	@media print {
-		body {
-			margin: 0;
-		}
 		section {
 			page-break-inside: avoid;
 		}
@@ -96,4 +93,4 @@
 			margin-bottom: 20px;
 		}
 	}
-</section>
+</style>
