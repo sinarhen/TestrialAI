@@ -1,6 +1,9 @@
 [build]
 builder = "nixpacks"
 
+[build.nixpacks]
+install = "npm ci && npx puppeteer browsers install chrome"
+
 [deploy]
 startCommand = "node build"
 restartPolicyType = "ON_FAILURE"

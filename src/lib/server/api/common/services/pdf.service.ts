@@ -9,8 +9,19 @@ export class PdfService {
 	public async generateTestPdf(testId: string) {
 		const exportUrl = `${this.configService.envs.BASE_URL}/test/${testId}/pdf`;
 
-		// 2) Launch Puppeteer
-		const browser = await puppeteer.launch({});
+		// 2) Launch Puppeteer with container-friendly flags
+		const browser = await puppeteer.launch({
+			headless: true,
+			args: [
+				'--no-sandbox',
+				'--disable-setuid-sandbox',
+				'--disable-dev-shm-usage',
+				'--disable-accelerated-2d-canvas',
+				'--no-first-run',
+				'--no-zygote',
+				'--disable-gpu'
+			]
+		});
 
 		const page = await browser.newPage();
 		await page.goto(exportUrl, { waitUntil: 'networkidle0' });
